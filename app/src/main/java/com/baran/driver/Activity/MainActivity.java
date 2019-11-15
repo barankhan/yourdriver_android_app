@@ -1,6 +1,8 @@
 package com.baran.driver.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
@@ -13,6 +15,8 @@ import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.ServiceApi;
+import com.baran.driver.Passenger;
+
 
 public class MainActivity extends AppCompatActivity implements MyInterface {
 
@@ -43,10 +47,12 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
             //check login status from sharedPreference
             if (appPreference.getLoginStatus()){
                 //when true
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .add(R.id.fragment_container, new ProfileFragment())
-                        .commit();
+//                getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .add(R.id.fragment_container, new ProfileFragment())
+//                        .commit();
+                Intent intent = new Intent(this, Passenger.class);
+                startActivity(intent);
             } else {
                 // when get false
                 getSupportFragmentManager()
@@ -74,10 +80,14 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         appPreference.setDisplayEmail(email);
         appPreference.setCreDate(created_at);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new ProfileFragment())
-                .commit();
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.fragment_container, new ProfileFragment())
+//                .commit();
+
+        Intent intent = new Intent(this, Passenger.class);
+        startActivity(intent);
+
     }
     @Override
     public void logout() {
@@ -86,9 +96,7 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         appPreference.setDisplayEmail("Email");
         appPreference.setCreDate("DATE");
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, new LoginFragment())
-                .commit();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
