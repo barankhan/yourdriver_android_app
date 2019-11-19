@@ -1,16 +1,16 @@
 package com.baran.driver.ui.home;
 
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,10 +47,9 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.navigation.NavigationView;
 
-import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.Deque;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
@@ -61,21 +62,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     Location mLastLocation;
-    boolean isSourceSet = false, tripStarted = false;
-    private static final int DEFAULT_ZOOM = 17;
+    boolean isSourceSet = false, tripStarted = false,isPickupMode=true,isDropOffMode=false;
+    private static final int DEFAULT_PICKUP_ZOOM = 18;
+    private static final int DEFAULT_DROP_OFF_ZOOM = 12;
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
+    private final LatLng mDefaultLocation = new LatLng(30.2223, 71.4703);
+    private LatLng pickUpLatLng,dropOffLatLng ;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final String KEY_LOCATION = "location";
     private static final String KEY_CAMERA_POSITION = "camera_position";
-    private AutocompleteSupportFragment pickupAutoCompleteFragment;
-    private Marker marker;
+    private AutocompleteSupportFragment pickupAutoCompleteFragment, dropoffAutoCompleteFragment;
+    private Marker pickUpMarker,dropOffMarker;
     private CameraPosition mCameraPosition;
-
+    private Button btnConfirmPickup, btnConfirmDropOff,btnSkipDropOff,btnCallDriver;
     public static AppPreference appPreference;
-
+    public Deque<String> stack;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
 
@@ -84,7 +87,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         appPreference = new AppPreference(getContext());
 
-
+        stack = new ArrayDeque<String>();
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -96,9 +99,75 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         TextView userEmail = headerView.findViewById(R.id.nav_user_email);
         userEmail.setText(appPreference.getDisplayEmail());
 
-
+        btnConfirmPickup = (Button) root.findViewById(R.id.btn_confirm_pickup);
+        btnConfirmDropOff = (Button) root.findViewById(R.id.btn_confirm_drop_off);
+        btnSkipDropOff = (Button) root.findViewById(R.id.btn_skip_drop_off);
+        btnCallDriver = (Button) root.findViewById(R.id.btn_call_driver);
 //        TextView userEmail = headerView.findViewById(R.id.text_email_address);
 
+
+        btnConfirmPickup.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dropoffAutoCompleteFragment.getView().setVisibility(View.VISIBLE);
+                pickUpMarker.setVisible(true);
+
+                isPickupMode=false;
+                isDropOffMode=true;
+
+                v.setVisibility(View.GONE);
+                btnConfirmDropOff.setVisibility(View.VISIBLE);
+                btnSkipDropOff.setVisibility(View.VISIBLE);
+                pickUpLatLng = pickUpMarker.getPosition();
+                stack.push("CONFIRM_PICK_UP");
+
+            }
+        });
+
+
+
+        btnConfirmDropOff.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                isDropOffMode=false;
+                dropOffLatLng = dropOffMarker.getPosition();
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                builder.include(pickUpLatLng).include(dropOffLatLng);
+                //Animate to the bounds
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), 100);
+                mMap.moveCamera(cameraUpdate);
+                v.setVisibility(View.GONE);
+                stack.push("CONFIRM_DROP_OFF");
+                btnCallDriver.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+
+
+
+        btnSkipDropOff.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dropoffAutoCompleteFragment.getView().setVisibility(View.GONE);
+                isPickupMode=false;
+                isDropOffMode=false;
+                v.setVisibility(View.GONE);
+                btnConfirmDropOff.setVisibility(View.GONE);
+                btnCallDriver.setVisibility(View.VISIBLE);
+                stack.push("SKIP_DROP_OFF");
+                dropOffLatLng=null;
+            }
+        });
+
+
+        btnCallDriver.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                v.setVisibility(View.GONE);
+                btnSkipDropOff.setVisibility(View.GONE);
+                btnConfirmDropOff.setVisibility(View.GONE);
+                btnConfirmPickup.setVisibility(View.GONE);
+
+                stack.push("DRIVER_CALLED");
+            }
+        });
 
 
         if (savedInstanceState != null) {
@@ -126,13 +195,43 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         // Pickup AutoComplete Fragment
          pickupAutoCompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.pickup_autocomplete_fragment);
-        pickupAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG,Place.Field.ADDRESS));
+        pickupAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+
+
+
+
         pickupAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(place.getLatLng().latitude,
-                                place.getLatLng().longitude), DEFAULT_ZOOM));
+                                place.getLatLng().longitude), DEFAULT_PICKUP_ZOOM));
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.e(TAG, "An error occurred: " + status);
+            }
+        });
+
+//        pickupAutoCompleteFragment.setLocationRestriction();
+
+
+
+        dropoffAutoCompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.drop_off_autocomplete_fragment);
+        dropoffAutoCompleteFragment.getView().setVisibility(View.INVISIBLE);
+        dropoffAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+
+        dropoffAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(place.getLatLng().latitude,
+                                place.getLatLng().longitude), DEFAULT_PICKUP_ZOOM));
+                dropOffMarker.setPosition(place.getLatLng());
+                dropOffMarker.setVisible(true);
             }
 
             @Override
@@ -143,10 +242,65 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
+        root.setFocusableInTouchMode(true);
+        root.requestFocus();
+        root.setOnKeyListener( new View.OnKeyListener()
+        {
+            @Override
+            public boolean onKey( View v, int keyCode, KeyEvent event )
+            {
+                if( keyCode == KeyEvent.KEYCODE_BACK  && event.getAction()== KeyEvent.ACTION_DOWN )
+                {
+                    switch (stack.peek()){
+                        case "DRIVER_CALLED":
+                            return true;
+                        case "SKIP_DROP_OFF":
+                        case "CONFIRM_DROP_OFF":
+
+                            if(dropoffAutoCompleteFragment.getView().getVisibility()!=View.VISIBLE)
+                                dropoffAutoCompleteFragment.getView().setVisibility(View.VISIBLE);
 
 
+                            isPickupMode=false;
+
+                            btnSkipDropOff.setVisibility(View.VISIBLE);
+                            btnConfirmDropOff.setVisibility(View.VISIBLE);
+
+                            btnConfirmPickup.setVisibility(View.GONE);
+                            btnCallDriver.setVisibility(View.GONE);
+
+                            dropOffMarker.setVisible(false);
+                            dropOffMarker.setPosition(pickUpLatLng);
 
 
+                            CameraPosition cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
+                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                            dropoffAutoCompleteFragment.setText(" ");
+                            isDropOffMode=true;
+
+                            stack.pop();
+                            return true;
+                        case "CONFIRM_PICK_UP":
+                            dropoffAutoCompleteFragment.getView().setVisibility(View.GONE);
+                            isDropOffMode=false;
+                            isPickupMode=true;
+                            btnConfirmPickup.setVisibility(View.VISIBLE);
+                            btnSkipDropOff.setVisibility(View.GONE);
+                            btnConfirmDropOff.setVisibility(View.GONE);
+                            btnCallDriver.setVisibility(View.GONE);
+                            dropOffMarker.setVisible(false);
+                            stack.pop();
+                            return true;
+                        default:
+                            return false;
+
+
+                    }
+                }
+                return false;
+            }
+        } );
 
 
         return root;
@@ -157,7 +311,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Add a marker in Sydney, Australia, and move the camera.
+        // Add a pickUpMarker in Sydney, Australia, and move the camera.
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
@@ -180,7 +334,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 //        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 //            @Override
 //            public void onMapClick(LatLng latLng) {
-//                marker.setPosition(latLng);
+//                pickUpMarker.setPosition(latLng);
 //                Log.e("fix","moved");
 //                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
 //            }
@@ -192,10 +346,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             public void onCameraMove() {
 
                 LatLng latLng = mMap.getCameraPosition().target;
-                if(!marker.isVisible()) {
-                    marker.setVisible(true);
+
+
+                if(isPickupMode){
+                    if(!pickUpMarker.isVisible()) {
+                        pickUpMarker.setVisible(true);
+                    }
+                    pickUpMarker.setPosition(latLng);
                 }
-                marker.setPosition(latLng);
+
+                if(isDropOffMode){
+                    dropOffMarker.setPosition(latLng);
+                    dropOffMarker.setVisible(true);
+                }
+
 
             }
         });
@@ -204,11 +368,29 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
+
                 LatLng latLng = mMap.getCameraPosition().target;
-                pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(),latLng.latitude,latLng.longitude));
+                if(isPickupMode) {
+                    pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
+                }
+
+                if(isDropOffMode){
+                    dropoffAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
+                }
             }
         });
 
+
+        dropOffMarker = mMap.addMarker(new MarkerOptions()
+                .position(mDefaultLocation)
+                .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_drop_off_locatin_marker)));
+        dropOffMarker.setVisible(false);
+
+
+        pickUpMarker = mMap.addMarker(new MarkerOptions()
+                .position(mDefaultLocation)
+                .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
+        pickUpMarker.setVisible(false);
 
 
     }
@@ -236,22 +418,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
 
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                            marker = mMap.addMarker(new MarkerOptions()
-                                    .position(new LatLng(mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude()))
-                                    .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
-                            marker.setVisible(false);
+                            if(mLastKnownLocation !=null) {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                        new LatLng(mLastKnownLocation.getLatitude(),
+                                                mLastKnownLocation.getLongitude()), DEFAULT_PICKUP_ZOOM));
 
-                            pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(),mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude()));
 
+                                pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
+                            }
 
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
                             mMap.moveCamera(CameraUpdateFactory
-                                    .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+                                    .newLatLngZoom(mDefaultLocation, DEFAULT_PICKUP_ZOOM));
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
@@ -321,8 +501,5 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             Log.e("Exception: %s", e.getMessage());
         }
     }
-
-
-
 
 }

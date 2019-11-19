@@ -43,9 +43,12 @@ public class Utils {
         geocoder = new Geocoder(context, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat,lng,1);
-//            return addresses.get(0).getAddressLine(0);
-            Log.e("GeoCode",addresses.get(0).toString());
-            return addresses.get(0).toString();
+            if(!addresses.isEmpty())
+                return addresses.get(0).getFeatureName()+","+addresses.get(0).getAddressLine(0);
+            else
+                return null;
+//            Log.e("GeoCode",addresses.get(0).toString());
+//            return addresses.get(0).toString();
 
         } catch (IOException e) {
             Log.e("Error In get geo Coding",e.toString());
