@@ -1,5 +1,7 @@
 package com.baran.driver.ui.home;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -43,13 +45,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.List;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static androidx.core.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
@@ -79,6 +88,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private Button btnConfirmPickup, btnConfirmDropOff,btnSkipDropOff,btnCallDriver;
     public static AppPreference appPreference;
     public Deque<String> stack;
+    private int AUTOCOMPLETE_REQUEST_CODE = 1;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
 
@@ -195,9 +205,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         // Pickup AutoComplete Fragment
          pickupAutoCompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.pickup_autocomplete_fragment);
-        pickupAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+//        pickupAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
+
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN, fields)
+                .build(getContext());
 
 
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
 
 
         pickupAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -304,6 +321,32 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
 
         return root;
+    }
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            Log.e("res_code", "onActivityResult: requestCode: " + requestCode + ", resultCode: " + resultCode + ", data: " + data);
+            Log.e("res_code", String.valueOf(resultCode));
+
+            Place place = Autocomplete.getPlaceFromIntent(data);
+            Log.e(TAG, "Place: " + place.getName() + ", " + place.getId());
+            if (resultCode == Activity.RESULT_OK) {
+                Place place1 = Autocomplete.getPlaceFromIntent(data);
+                Log.e(TAG, "Place: " + place1.getName() + ", " + place1.getId());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.e(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+                Log.e(TAG, "RESULT FUCKED UP");
+            }
+        Log.e("I got it","YOu babay");
+        }
+        Log.e("I got it","YOu babay bc");
     }
 
 
