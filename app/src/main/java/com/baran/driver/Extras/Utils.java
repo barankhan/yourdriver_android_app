@@ -43,6 +43,9 @@ public class Utils {
         geocoder = new Geocoder(context, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(lat,lng,1);
+
+
+
             if(!addresses.isEmpty())
                 return addresses.get(0).getFeatureName()+","+addresses.get(0).getAddressLine(0);
             else
@@ -55,5 +58,32 @@ public class Utils {
         }
         return null;
     }
+
+
+
+
+    public static String getCityBound(@NonNull Context context, String CityName){
+        Geocoder geocoder;
+        geocoder = new Geocoder(context, Locale.getDefault());
+        try {
+//            List<Address> addresses = geocoder.getFromLocation(lat,lng,1);
+            List<Address> addresses = geocoder.getFromLocationName(CityName,1);
+
+
+
+            if(!addresses.isEmpty())
+                return addresses.get(0).getFeatureName()+","+addresses.get(0).getAddressLine(0);
+            else
+                return null;
+//            Log.e("GeoCode",addresses.get(0).toString());
+//            return addresses.get(0).toString();
+
+        } catch (IOException e) {
+            Log.e("Error In get geo Coding",e.toString());
+        }
+        return null;
+    }
+
+
 
 }

@@ -23,6 +23,15 @@
     <string name="menu_send">Send</string>
     <string name="menu_logout">Log Out</string>
     <string name="title_activity_search">SearchActivity</string>
+
+    <item type="id" name="place_id" />
+    <item type="id" name="primary_text" />
+    <item type="id" name="secondary_text" />
+    <item type="id" name="lat" />
+    <item type="id" name="lng" />
+    <item type="id" name="address" />
+    <item type="id" name="is_saved" />
+
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

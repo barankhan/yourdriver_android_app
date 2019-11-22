@@ -22,8 +22,10 @@ import androidx.fragment.app.Fragment;
 
 import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.Extras.Utils;
+import com.baran.driver.Passenger;
 import com.baran.driver.R;
 
+import com.baran.driver.SearchActivity;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -89,6 +91,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public static AppPreference appPreference;
     public Deque<String> stack;
     private int AUTOCOMPLETE_REQUEST_CODE = 1;
+    private TextView pickupText;
 
     private static final String TAG = HomeFragment.class.getSimpleName();
 
@@ -108,7 +111,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         userName.setText(appPreference.getDisplayName());
         TextView userEmail = headerView.findViewById(R.id.nav_user_email);
         userEmail.setText(appPreference.getDisplayEmail());
-
+        pickupText  = root.findViewById(R.id.tv_pick_up_location);
         btnConfirmPickup = (Button) root.findViewById(R.id.btn_confirm_pickup);
         btnConfirmDropOff = (Button) root.findViewById(R.id.btn_confirm_drop_off);
         btnSkipDropOff = (Button) root.findViewById(R.id.btn_skip_drop_off);
@@ -203,34 +206,42 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
         // Pickup AutoComplete Fragment
-         pickupAutoCompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.pickup_autocomplete_fragment);
+//         pickupAutoCompleteFragment = (AutocompleteSupportFragment)
+//                getChildFragmentManager().findFragmentById(R.id.pickup_autocomplete_fragment);
 //        pickupAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
 
-        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
+//        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
 
-        Intent intent = new Autocomplete.IntentBuilder(
-                AutocompleteActivityMode.FULLSCREEN, fields)
-                .build(getContext());
-
-
-        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-
-
-        pickupAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        pickupText.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPlaceSelected(Place place) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(place.getLatLng().latitude,
-                                place.getLatLng().longitude), DEFAULT_PICKUP_ZOOM));
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.e(TAG, "An error occurred: " + status);
+            public void onClick(View v) {
+                Intent intent=new Intent(getContext(), SearchActivity.class);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);// Activity is started with requestCode 2
             }
         });
+
+//        Intent intent = new Autocomplete.IntentBuilder(
+//                AutocompleteActivityMode.FULLSCREEN, fields)
+//                .build(getContext());
+
+
+//        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
+
+//        pickupAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+//                        new LatLng(place.getLatLng().latitude,
+//                                place.getLatLng().longitude), DEFAULT_PICKUP_ZOOM));
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                // TODO: Handle the error.
+//                Log.e(TAG, "An error occurred: " + status);
+//            }
+//        });
 
 //        pickupAutoCompleteFragment.setLocationRestriction();
 
@@ -331,11 +342,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             Log.e("res_code", "onActivityResult: requestCode: " + requestCode + ", resultCode: " + resultCode + ", data: " + data);
             Log.e("res_code", String.valueOf(resultCode));
 
-            Place place = Autocomplete.getPlaceFromIntent(data);
-            Log.e(TAG, "Place: " + place.getName() + ", " + place.getId());
+//            Place place = Autocomplete.getPlaceFromIntent(data);
+//            Log.e(TAG, "Place: " + place.getName() + ", " + place.getId());
             if (resultCode == Activity.RESULT_OK) {
-                Place place1 = Autocomplete.getPlaceFromIntent(data);
-                Log.e(TAG, "Place: " + place1.getName() + ", " + place1.getId());
+                Log.e("Now Im","Here");
+                Place place = (Place) data.getParcelableExtra("place");
+                Log.e("got Data Back",String.valueOf(place.getLatLng().longitude));
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
@@ -414,7 +426,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
                 LatLng latLng = mMap.getCameraPosition().target;
                 if(isPickupMode) {
-                    pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
+//                    pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
                 }
 
                 if(isDropOffMode){
@@ -467,7 +479,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                                 mLastKnownLocation.getLongitude()), DEFAULT_PICKUP_ZOOM));
 
 
-                                pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
+//                                pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
                             }
 
                         } else {

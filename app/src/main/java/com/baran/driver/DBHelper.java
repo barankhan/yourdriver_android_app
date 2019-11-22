@@ -1,0 +1,111 @@
+package com.baran.driver;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.baran.driver.Extras.SavedLocationData;
+
+public class DBHelper extends SQLiteOpenHelper {
+
+    public static final String DATABASE_NAME = "_driver.db";
+    public static final String LOCATION_TABLE_NAME = "location";
+    public static final String LOCATION_COLUMN_ID = "id";
+    public static final String LOCATION_COLUMN_GOOGLE_PLACE_ID = "place_id";
+    public static final String LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT = "primary_text";
+    public static final String LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT = "secondary_text";
+    public static final String LOCATION_COLUMN_LAT = "lat";
+    public static final String LOCATION_COLUMN_LONG = "lng";
+    public static final String LOCATION_COLUMN_TITLE = "title";
+    private HashMap hp;
+
+    public DBHelper(Context context) {
+        super(context, DATABASE_NAME , null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // TODO Auto-generated method stub
+        db.execSQL(
+                "create table "+LOCATION_TABLE_NAME+" " +
+                        "("+LOCATION_COLUMN_ID+" integer primary key, "+LOCATION_COLUMN_GOOGLE_PLACE_ID+" text,"+LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT+" text,"+LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT+" text, "+LOCATION_COLUMN_LAT+" text,"+LOCATION_COLUMN_LONG+" text,"+LOCATION_COLUMN_TITLE +" text )"
+        );
+
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // TODO Auto-generated method stub
+        db.execSQL("DROP TABLE IF EXISTS "+LOCATION_TABLE_NAME);
+        onCreate(db);
+    }
+
+    public boolean insertLocation (String place_id, String primary_text, String secondary_text, String lat,String lng,String title) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("place_id", place_id);
+        contentValues.put("primary_text", primary_text);
+        contentValues.put("secondary_text", secondary_text);
+        contentValues.put("lat", lat);
+        contentValues.put("lng", lng);
+        contentValues.put("title", title);
+        db.insert(LOCATION_TABLE_NAME, null, contentValues);
+        return true;
+    }
+
+    public Cursor getData(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from contacts where id="+id+"", null );
+        return res;
+    }
+
+    public int numberOfRows(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int numRows = (int) DatabaseUtils.queryNumEntries(db, LOCATION_TABLE_NAME);
+        return numRows;
+    }
+
+
+
+    public Integer deleteLocation (Integer id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(LOCATION_TABLE_NAME,
+                "id = ? ",
+                new String[] { Integer.toString(id) });
+    }
+
+    public List<SavedLocationData> getAllAddress() {
+        List<SavedLocationData> rows = new ArrayList<>();
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from "+LOCATION_TABLE_NAME, null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+
+            int id = res.getInt(res.getColumnIndex(LOCATION_COLUMN_ID));
+            String title = res.getString(res.getColumnIndex(LOCATION_COLUMN_TITLE));
+            String lat=res.getString(res.getColumnIndex(LOCATION_COLUMN_LAT));
+            String lng=res.getString(res.getColumnIndex(LOCATION_COLUMN_LONG));
+            String primary_text =res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT));
+            String secondary_text= res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT));
+            String place_id = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_ID));
+
+
+
+            SavedLocationData s = new SavedLocationData(id,title,lat,lng,primary_text,secondary_text,place_id);
+            rows.add(s);
+            res.moveToNext();
+        }
+        return rows;
+    }
+}
