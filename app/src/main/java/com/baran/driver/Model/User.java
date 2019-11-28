@@ -3,20 +3,74 @@ package com.baran.driver.Model;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
+
+    public int getIsDeleted() {
+        return isDeleted;
+    }
+
+    public int getIsActive() {
+        return isActive;
+    }
+
+    public int getIsVerified() {
+        return isVerified;
+    }
+
+    public String getIsDriver() {
+        return isDriver;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getVerificationToken() {
+        return verificationToken;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    @SerializedName("isDeleted")
+    private int isDeleted;
+
+    @SerializedName("isActive")
+    private int isActive;
+
+    @SerializedName("isVerified")
+    private int isVerified;
+
+
+    @SerializedName("isDriver")
+    private String isDriver;
+
+
     @SerializedName("response")
     private String response;
 
     @SerializedName("name")
     private String name;
 
+    @SerializedName("id")
+    private int id;
+
+    @SerializedName("verificationToken")
+    private int verificationToken;
+
+
     @SerializedName("email")
     private String email;
 
-    @SerializedName("phone")
-    private String phone;
+    @SerializedName("mobile")
+    private String mobile;
 
-    @SerializedName("created_at")
-    private String created_at;
+    @SerializedName("createdAt")
+    private String createdAt;
 
     public String getResponse() {
         return response;
@@ -30,22 +84,14 @@ public class User {
         return email;
     }
 
-    public String getCreated_at() {
-        return created_at;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
     @Override
     public String toString() {
         return "User{" +
                 "response='" + response + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", created_at='" + created_at + '\'' +
+                ", phone='" + mobile + '\'' +
+                ", createdAt='" + createdAt + '\'' +
                 '}';
     }
 }

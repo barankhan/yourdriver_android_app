@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/pickup_drop_off_box_style">
+
+
+    <TextView
+        android:id="@+id/tv_pickup_location"
+        android:layout_width="246dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="2dp"
+        android:padding="10sp"
+        android:text="Please Select a Pickup Location"
+        app:layout_constraintEnd_toStartOf="@+id/img_pickup_location"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/tv_pickup_drop_off_separator"
+        android:layout_width="310dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:visibility="gone"
+        android:layout_marginLeft="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_drop_off_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_pickup_location"
+
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tv_drop_off_location"
+        android:layout_width="246dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="5dp"
+        android:padding="10sp"
+        android:text="Please Select a Drop Off location"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/img_drop_off_location"
+        app:layout_constraintStart_toEndOf="@+id/im_drop_off_icon"
+        app:layout_constraintTop_toBottomOf="@+id/tv_pickup_location" />
+
+    <ImageView
+        android:id="@+id/img_drop_off_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_drop_off_location"
+        app:layout_constraintTop_toBottomOf="@+id/tv_pickup_drop_off_separator"
+        app:srcCompat="@drawable/ic_saved_icon" />
+
+    <ImageView
+        android:id="@+id/img_pickup_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="7dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_pickup_drop_off_separator"
+        app:layout_constraintStart_toEndOf="@+id/tv_pickup_location"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_unsaved_icon" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_pickup_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_pickup_icon" />
+
+    <ImageView
+        android:id="@+id/im_drop_off_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toStartOf="@+id/tv_drop_off_location"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_pickup_drop_off_separator"
+        app:srcCompat="@drawable/ic_drop_off_icon"
+        android:visibility="gone"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

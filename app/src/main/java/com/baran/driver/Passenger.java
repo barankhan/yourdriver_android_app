@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.baran.driver.Extras.AppPreference;
+import com.baran.driver.Fragments.RegistrationFragment;
+import com.baran.driver.Services.MyInterface;
 import com.baran.driver.ui.gallery.GalleryFragment;
 import com.baran.driver.ui.home.HomeFragment;
 import com.baran.driver.ui.slideshow.SlideshowFragment;
@@ -81,6 +83,11 @@ public class Passenger extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
+
+
+
 
 
 }

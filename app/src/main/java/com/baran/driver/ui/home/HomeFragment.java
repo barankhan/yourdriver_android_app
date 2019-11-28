@@ -1,8 +1,10 @@
 package com.baran.driver.ui.home;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,14 +23,17 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.DBHelper;
 import com.baran.driver.Extras.AppPreference;
+import com.baran.driver.Extras.SavedLocationData;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Passenger;
 import com.baran.driver.R;
 
 import com.baran.driver.SearchActivity;
+import com.baran.driver.Services.MyInterface;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -47,20 +53,19 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
+
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
-import java.util.List;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static androidx.core.provider.FontsContractCompat.FontRequestCallback.RESULT_OK;
+
+import static androidx.core.app.ActivityCompat.finishAffinity;
+import static com.baran.driver.Extras.Utils.calculateDerivedPosition;
+import static com.baran.driver.Extras.Utils.removeSavedLocationDialogue;
+import static com.baran.driver.Extras.Utils.showLocationSaveDialogue;
 
 public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
@@ -73,37 +78,42 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     Location mLastLocation;
-    boolean isSourceSet = false, tripStarted = false,isPickupMode=true,isDropOffMode=false;
+    boolean isSourceSet = false, tripStarted = false, isPickupMode = true, isDropOffMode = false;
     private static final int DEFAULT_PICKUP_ZOOM = 18;
     private static final int DEFAULT_DROP_OFF_ZOOM = 12;
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private final LatLng mDefaultLocation = new LatLng(30.2223, 71.4703);
-    private LatLng pickUpLatLng,dropOffLatLng ;
+    private LatLng pickUpLatLng, dropOffLatLng;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final String KEY_LOCATION = "location";
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private AutocompleteSupportFragment pickupAutoCompleteFragment, dropoffAutoCompleteFragment;
-    private Marker pickUpMarker,dropOffMarker;
+    private Marker pickUpMarker, dropOffMarker;
     private CameraPosition mCameraPosition;
-    private Button btnConfirmPickup, btnConfirmDropOff,btnSkipDropOff,btnCallDriver;
+    private Button btnConfirmPickup, btnConfirmDropOff, btnSkipDropOff, btnCallDriver;
     public static AppPreference appPreference;
     public Deque<String> stack;
-    private int AUTOCOMPLETE_REQUEST_CODE = 1;
-    private TextView pickupText;
-
+    private int PICKUP_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private int DROP_OFF_AUTOCOMPLETE_REQUEST_CODE = 2;
+    private TextView pickupTextView, dropOffTextView;
+    private ImageView pickUpSaveImage, dropOffSaveImage,dropOffIcon;
+    private View separator;
     private static final String TAG = HomeFragment.class.getSimpleName();
+    private String dropOffText;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         appPreference = new AppPreference(getContext());
 
+
         stack = new ArrayDeque<String>();
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        separator = root.findViewById(R.id.tv_pickup_drop_off_separator);
 
         NavigationView mNavigationView = getActivity().findViewById(R.id.nav_view);
         View headerView = mNavigationView.getHeaderView(0);
@@ -111,7 +121,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         userName.setText(appPreference.getDisplayName());
         TextView userEmail = headerView.findViewById(R.id.nav_user_email);
         userEmail.setText(appPreference.getDisplayEmail());
-        pickupText  = root.findViewById(R.id.tv_pick_up_location);
+        pickupTextView = root.findViewById(R.id.tv_pickup_location);
+        dropOffTextView = root.findViewById(R.id.tv_drop_off_location);
+        pickUpSaveImage = root.findViewById(R.id.img_pickup_location);
+        dropOffSaveImage = root.findViewById(R.id.img_drop_off_location);
+        dropOffIcon = root.findViewById(R.id.im_drop_off_icon);
+
         btnConfirmPickup = (Button) root.findViewById(R.id.btn_confirm_pickup);
         btnConfirmDropOff = (Button) root.findViewById(R.id.btn_confirm_drop_off);
         btnSkipDropOff = (Button) root.findViewById(R.id.btn_skip_drop_off);
@@ -121,11 +136,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         btnConfirmPickup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dropoffAutoCompleteFragment.getView().setVisibility(View.VISIBLE);
+
+                pickupTextView.setClickable(false);
+                dropOffTextView.setVisibility(View.VISIBLE);
+                dropOffIcon.setVisibility(View.VISIBLE);
+                separator.setVisibility(View.VISIBLE);
                 pickUpMarker.setVisible(true);
 
-                isPickupMode=false;
-                isDropOffMode=true;
+                isPickupMode = false;
+                isDropOffMode = true;
 
                 v.setVisibility(View.GONE);
                 btnConfirmDropOff.setVisibility(View.VISIBLE);
@@ -137,15 +156,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
-
         btnConfirmDropOff.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                isDropOffMode=false;
+
+                dropOffTextView.setClickable(false);
+                isDropOffMode = false;
                 dropOffLatLng = dropOffMarker.getPosition();
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 builder.include(pickUpLatLng).include(dropOffLatLng);
                 //Animate to the bounds
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), 100);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), 400, 400, 5);
                 mMap.moveCamera(cameraUpdate);
                 v.setVisibility(View.GONE);
                 stack.push("CONFIRM_DROP_OFF");
@@ -154,19 +174,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
-
-
-
         btnSkipDropOff.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                dropoffAutoCompleteFragment.getView().setVisibility(View.GONE);
-                isPickupMode=false;
-                isDropOffMode=false;
+                dropOffTextView.setVisibility(View.GONE);
+                dropOffIcon.setVisibility(View.GONE);
+                separator.setVisibility(View.GONE);
+                isPickupMode = false;
+                isDropOffMode = false;
                 v.setVisibility(View.GONE);
                 btnConfirmDropOff.setVisibility(View.GONE);
                 btnCallDriver.setVisibility(View.VISIBLE);
                 stack.push("SKIP_DROP_OFF");
-                dropOffLatLng=null;
+                dropOffLatLng = null;
             }
         });
 
@@ -183,13 +202,40 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         });
 
 
+        pickUpSaveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ((boolean) v.getTag(R.id.is_saved)) {
+                    removeSavedLocationDialogue(getContext(), v,pickUpSaveImage);
+
+                } else {
+                    showLocationSaveDialogue(getContext(), v, pickUpLatLng, pickUpSaveImage, pickupTextView);
+                }
+            }
+        });
+
+
+
+        dropOffSaveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ((boolean) v.getTag(R.id.is_saved)) {
+                    removeSavedLocationDialogue(getContext(), v,dropOffSaveImage);
+
+                } else {
+                    showLocationSaveDialogue(getContext(), v, dropOffLatLng, dropOffSaveImage, dropOffTextView);
+                }
+            }
+        });
+
+
         if (savedInstanceState != null) {
             mLastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
 
 
-        SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -205,162 +251,169 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             Places.initialize(getContext(), "AIzaSyCMeNFGFvsheMOXo7gcJMMiLStrKyHGAFI");
         }
 
-        // Pickup AutoComplete Fragment
-//         pickupAutoCompleteFragment = (AutocompleteSupportFragment)
-//                getChildFragmentManager().findFragmentById(R.id.pickup_autocomplete_fragment);
-//        pickupAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
 
-//        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG);
-
-        pickupText.setOnClickListener(new View.OnClickListener() {
+        pickupTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getContext(), SearchActivity.class);
-                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);// Activity is started with requestCode 2
+                Intent intent = new Intent(getContext(), SearchActivity.class);
+                startActivityForResult(intent, PICKUP_AUTOCOMPLETE_REQUEST_CODE);// Activity is started with requestCode 2
             }
         });
 
-//        Intent intent = new Autocomplete.IntentBuilder(
-//                AutocompleteActivityMode.FULLSCREEN, fields)
-//                .build(getContext());
 
-
-//        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-
-
-//        pickupAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-//                        new LatLng(place.getLatLng().latitude,
-//                                place.getLatLng().longitude), DEFAULT_PICKUP_ZOOM));
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                Log.e(TAG, "An error occurred: " + status);
-//            }
-//        });
-
-//        pickupAutoCompleteFragment.setLocationRestriction();
-
-
-
-        dropoffAutoCompleteFragment = (AutocompleteSupportFragment)
-                getChildFragmentManager().findFragmentById(R.id.drop_off_autocomplete_fragment);
-        dropoffAutoCompleteFragment.getView().setVisibility(View.INVISIBLE);
-        dropoffAutoCompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
-
-        dropoffAutoCompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        dropOffTextView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onPlaceSelected(Place place) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(place.getLatLng().latitude,
-                                place.getLatLng().longitude), DEFAULT_PICKUP_ZOOM));
-                dropOffMarker.setPosition(place.getLatLng());
-                dropOffMarker.setVisible(true);
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                Log.e(TAG, "An error occurred: " + status);
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), SearchActivity.class);
+                startActivityForResult(intent, DROP_OFF_AUTOCOMPLETE_REQUEST_CODE);// Activity is started with requestCode 2
             }
         });
-
 
         root.setFocusableInTouchMode(true);
         root.requestFocus();
-        root.setOnKeyListener( new View.OnKeyListener()
-        {
+        root.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onKey( View v, int keyCode, KeyEvent event )
-            {
-                if( keyCode == KeyEvent.KEYCODE_BACK  && event.getAction()== KeyEvent.ACTION_DOWN )
-                {
-                    switch (stack.peek()){
-                        case "DRIVER_CALLED":
-                            return true;
-                        case "SKIP_DROP_OFF":
-                        case "CONFIRM_DROP_OFF":
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    CameraPosition cameraPosition ;
+                    if (!stack.isEmpty())
+                        switch (stack.peek()) {
+                            case "DRIVER_CALLED":
+                                return true;
+                            case "SKIP_DROP_OFF":
+                            case "CONFIRM_DROP_OFF":
 
-                            if(dropoffAutoCompleteFragment.getView().getVisibility()!=View.VISIBLE)
-                                dropoffAutoCompleteFragment.getView().setVisibility(View.VISIBLE);
+                                if (dropOffTextView.getVisibility() != View.VISIBLE) {
+                                    dropOffTextView.setVisibility(View.VISIBLE);
+                                    dropOffIcon.setVisibility(View.VISIBLE);
+                                    separator.setVisibility(View.VISIBLE);
+                                }
 
+                                dropOffTextView.setClickable(true);
+                                isPickupMode = false;
 
-                            isPickupMode=false;
+                                btnSkipDropOff.setVisibility(View.VISIBLE);
+                                btnConfirmDropOff.setVisibility(View.VISIBLE);
 
-                            btnSkipDropOff.setVisibility(View.VISIBLE);
-                            btnConfirmDropOff.setVisibility(View.VISIBLE);
+                                btnConfirmPickup.setVisibility(View.GONE);
+                                btnCallDriver.setVisibility(View.GONE);
 
-                            btnConfirmPickup.setVisibility(View.GONE);
-                            btnCallDriver.setVisibility(View.GONE);
-
-                            dropOffMarker.setVisible(false);
-                            dropOffMarker.setPosition(pickUpLatLng);
-
-
-                            CameraPosition cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                            dropoffAutoCompleteFragment.setText(" ");
-                            isDropOffMode=true;
-
-                            stack.pop();
-                            return true;
-                        case "CONFIRM_PICK_UP":
-                            dropoffAutoCompleteFragment.getView().setVisibility(View.GONE);
-                            isDropOffMode=false;
-                            isPickupMode=true;
-                            btnConfirmPickup.setVisibility(View.VISIBLE);
-                            btnSkipDropOff.setVisibility(View.GONE);
-                            btnConfirmDropOff.setVisibility(View.GONE);
-                            btnCallDriver.setVisibility(View.GONE);
-                            dropOffMarker.setVisible(false);
-                            stack.pop();
-                            return true;
-                        default:
-                            return false;
+                                dropOffMarker.setVisible(false);
+                                dropOffMarker.setPosition(pickUpLatLng);
 
 
-                    }
+                                cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                                dropOffTextView.setText("Please Select Drop Off Location");
+                                isDropOffMode = true;
+
+                                stack.pop();
+                                return true;
+                            case "CONFIRM_PICK_UP":
+                                dropOffTextView.setVisibility(View.GONE);
+                                dropOffIcon.setVisibility(View.GONE);
+                                separator.setVisibility(View.GONE);
+                                dropOffSaveImage.setVisibility(View.GONE);
+                                isDropOffMode = false;
+                                isPickupMode = true;
+                                btnConfirmPickup.setVisibility(View.VISIBLE);
+                                btnSkipDropOff.setVisibility(View.GONE);
+                                btnConfirmDropOff.setVisibility(View.GONE);
+                                btnCallDriver.setVisibility(View.GONE);
+                                dropOffMarker.setVisible(false);
+                                cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                                dropOffTextView.setText("Please Select Drop Off Location");
+                                pickupTextView.setClickable(true);
+                                stack.pop();
+                                return true;
+                            default:
+                                return false;
+
+
+                        }
                 }
                 return false;
             }
-        } );
+        });
 
 
         return root;
     }
 
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-            Log.e("res_code", "onActivityResult: requestCode: " + requestCode + ", resultCode: " + resultCode + ", data: " + data);
-            Log.e("res_code", String.valueOf(resultCode));
-
-//            Place place = Autocomplete.getPlaceFromIntent(data);
-//            Log.e(TAG, "Place: " + place.getName() + ", " + place.getId());
+        if (requestCode == PICKUP_AUTOCOMPLETE_REQUEST_CODE) {
+//            Log.e("res_code", "onActivityResult: requestCode: " + requestCode + ", resultCode: " + resultCode + ", data: " + data);
+//            Log.e("res_code", String.valueOf(resultCode));
+            String placeName = "";
             if (resultCode == Activity.RESULT_OK) {
-                Log.e("Now Im","Here");
-                Place place = (Place) data.getParcelableExtra("place");
-                Log.e("got Data Back",String.valueOf(place.getLatLng().longitude));
-            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-                // TODO: Handle the error.
-                Status status = Autocomplete.getStatusFromIntent(data);
-                Log.e(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED) {
+                boolean is_saved = data.getBooleanExtra("is_saved", false);
+                if (!is_saved) {
+                    pickUpSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                    Place place = (Place) data.getParcelableExtra("place");
+                    placeName = place.getName();
+                    pickUpLatLng = place.getLatLng();
+                    pickUpSaveImage.setTag(R.id.is_saved, false);
+                } else {
+                    pickUpSaveImage.setImageResource(R.drawable.ic_saved_icon);
+                    // TODO: Added logic to display saved content
+                    SavedLocationData sl = (SavedLocationData) data.getParcelableExtra("location");
+                    placeName = sl.getTitle();
+                    pickUpLatLng = new LatLng(Double.parseDouble(sl.getLat()), Double.parseDouble(sl.getLng()));
+                    pickUpSaveImage.setTag(R.id.is_saved, true);
+                    pickUpSaveImage.setTag(R.id.location_db_id, sl.getId());
+                    pickUpSaveImage.setTag(R.id.title, sl.getTitle());
+
+                }
+                pickUpSaveImage.setVisibility(View.VISIBLE);
+                pickupTextView.setText(placeName);
+                pickUpMarker.setPosition(pickUpLatLng);
+                pickUpMarker.setVisible(true);
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            } else {
                 // The user canceled the operation.
                 Log.e(TAG, "RESULT FUCKED UP");
             }
-        Log.e("I got it","YOu babay");
-        }
-        Log.e("I got it","YOu babay bc");
-    }
 
+        } else if (requestCode == DROP_OFF_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                boolean is_saved = data.getBooleanExtra("is_saved", false);
+                String placeName = "";
+                if (!is_saved) {
+                    dropOffSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                    Place place = (Place) data.getParcelableExtra("place");
+                    placeName = place.getName();
+                    dropOffLatLng = place.getLatLng();
+                    dropOffSaveImage.setTag(R.id.is_saved, false);
+
+                } else {
+                    dropOffSaveImage.setImageResource(R.drawable.ic_saved_icon);
+                    SavedLocationData sl = (SavedLocationData) data.getParcelableExtra("location");
+                    placeName = sl.getTitle();
+                    dropOffLatLng = new LatLng(Double.parseDouble(sl.getLat()), Double.parseDouble(sl.getLng()));
+                    dropOffSaveImage.setTag(R.id.is_saved, true);
+                    dropOffSaveImage.setTag(R.id.location_db_id, sl.getId());
+                    dropOffSaveImage.setTag(R.id.title, sl.getTitle());
+                }
+                dropOffSaveImage.setVisibility(View.VISIBLE);
+                dropOffTextView.setText(placeName);
+                dropOffMarker.setPosition(dropOffLatLng);
+                dropOffMarker.setVisible(true);
+                CameraPosition cameraPosition = new CameraPosition.Builder().target(dropOffLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            } else {
+                // The user canceled the operation.
+                Log.e(TAG, "RESULT FUCKED UP");
+            }
+        }
+
+        Log.e("I got it", "YOu babay bc");
+    }
 
 
     @Override
@@ -376,7 +429,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         // Prompt the user for permission.
         getLocationPermission();
-
 
 
         // Turn on the My Location layer and the related control on the map.
@@ -403,16 +455,41 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 LatLng latLng = mMap.getCameraPosition().target;
 
 
-                if(isPickupMode){
-                    if(!pickUpMarker.isVisible()) {
+                if (isPickupMode) {
+                    if (!pickUpMarker.isVisible()) {
                         pickUpMarker.setVisible(true);
                     }
                     pickUpMarker.setPosition(latLng);
+                    pickUpLatLng = latLng;
+
+
+                    PointF center = new PointF((float)pickUpLatLng.latitude, (float)pickUpLatLng.longitude);
+                    final double mult = 1; // mult = 1.1; is more reliable
+                    PointF p1 = calculateDerivedPosition(center, mult * 50, 0);
+                    PointF p2 = calculateDerivedPosition(center, mult * 50, 90);
+                    PointF p3 = calculateDerivedPosition(center, mult * 50, 180);
+                    PointF p4 = calculateDerivedPosition(center, mult * 50, 270);
+
+
+
+
+                    String strWhere =  " WHERE cast(lat as real) > " + String.valueOf(p3.x) + " AND cast(lat as real) < " + String.valueOf(p1.x) + " AND cast(lng as real)< " + String.valueOf(p2.y) + " AND cast(lng  as real) >" + String.valueOf(p4.y);
+
+                    DBHelper d = new DBHelper(getContext());
+                    SavedLocationData dox = d.getDataUsingLatLand(strWhere);
+                    d.close();
+                    if(dox!=null){
+                        Log.e("got something",dox.getTitle());
+                        Log.e("got something",String.valueOf(dox.getId()));
+                    }
+
+
                 }
 
-                if(isDropOffMode){
+                if (isDropOffMode) {
                     dropOffMarker.setPosition(latLng);
                     dropOffMarker.setVisible(true);
+                    dropOffLatLng=latLng;
                 }
 
 
@@ -425,13 +502,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             public void onCameraIdle() {
 
                 LatLng latLng = mMap.getCameraPosition().target;
-                if(isPickupMode) {
-//                    pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
-                }
-
-                if(isDropOffMode){
-                    dropoffAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
-                }
+//                if(isPickupMode) {
+////                    pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
+//                }
+//
+//                if(isDropOffMode){
+//                    dropoffAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
+//                }
             }
         });
 
@@ -473,7 +550,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
 
-                            if(mLastKnownLocation !=null) {
+                            if (mLastKnownLocation != null) {
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(mLastKnownLocation.getLatitude(),
                                                 mLastKnownLocation.getLongitude()), DEFAULT_PICKUP_ZOOM));
@@ -492,7 +569,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     }
                 });
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -552,9 +629,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+
 
 }

@@ -3,6 +3,7 @@ package com.baran.driver.Fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
@@ -19,8 +20,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Model.User;
+import com.baran.driver.Passenger;
 import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
+
+import static com.baran.driver.Extras.Utils.showAlertBox;
 
 
 /**
@@ -29,9 +33,9 @@ import com.baran.driver.Services.MyInterface;
 public class LoginFragment extends Fragment {
 
     private MyInterface loginFromActivityListener;
-    private TextView registerTV;
+    private TextView registerTV,forgetPasswordTV;
 
-    private EditText emailInput, passwordInput;
+    private EditText mobileInput, passwordInput;
     private Button loginBtn;
 
     public LoginFragment() {
@@ -43,12 +47,19 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        if (MainActivity.appPreference.getLoginStatus()){
+            User u = MainActivity.appPreference.getUserObject();
+            loginFromActivityListener.login(u);
+        }
+
+
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_login, container, false);
 
         // for login
-        emailInput = view.findViewById(R.id.emailInput);
-        passwordInput = view.findViewById(R.id.passwordInput);
+        mobileInput = view.findViewById(R.id.et_login_mobile);
+        passwordInput = view.findViewById(R.id.et_login_pass);
         loginBtn = view.findViewById(R.id.loginBtn);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +69,16 @@ public class LoginFragment extends Fragment {
         });
 
         registerTV = view.findViewById(R.id.registerTV);
+        forgetPasswordTV = view.findViewById(R.id.forgetPasswordTV);
+
+        forgetPasswordTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginFromActivityListener.forgetPassword();
+            }
+        });
+
+
         registerTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,36 +89,34 @@ public class LoginFragment extends Fragment {
     } //ending onCreateView
 
     private void loginUser() {
-        String Email = emailInput.getText().toString();
+        String mobile_number = mobileInput.getText().toString();
         String Password = passwordInput.getText().toString();
 
-        if (TextUtils.isEmpty(Email)){
+        if (TextUtils.isEmpty(mobile_number)){
             MainActivity.appPreference.showToast("Your email is required.");
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(Email).matches()) {
-            MainActivity.appPreference.showToast("Invalid email");
+        } else if (mobile_number.length() != 11) {
+            MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
         } else if (TextUtils.isEmpty(Password)){
             MainActivity.appPreference.showToast("Password required");
         } else if (Password.length() < 6){
             MainActivity.appPreference.showToast("Password  may be at least 6 characters long.");
         } else {
-            Call<User> userCall = MainActivity.serviceApi.doLogin(Email, Password);
+            Call<User> userCall = MainActivity.serviceApi.doLogin(mobile_number, Password);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.body().getResponse().equals("data")){
                         MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
-                        loginFromActivityListener.login(
-                                response.body().getName(),
-                                response.body().getEmail(),
-                                response.body().getCreated_at());
+                        MainActivity.appPreference.setUserObject(response.body());
+                        loginFromActivityListener.login(response.body());
                     } else if (response.body().getResponse().equals("login_failed")){
-                        MainActivity.appPreference.showToast("Error. Login Failed");
-                        emailInput.setText("");
-                        passwordInput.setText("");
+                        MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
+                        mobileInput.setText("");
                     }
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+                    showAlertBox(getActivity(),"Unable to connect to server");
                 }
             });
         }

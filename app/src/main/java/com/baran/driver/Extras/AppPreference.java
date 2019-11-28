@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.baran.driver.Model.User;
 import com.baran.driver.R;
+import com.google.gson.Gson;
 
 // Shared Preference METHODS
 
@@ -59,5 +61,22 @@ public class AppPreference {
     public void showToast(String message){
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }
+
+
+    public void setUserObject(User u){
+        Gson gson = new Gson();
+        String json = gson.toJson(u); // myObject - instance of MyObject
+        editor.putString("UserObj", json);
+        editor.commit();
+    }
+
+
+    public User getUserObject(){
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("UserObj", null);
+        User user = gson.fromJson(json, User.class);
+        return  user;
+    }
+
 
 }

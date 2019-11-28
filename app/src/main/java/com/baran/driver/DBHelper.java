@@ -49,7 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertLocation (String place_id, String primary_text, String secondary_text, String lat,String lng,String title) {
+    public long insertLocation (String place_id, String primary_text, String secondary_text, String lat,String lng,String title) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("place_id", place_id);
@@ -58,15 +58,59 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("lat", lat);
         contentValues.put("lng", lng);
         contentValues.put("title", title);
-        db.insert(LOCATION_TABLE_NAME, null, contentValues);
-        return true;
+        return db.insert(LOCATION_TABLE_NAME, null, contentValues);
     }
 
-    public Cursor getData(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from contacts where id="+id+"", null );
-        return res;
+
+    public long insertShortLocation (String lat,String lng,String title) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("lat", lat);
+        contentValues.put("lng", lng);
+        contentValues.put("title", title);
+        return db.insert(LOCATION_TABLE_NAME, null, contentValues);
     }
+
+
+
+    public SavedLocationData getData(Long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from "+LOCATION_TABLE_NAME+" where id="+id+"", null );
+
+        if (res != null) {
+            res.moveToFirst();
+            int saved_id = res.getInt(res.getColumnIndex(LOCATION_COLUMN_ID));
+            String title = res.getString(res.getColumnIndex(LOCATION_COLUMN_TITLE));
+            String lat = res.getString(res.getColumnIndex(LOCATION_COLUMN_LAT));
+            String lng = res.getString(res.getColumnIndex(LOCATION_COLUMN_LONG));
+            String primary_text = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT));
+            String secondary_text = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT));
+            String place_id = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_ID));
+            SavedLocationData s = new SavedLocationData(saved_id, title, lat, lng, primary_text, secondary_text, place_id);
+            return s;
+        }
+        return null;
+    }
+
+
+    public SavedLocationData getDataUsingLatLand(String whereClause) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from "+LOCATION_TABLE_NAME+" "+whereClause+"", null );
+        if (res != null && res.moveToFirst()) {
+
+            int saved_id = res.getInt(res.getColumnIndex(LOCATION_COLUMN_ID));
+            String title = res.getString(res.getColumnIndex(LOCATION_COLUMN_TITLE));
+            String lat = res.getString(res.getColumnIndex(LOCATION_COLUMN_LAT));
+            String lng = res.getString(res.getColumnIndex(LOCATION_COLUMN_LONG));
+            String primary_text = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT));
+            String secondary_text = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT));
+            String place_id = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_ID));
+            SavedLocationData s = new SavedLocationData(saved_id, title, lat, lng, primary_text, secondary_text, place_id);
+            return s;
+        }
+        return null;
+    }
+
 
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -76,7 +120,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    public Integer deleteLocation (Integer id) {
+    public Integer deleteLocation(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(LOCATION_TABLE_NAME,
                 "id = ? ",
@@ -99,13 +143,19 @@ public class DBHelper extends SQLiteOpenHelper {
             String primary_text =res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT));
             String secondary_text= res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT));
             String place_id = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_ID));
-
-
-
             SavedLocationData s = new SavedLocationData(id,title,lat,lng,primary_text,secondary_text,place_id);
             rows.add(s);
             res.moveToNext();
         }
         return rows;
     }
+
+
+
+
+
+
+
+
+
 }

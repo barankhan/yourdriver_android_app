@@ -23,14 +23,22 @@
     <string name="menu_send">Send</string>
     <string name="menu_logout">Log Out</string>
     <string name="title_activity_search">SearchActivity</string>
+    <string name="ok">Okay</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
-    <item type="id" name="place_id" />
-    <item type="id" name="primary_text" />
-    <item type="id" name="secondary_text" />
-    <item type="id" name="lat" />
-    <item type="id" name="lng" />
-    <item type="id" name="address" />
-    <item type="id" name="is_saved" />
+    <item name="place_id" type="id" />
+    <item name="primary_text" type="id" />
+    <item name="secondary_text" type="id" />
+    <item name="saved_location_object" type="id" />
+    <item name="lat" type="id" />
+    <item name="lng" type="id" />
+    <item name="address" type="id" />
+    <item name="is_saved" type="id" />
+    <item name="location_db_id" type="id" />
+    <item name="title" type="id" />
+    <item name="list_view_position" type="id" />
 
     <string name="large_text">
         "Material is the metaphor.\n\n"
@@ -121,6 +129,7 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="sample">sample</string>
 
 
 </resources>

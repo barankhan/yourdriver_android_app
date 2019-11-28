@@ -61,17 +61,20 @@ public class SearchActivity extends AppCompatActivity  {
         }
         placesClient = Places.createClient(SearchActivity.this);
 
-        SavedLocationDataAdapter adapter = new SavedLocationDataAdapter(this, arrayOfUsers);
-        final LocationDataAdapter locationAdapter = new LocationDataAdapter(this, arrayOfSuggestions,placesClient,SearchActivity.this);
+        SavedLocationDataAdapter adapter = new SavedLocationDataAdapter(this, arrayOfUsers,SearchActivity.this);
+        final LocationDataAdapter locationAdapter = new LocationDataAdapter(this, arrayOfSuggestions,placesClient,SearchActivity.this,adapter);
 
 
         ListView listView = (ListView) findViewById(R.id.lvItems);
-        TextView textView = new TextView(getBaseContext());
-        textView.setText("Saved Locations");
-        textView.setPadding(15,0,0,0);
-        textView.setBackgroundColor(getResources().getColor(R.color.quantum_grey));
+        if(array_list.size()>0) {
 
-        listView.addHeaderView(textView);
+            TextView textView = new TextView(getBaseContext());
+            textView.setText("Saved Locations");
+            textView.setPadding(15, 0, 0, 0);
+            textView.setBackgroundColor(getResources().getColor(R.color.quantum_grey));
+
+            listView.addHeaderView(textView);
+        }
         listView.setAdapter(adapter);
 
         ListView listViewSuggestion = (ListView) findViewById(R.id.lvSuggestions);
@@ -142,5 +145,14 @@ public class SearchActivity extends AppCompatActivity  {
         });
 
     }
+
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.e("resume","Yo i'm here");
+
+    }
+
 
 }

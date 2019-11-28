@@ -6,47 +6,28 @@
     android:layout_height="match_parent">
 
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         tools:context=".Passenger" />
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/map">
-
-        <TextView
-            android:id="@+id/tv_pick_up_location"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:layout_marginTop="26dp"
-            android:text="TextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <fragment
-        android:id="@+id/drop_off_autocomplete_fragment"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-        android:layout_width="match_parent"
+    <include
+        layout="@layout/pickup_dropoff_area"
+        android:layout_width="323dp"
         android:layout_height="wrap_content"
 
-        android:layout_marginTop="96dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="44dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/map" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="403dp"
@@ -60,17 +41,20 @@
         <Button
             android:id="@+id/btn_confirm_pickup"
             android:layout_width="351dp"
-            android:layout_height="68dp"
+            android:layout_height="50dp"
             android:layout_marginStart="27dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="27dp"
             android:layout_marginBottom="33dp"
-            android:text="Cofirm Pickup"
+            android:text="Confirm Pickup"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
+            android:background="@drawable/button_style"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
 
             />
 
@@ -78,53 +62,59 @@
         <Button
             android:id="@+id/btn_confirm_drop_off"
             android:layout_width="232dp"
-            android:layout_height="60dp"
+            android:layout_height="50dp"
             android:layout_marginStart="28dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="14dp"
             android:layout_marginBottom="26dp"
-            android:text="Cofirm Dropoff"
+            android:text="Confirm DropOff"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_skip_drop_off"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:visibility="gone"
+            android:background="@drawable/button_style"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
+
             />
 
         <Button
             android:id="@+id/btn_skip_drop_off"
             android:layout_width="101dp"
-            android:layout_height="59dp"
+            android:layout_height="50dp"
             android:layout_marginStart="14dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="28dp"
             android:layout_marginBottom="42dp"
             android:text="Skip"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_confirm_drop_off"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            android:visibility="gone"
-            />
+            app:layout_constraintVertical_bias="0.0" />
 
 
         <Button
             android:id="@+id/btn_call_driver"
             android:layout_width="351dp"
-            android:layout_height="68dp"
+            android:layout_height="50dp"
             android:layout_marginStart="27dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="27dp"
             android:layout_marginBottom="33dp"
             android:text="Driver Bullain"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:visibility="gone"
+            android:background="@drawable/button_style"
+            android:textSize="20dp"
+
 
             />
 

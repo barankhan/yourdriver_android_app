@@ -1,9 +1,16 @@
 package com.baran.driver.Services;
 
+import com.baran.driver.Model.User;
+
 public interface MyInterface {
 
     // for login
     void register();
-    void login(String name, String email, String created_at);
+    void login(User u);
     void logout();
+    void registrationVerificationFragment();
+    void loginFragment();
+    void forgetPassword();
+
+
 }

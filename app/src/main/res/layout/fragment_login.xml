@@ -9,22 +9,22 @@
     android:orientation="vertical">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Admin Login"
+        android:gravity="center_horizontal"
+        android:text="Login"
         android:textColor="@color/colorPrimary"
-        android:textSize="18sp"
-        android:gravity="center_horizontal"/>
+        android:textSize="18sp" />
 
     <EditText
+        android:id="@+id/et_login_mobile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
         android:layout_marginTop="20dp"
-        android:id="@+id/emailInput"/>
+        android:hint="Mobile Number"
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:layout_marginTop="20dp"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
-        android:id="@+id/passwordInput"/>
+        android:id="@+id/et_login_pass"/>
 
     <Button
         android:id="@+id/loginBtn"
@@ -49,10 +49,20 @@
     <TextView
         android:id="@+id/registerTV"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="New here? Register"
         android:gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/forgetPasswordTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center_horizontal"
+        android:text="Forgot Password?" />
+
 
 </LinearLayout>
