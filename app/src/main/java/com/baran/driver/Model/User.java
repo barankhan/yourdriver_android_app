@@ -57,7 +57,7 @@ public class User {
     private String name;
 
     @SerializedName("id")
-    private int id;
+    private int id=0;
 
     @SerializedName("verificationToken")
     private int verificationToken;

@@ -1,9 +1,15 @@
-package com.baran.driver;
+package com.baran.driver.Services;
 
 import android.util.Log;
 
+import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Model.User;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FirebaseService extends FirebaseMessagingService {
 
@@ -45,7 +51,21 @@ public class FirebaseService extends FirebaseMessagingService {
      */
     @Override
     public void onNewToken(String token) {
-        Log.d(TAG, "Refreshed token: " + token);
+        User u =  MainActivity.appPreference.getUserObject();
+        if(u.getId()!=0){
+            Call<User> userCall = MainActivity.serviceApi.doFirebaseTokenUpdate(u.getMobile(), token);
+            userCall.enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    Log.e("TokenUpdate","OnNewToken Update failed");
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Log.e("TokenUpdate","OnNewToken Update failed");
+                }
+            });
+        }
     }
 
 }

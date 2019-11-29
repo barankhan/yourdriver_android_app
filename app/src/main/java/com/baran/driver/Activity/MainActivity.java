@@ -103,8 +103,9 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         appPreference.setDisplayName("Name");
         appPreference.setDisplayEmail("Email");
         appPreference.setCreDate("DATE");
-
         Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
 

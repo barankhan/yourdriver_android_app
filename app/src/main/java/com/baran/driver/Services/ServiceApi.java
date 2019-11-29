@@ -18,13 +18,17 @@ public interface ServiceApi {
 
     @FormUrlEncoded
     @POST("login.php")
-    Call<User> doLogin(@Field("mobile") String mobile, @Field("password") String password);
-
+    Call<User> doLogin(@Field("mobile") String mobile, @Field("password") String password, @Field("firebaseToken") String firebaseToken);
 
 
     @FormUrlEncoded
     @POST("token_verification.php")
     Call<User> doTokenVerification(@Field("mobile") String mobile, @Field("verificationToken") int verificationToken);
+
+
+    @FormUrlEncoded
+    @POST("update_firebase_token.php")
+    Call<User> doFirebaseTokenUpdate(@Field("mobile") String mobile, @Field("firebaseToken") String firebaseToken);
 
 
     @FormUrlEncoded

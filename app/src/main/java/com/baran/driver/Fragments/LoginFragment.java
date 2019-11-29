@@ -23,6 +23,9 @@ import com.baran.driver.Model.User;
 import com.baran.driver.Passenger;
 import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import static com.baran.driver.Extras.Utils.showAlertBox;
 
@@ -37,7 +40,7 @@ public class LoginFragment extends Fragment {
 
     private EditText mobileInput, passwordInput;
     private Button loginBtn;
-
+    private String firebaseToken;
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -52,6 +55,17 @@ public class LoginFragment extends Fragment {
             User u = MainActivity.appPreference.getUserObject();
             loginFromActivityListener.login(u);
         }
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String mToken = instanceIdResult.getToken();
+                firebaseToken = mToken;
+
+            }
+        });
+
+
 
 
         // Inflate the layout for this fragment
@@ -101,17 +115,18 @@ public class LoginFragment extends Fragment {
         } else if (Password.length() < 6){
             MainActivity.appPreference.showToast("Password  may be at least 6 characters long.");
         } else {
-            Call<User> userCall = MainActivity.serviceApi.doLogin(mobile_number, Password);
+            Call<User> userCall = MainActivity.serviceApi.doLogin(mobile_number, Password,firebaseToken);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+
                     if (response.body().getResponse().equals("data")){
                         MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
                         MainActivity.appPreference.setUserObject(response.body());
                         loginFromActivityListener.login(response.body());
                     } else if (response.body().getResponse().equals("login_failed")){
                         MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
-                        mobileInput.setText("");
+                        passwordInput.setText("");
                     }
                 }
                 @Override

@@ -14,9 +14,12 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -33,6 +36,7 @@ import com.baran.driver.R;
 
 import com.baran.driver.SearchActivity;
 import com.baran.driver.Services.MyInterface;
+import com.baran.driver.adapters.DriverTypeSpinnerAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -79,7 +83,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     LocationRequest mLocationRequest;
     Location mLastLocation;
     boolean isSourceSet = false, tripStarted = false, isPickupMode = true, isDropOffMode = false;
-    private static final int DEFAULT_PICKUP_ZOOM = 18;
+    private static final int DEFAULT_PICKUP_ZOOM = 17;
     private static final int DEFAULT_DROP_OFF_ZOOM = 12;
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
@@ -102,6 +106,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     private View separator;
     private static final String TAG = HomeFragment.class.getSimpleName();
     private String dropOffText;
+    String[] spinnerTitles;
+    int[] spinnerImages;
+    Spinner mSpinner;
+    private boolean isUserInteracting;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -149,6 +157,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 v.setVisibility(View.GONE);
                 btnConfirmDropOff.setVisibility(View.VISIBLE);
                 btnSkipDropOff.setVisibility(View.VISIBLE);
+                mSpinner.setVisibility(View.GONE);
                 pickUpLatLng = pickUpMarker.getPosition();
                 stack.push("CONFIRM_PICK_UP");
 
@@ -196,6 +205,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 btnSkipDropOff.setVisibility(View.GONE);
                 btnConfirmDropOff.setVisibility(View.GONE);
                 btnConfirmPickup.setVisibility(View.GONE);
+                mSpinner.setVisibility(View.GONE);
 
                 stack.push("DRIVER_CALLED");
             }
@@ -296,6 +306,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                 btnConfirmDropOff.setVisibility(View.VISIBLE);
 
                                 btnConfirmPickup.setVisibility(View.GONE);
+                                mSpinner.setVisibility(View.GONE);
                                 btnCallDriver.setVisibility(View.GONE);
 
                                 dropOffMarker.setVisible(false);
@@ -318,6 +329,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                                 isDropOffMode = false;
                                 isPickupMode = true;
                                 btnConfirmPickup.setVisibility(View.VISIBLE);
+                                mSpinner.setVisibility(View.VISIBLE);
                                 btnSkipDropOff.setVisibility(View.GONE);
                                 btnConfirmDropOff.setVisibility(View.GONE);
                                 btnCallDriver.setVisibility(View.GONE);
@@ -338,6 +350,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
+
+        mSpinner = root.findViewById(R.id.spinner);
+        spinnerTitles = new String[]{"Auto", "Car", "Bike"};
+
+        spinnerImages = new int[]{R.drawable.ic_auto_512
+                , R.drawable.ic_iconfinder_sedan_285810
+                , R.drawable.ic_motor_bike_100
+                };
+
+        DriverTypeSpinnerAdapter mCustomAdapter = new DriverTypeSpinnerAdapter(getContext(),R.layout.driver_type_spiner_layout,spinnerTitles, spinnerImages);
+        mSpinner.setAdapter(mCustomAdapter);
+
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    Toast.makeText(getContext(), spinnerTitles[i], Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         return root;
     }
@@ -634,6 +668,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+//    @Override
+//    public void onUserInteraction() {
+//        super.onUserInteraction();
+//        isUserInteracting = true;
+//    }
 
 
 }

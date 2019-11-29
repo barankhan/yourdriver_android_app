@@ -1,8 +1,7 @@
-package com.baran.driver.ui.send;
+package com.baran.driver.ui.logout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,9 @@ import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.R;
 
-public class SendFragment extends Fragment {
+public class LogoutFragment extends Fragment {
 
-    private SendViewModel sendViewModel;
+    private LogoutViewModel sendViewModel;
     public static AppPreference appPreference;
 
 
@@ -29,7 +28,7 @@ public class SendFragment extends Fragment {
         appPreference = new AppPreference(getContext());
 
         sendViewModel =
-                ViewModelProviders.of(this).get(SendViewModel.class);
+                ViewModelProviders.of(this).get(LogoutViewModel.class);
         View root = inflater.inflate(R.layout.fragment_send, container, false);
         final TextView textView = root.findViewById(R.id.text_send);
         sendViewModel.getText().observe(this, new Observer<String>() {
@@ -40,15 +39,16 @@ public class SendFragment extends Fragment {
         });
 
 
-                        appPreference.setLoginStatus(false);
-                        appPreference.setDisplayName("Name");
-                        appPreference.setDisplayEmail("Email");
-                        appPreference.setCreDate("DATE");
+        appPreference.setLoginStatus(false);
+        appPreference.setUserObject(null);
+        appPreference.setDisplayName("Name");
+        appPreference.setDisplayEmail("Email");
+        appPreference.setCreDate("DATE");
 
-                        Log.e("fix", String.valueOf(appPreference.getLoginStatus()));
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
                         startActivity(intent);
 
         return root;
