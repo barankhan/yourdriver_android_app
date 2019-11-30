@@ -47,8 +47,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="35dp"
         android:layout_marginEnd="30dp"
-        android:background="@drawable/button_style"
-
+        android:background="@color/colorPrimary"
         android:text="Verify"
         android:textColor="#FFFFFF"
         android:textSize="20dp"
