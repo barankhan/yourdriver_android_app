@@ -1,7 +1,6 @@
-package com.baran.driver.ui.home;
+package com.baran.driver.Fragments.passenger.home;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
@@ -26,16 +25,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.baran.driver.Activity.MainActivity;
-import com.baran.driver.DBHelper;
+import com.baran.driver.Model.DBHelper;
 import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.Extras.SavedLocationData;
 import com.baran.driver.Extras.Utils;
-import com.baran.driver.Passenger;
 import com.baran.driver.R;
 
-import com.baran.driver.SearchActivity;
-import com.baran.driver.Services.MyInterface;
+import com.baran.driver.Activity.SearchActivity;
 import com.baran.driver.adapters.DriverTypeSpinnerAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -66,7 +62,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 
-import static androidx.core.app.ActivityCompat.finishAffinity;
 import static com.baran.driver.Extras.Utils.calculateDerivedPosition;
 import static com.baran.driver.Extras.Utils.removeSavedLocationDialogue;
 import static com.baran.driver.Extras.Utils.showLocationSaveDialogue;

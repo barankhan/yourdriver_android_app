@@ -1,4 +1,4 @@
-package com.baran.driver.ui.logout;
+package com.baran.driver.Fragments.passenger.logout;
 
 import android.content.Intent;
 import android.os.Bundle;

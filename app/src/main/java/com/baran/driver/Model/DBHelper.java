@@ -1,4 +1,4 @@
-package com.baran.driver;
+package com.baran.driver.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

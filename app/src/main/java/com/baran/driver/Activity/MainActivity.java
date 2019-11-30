@@ -1,15 +1,14 @@
 package com.baran.driver.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.IntentCompat;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.AppPreference;
+import com.baran.driver.Fragments.DriverDataUpdateFragment;
 import com.baran.driver.Fragments.ForgetPasswordFragment;
 import com.baran.driver.Fragments.LoginFragment;
 import com.baran.driver.Fragments.RegistrationVerificationFragment;
@@ -19,7 +18,6 @@ import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.ServiceApi;
-import com.baran.driver.Passenger;
 
 
 public class MainActivity extends AppCompatActivity implements MyInterface {
@@ -42,30 +40,14 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         //Log.e("created_at: ", c_date);
 
         serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
-
-        if (container_layout != null){
-            if (savedInstanceState != null){
-                return;
-            }
-            this.loginFragment();
-
-//            //check login status from sharedPreference
-//            if (appPreference.getLoginStatus()){
-//                //when true
-////                getSupportFragmentManager()
-////                        .beginTransaction()
-////                        .add(R.id.fragment_container, new ProfileFragment())
-////                        .commit();
-//                Intent intent = new Intent(this, Passenger.class);
-//                startActivity(intent);
-//            } else {
-//                // when get false
-//                getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .add(R.id.fragment_container, new LoginFragment())
-//                        .commit();
+        this.driverDataUpdate();
+//        if (container_layout != null){
+//            if (savedInstanceState != null){
+//                return;
 //            }
-        }
+//            this.loginFragment();
+//
+//        }
 
     } // ending onCreate
 
@@ -135,6 +117,15 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, new ForgetPasswordFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void driverDataUpdate() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new DriverDataUpdateFragment())
                 .addToBackStack(null)
                 .commit();
     }

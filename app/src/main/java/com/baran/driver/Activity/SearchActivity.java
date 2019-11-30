@@ -1,4 +1,4 @@
-package com.baran.driver;
+package com.baran.driver.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,9 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.baran.driver.Model.DBHelper;
 import com.baran.driver.Extras.LocationDataAdapter;
 import com.baran.driver.Extras.SavedLocationData;
 import com.baran.driver.Extras.SavedLocationDataAdapter;
+import com.baran.driver.R;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;

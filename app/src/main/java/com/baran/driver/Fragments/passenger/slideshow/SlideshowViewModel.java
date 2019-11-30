@@ -1,4 +1,4 @@
-package com.baran.driver.ui.slideshow;
+package com.baran.driver.Fragments.passenger.slideshow;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

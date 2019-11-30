@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -14,9 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baran.driver.DBHelper;
+import com.baran.driver.Model.DBHelper;
 import com.baran.driver.R;
-import com.google.android.libraries.places.api.model.Place;
 
 import java.util.ArrayList;
 

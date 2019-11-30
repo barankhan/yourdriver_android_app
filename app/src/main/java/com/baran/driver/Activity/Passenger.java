@@ -1,21 +1,10 @@
-package com.baran.driver;
+package com.baran.driver.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.baran.driver.Extras.AppPreference;
-import com.baran.driver.Fragments.RegistrationFragment;
-import com.baran.driver.Services.MyInterface;
-import com.baran.driver.ui.gallery.GalleryFragment;
-import com.baran.driver.ui.home.HomeFragment;
-import com.baran.driver.ui.slideshow.SlideshowFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
+import com.baran.driver.R;
 
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
@@ -31,8 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
-
-import com.baran.driver.Activity.MainActivity;
 
 public class Passenger extends AppCompatActivity {
 

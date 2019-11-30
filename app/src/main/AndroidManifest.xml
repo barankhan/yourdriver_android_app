@@ -13,22 +13,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <service
             android:name=".Services.FirebaseService"
             android:enabled="true"
             android:exported="true">
-                <intent-filter>
-                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
-                </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
         </service>
 
         <activity
-            android:name=".SearchActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".Activity.SearchActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".Passenger"
+            android:name=".Activity.Passenger"
             android:label="@string/title_activity_passenger"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
