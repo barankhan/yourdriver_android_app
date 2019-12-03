@@ -20,6 +20,7 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
+    <string name="become_a_partner">Become a Partner</string>
     <string name="menu_send">Send</string>
     <string name="menu_logout">Log Out</string>
     <string name="title_activity_search">SearchActivity</string>
@@ -28,6 +29,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <item name="image_uri" type="id" />
+    <item name="media_path" type="id" />
     <item name="place_id" type="id" />
     <item name="primary_text" type="id" />
     <item name="secondary_text" type="id" />

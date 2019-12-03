@@ -3,12 +3,15 @@ package com.baran.driver.Extras;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -220,6 +223,23 @@ public class Utils {
 
 
 
+
+    public static String getRealPathFromURI(Context c , Uri contentURI) {
+        String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+        Cursor cursor = c.getContentResolver().query(contentURI, filePathColumn, null, null, null);
+        assert cursor != null;
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String mediaPath = cursor.getString(columnIndex);
+
+        // Set the Image in ImageView for Previewing the Media
+
+        cursor.close();
+
+        return  mediaPath;
+    }
 
 
 }

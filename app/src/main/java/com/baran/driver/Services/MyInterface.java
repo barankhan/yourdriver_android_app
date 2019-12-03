@@ -13,5 +13,6 @@ public interface MyInterface {
     void forgetPassword();
 
 
-    void driverDataUpdate();
+    void driverDataUpdateStep1();
+    void driverDataUpdateStep2();
 }

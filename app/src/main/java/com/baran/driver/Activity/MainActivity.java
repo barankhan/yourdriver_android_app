@@ -8,7 +8,8 @@ import android.widget.FrameLayout;
 
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.AppPreference;
-import com.baran.driver.Fragments.DriverDataUpdateFragment;
+import com.baran.driver.Fragments.DriverDataUpdateFragmentStep1;
+import com.baran.driver.Fragments.DriverDataUpdateFragmentStep2;
 import com.baran.driver.Fragments.ForgetPasswordFragment;
 import com.baran.driver.Fragments.LoginFragment;
 import com.baran.driver.Fragments.RegistrationVerificationFragment;
@@ -40,14 +41,14 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         //Log.e("created_at: ", c_date);
 
         serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
-        this.driverDataUpdate();
-//        if (container_layout != null){
-//            if (savedInstanceState != null){
-//                return;
-//            }
-//            this.loginFragment();
-//
-//        }
+//        this.driverDataUpdateStep2();
+        if (container_layout != null){
+            if (savedInstanceState != null){
+                return;
+            }
+            this.loginFragment();
+
+        }
 
     } // ending onCreate
 
@@ -122,10 +123,20 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
     }
 
     @Override
-    public void driverDataUpdate() {
+    public void driverDataUpdateStep1() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, new DriverDataUpdateFragment())
+                .replace(R.id.fragment_container, new DriverDataUpdateFragmentStep1())
+                .addToBackStack(null)
+                .commit();
+    }
+
+
+    @Override
+    public void driverDataUpdateStep2() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new DriverDataUpdateFragmentStep2())
                 .addToBackStack(null)
                 .commit();
     }

@@ -1,0 +1,249 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.baran.driver.Fragments.DriverDataUpdateFragmentStep1">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="296dp"
+            android:layout_height="21dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="Driver Vehicel Inforamtion"
+            app:layout_constraintBottom_toTopOf="@+id/et_driver_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_vehicle_reg_year"
+            android:layout_width="41dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="7dp"
+            android:ems="10"
+            android:hint="15"
+            android:inputType="number"
+            android:maxLength="2"
+            app:layout_constraintBottom_toTopOf="@+id/sp_driver_type"
+            app:layout_constraintEnd_toStartOf="@+id/et_vehicle_reg_number"
+            app:layout_constraintStart_toEndOf="@+id/et_vehicle_reg_alphabet"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <EditText
+            android:id="@+id/et_vehicle_reg_alphabet"
+            android:layout_width="61dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="74dp"
+            android:layout_marginLeft="74dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginBottom="11dp"
+            android:ems="10"
+            android:hint="MNN"
+            android:inputType="textPersonName"
+            android:maxLength="3"
+            app:layout_constraintBottom_toTopOf="@+id/sp_driver_type"
+            app:layout_constraintEnd_toStartOf="@+id/et_vehicle_reg_year"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <EditText
+            android:id="@+id/et_vehicle_reg_number"
+            android:layout_width="63dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="7dp"
+            android:layout_marginEnd="74dp"
+            android:layout_marginRight="74dp"
+            android:layout_marginBottom="11dp"
+            android:ems="10"
+            android:hint="1234"
+            android:inputType="number"
+            android:maxLength="4"
+            app:layout_constraintBottom_toTopOf="@+id/sp_driver_type"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/et_vehicle_reg_year"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <Spinner
+            android:id="@+id/sp_driver_type"
+            android:layout_width="219dp"
+            android:layout_height="40dp"
+
+            android:layout_marginStart="48dp"
+
+
+            android:layout_marginLeft="48dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="48dp"
+            android:layout_marginRight="48dp"
+            android:entries="@array/driver_types"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/et_vehicle_reg_year" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout1">
+
+        <ImageView
+            android:id="@+id/im_vehicle_front"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"
+            android:contentDescription="Vehicle Front"
+            app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_front"
+            app:layout_constraintEnd_toStartOf="@+id/im_vehicle_rear"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:srcCompat="@drawable/ic_photo_blank" />
+
+        <TextView
+            android:id="@+id/tv_vehicle_front"
+            android:layout_width="80dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"
+            android:gravity="center"
+            android:text="Veh. Front"
+            app:layout_constraintBottom_toTopOf="@+id/im_vehicle_registration"
+            app:layout_constraintEnd_toStartOf="@+id/tv_vehicle_rear"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/im_vehicle_front" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:gravity="center|center_horizontal|center_vertical"
+            android:text="Select Images"
+            app:layout_constraintBottom_toTopOf="@+id/im_vehicle_front"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_vehicle_route"
+            android:layout_width="80dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="72dp"
+            android:layout_marginRight="72dp"
+            android:gravity="center"
+            android:text="Route"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_vehicle_registration"
+            app:layout_constraintTop_toBottomOf="@+id/im_vehicle_route" />
+
+        <TextView
+            android:id="@+id/tv_vehicle_rear"
+            android:layout_width="80dp"
+            android:layout_height="25dp"
+            android:layout_marginEnd="72dp"
+            android:layout_marginRight="72dp"
+            android:gravity="center"
+            android:text="Vehicle Rare"
+            app:layout_constraintBottom_toTopOf="@+id/im_vehicle_route"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_vehicle_front"
+            app:layout_constraintTop_toBottomOf="@+id/im_vehicle_rear" />
+
+        <ImageView
+            android:id="@+id/im_vehicle_route"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="72dp"
+            android:layout_marginRight="72dp"
+            android:contentDescription="Route"
+            app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_route"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_vehicle_registration"
+            app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_rear"
+            app:srcCompat="@drawable/ic_photo_blank" />
+
+        <ImageView
+            android:id="@+id/im_vehicle_registration"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"
+            android:contentDescription="Vehicle Registration"
+            app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_registration"
+            app:layout_constraintEnd_toStartOf="@+id/im_vehicle_route"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_front"
+            app:srcCompat="@drawable/ic_photo_blank" />
+
+        <ImageView
+            android:id="@+id/im_vehicle_rear"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+
+            android:layout_marginEnd="72dp"
+            android:layout_marginRight="72dp"
+            android:contentDescription="Vehicle Rare"
+            app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_front"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/im_vehicle_front"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            app:srcCompat="@drawable/ic_photo_blank" />
+
+        <TextView
+            android:id="@+id/tv_vehicle_registration"
+            android:layout_width="80dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="72dp"
+            android:layout_marginLeft="72dp"
+            android:gravity="center"
+            android:text="Registration"
+            app:layout_constraintEnd_toStartOf="@+id/tv_vehicle_route"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/im_vehicle_registration" />
+
+        <Button
+            android:id="@+id/btn_save_driver_data_step2"
+            android:layout_width="213dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="46dp"
+            android:layout_marginLeft="46dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginEnd="46dp"
+            android:layout_marginRight="46dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/colorPrimary"
+            android:text="Save"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.533"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_route" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
