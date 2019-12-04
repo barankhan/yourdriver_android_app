@@ -51,7 +51,7 @@ public class FirebaseService extends FirebaseMessagingService {
      */
     @Override
     public void onNewToken(String token) {
-        User u =  MainActivity.appPreference.getUserObject();
+        User u =  MainActivity.appPreference.getUserObjectWithoutUserValidation();
         if(u.getId()!=0){
             Call<User> userCall = MainActivity.serviceApi.doFirebaseTokenUpdate(u.getMobile(), token);
             userCall.enqueue(new Callback<User>() {

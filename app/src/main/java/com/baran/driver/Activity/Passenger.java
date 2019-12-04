@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.baran.driver.Extras.AppPreference;
+import com.baran.driver.Extras.Utils;
+import com.baran.driver.Fragments.DriverDataUpdateFragmentStep1;
+import com.baran.driver.Fragments.DriverDataUpdateFragmentStep2;
 import com.baran.driver.Fragments.passenger.gallery.GalleryFragment;
 import com.baran.driver.Fragments.passenger.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
+import com.baran.driver.Model.User;
 import com.baran.driver.R;
 
 import androidx.annotation.Nullable;
@@ -35,7 +39,6 @@ public class Passenger extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     NavigationView navigation;
-    public static AppPreference appPreference;
     ActionBarDrawerToggle action;
     Button btnDrawerToggle;
     @Override
@@ -44,8 +47,8 @@ public class Passenger extends AppCompatActivity {
         setContentView(R.layout.activity_passenger);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        btnDrawerToggle = findViewById(R.id.button2);
-        appPreference = new AppPreference(this);
+
+
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -60,18 +63,7 @@ public class Passenger extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        action = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
 
-            /* Called when drawer is closed */
-            public void onDrawerClosed(View view) {
-                //Put your code here
-            }
-
-            /* Called when a drawer is opened */
-            public void onDrawerOpened(View drawerView) {
-                //Put your code here
-            }
-        };
 
 
         navigationView.setNavigationItemSelectedListener(
@@ -99,28 +91,40 @@ public class Passenger extends AppCompatActivity {
             case R.id.nav_logout:
                 fragmentClass = LogoutFragment.class;
                 break;
+            case R.id.nav_partner:
+                fragmentClass = getBecomePartnerFragment();
+                break;
         }
 
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if(fragmentClass!=null) {
+
+            try {
+                fragment = (Fragment) fragmentClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack("@").commit();
+
         }
-
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        fragmentManager.getFragments().clear();
-        fragmentManager.beginTransaction().replace(R.id.nav_host_fragment,fragment).commit();
-
-
-
-        // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
-        // Set action bar title
         setTitle(menuItem.getTitle());
-        // Close the navigation drawer
         drawer.closeDrawers();
+    }
+
+    private Class getBecomePartnerFragment(){
+        User currentUser = MainActivity.appPreference.getUserObject(this,this);
+        if(currentUser.getDriverSteps()==0){
+            return DriverDataUpdateFragmentStep1.class;
+        }else if(currentUser.getDriverSteps()==1){
+            return DriverDataUpdateFragmentStep2.class;
+        }else if(currentUser.getDriverSteps()==2){
+            Utils.showAlertBox(this,"Your Request is under review. Please wait.");
+        }
+        return null;
     }
 
 

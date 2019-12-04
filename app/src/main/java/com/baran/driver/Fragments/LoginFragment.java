@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         if (MainActivity.appPreference.getLoginStatus()){
-            User u = MainActivity.appPreference.getUserObject();
+            User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
             loginFromActivityListener.login(u);
         }
 
@@ -121,6 +122,7 @@ public class LoginFragment extends Fragment {
                         MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
                         MainActivity.appPreference.setUserObject(response.body());
                         loginFromActivityListener.login(response.body());
+                        Log.e("Login Activity","I'm here");
                     } else if (response.body().getResponse().equals("login_failed")){
                         MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
                         passwordInput.setText("");

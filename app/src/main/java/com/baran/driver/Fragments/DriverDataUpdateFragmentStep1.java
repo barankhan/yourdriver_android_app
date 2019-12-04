@@ -11,9 +11,11 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,6 +55,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
     public final int PICK_DRIVER_CNIC_FRONT = 3;
     public final int PICK_DRIVER_CNIC_REAR = 4;
     public final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 60;
+    User current_user;
     public DriverDataUpdateFragmentStep1() {
         // Required empty public constructor
     }
@@ -64,11 +67,13 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_driver_data_update_step_1, container, false);
 
+
+        current_user = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         etDriverName = root.findViewById(R.id.et_driver_name);
         etDriverFather = root.findViewById(R.id.et_driver_father);
         etDriverCNIC = root.findViewById(R.id.et_driver_cnic);
 
-
+        etDriverName.setText(current_user.getName());
 
         tvDriverPic = root.findViewById(R.id.tv_driver_pic);
         imDriverPic = root.findViewById(R.id.im_driver_pic);
@@ -243,6 +248,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
     }
 
     private void driverRegisterStep1(){
+
         final String name = etDriverName.getText().toString();
         final String father = etDriverFather.getText().toString();
         final String cnic = etDriverCNIC.getText().toString();
@@ -291,6 +297,13 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
             RequestBody pictureRequestBody = RequestBody.create(MediaType.parse("image/*"), picture);
 
 
+            RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
+            RequestBody fatherBody = RequestBody.create(MediaType.parse("text/plain"), father);
+            RequestBody cnicBody = RequestBody.create(MediaType.parse("text/plain"), cnic);
+            RequestBody mobileBody = RequestBody.create(MediaType.parse("text/plain"), current_user.getMobile());
+
+
+
             MultipartBody.Part cnicFrontToUpload = MultipartBody.Part.createFormData("cnic_front", "cnic_front_" + cnicFront.getName(), cnicFrontRequestBody);
             MultipartBody.Part cnicRearToUpload = MultipartBody.Part.createFormData("cnic_rear", "cnic_rear_" + cnicRear.getName(), cnicRearRequestBody);
             MultipartBody.Part pictureToUpload = MultipartBody.Part.createFormData("picture", "pic_" + picture.getName(), pictureRequestBody);
@@ -304,20 +317,38 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
             }
 
 
-            User u = MainActivity.appPreference.getUserObject();
 
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.doDriverRegistrationStep1(pictureToUpload, licenceToUpload, cnicFrontToUpload, cnicRearToUpload, cnic, name, father, "03336126632");
-            userCall.enqueue(new Callback<DriverServerResponse>() {
+
+            Call<User> userCall = MainActivity.serviceApi.doDriverRegistrationStep1(pictureToUpload, licenceToUpload, cnicFrontToUpload, cnicRearToUpload, cnicBody, nameBody, fatherBody, mobileBody);
+            userCall.enqueue(new Callback<User>() {
+
+
+
+
                 @Override
-                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-                    Log.e("fucked", "i'm ok");
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if(response.body().getResponse().equals("step1_completed")){
+                        MainActivity.appPreference.setUserObject(response.body());
+                        FragmentManager fragmentManager = getFragmentManager();
+                        Utils.showAlertBox(getActivity(),"Please enter your vehicle details now.");
+                        DriverDataUpdateFragmentStep2 step2 = new DriverDataUpdateFragmentStep2();
+                        fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, step2).commit();
+                    }else if(response.body().getResponse().equals("error_uploading")){
+                        Utils.showAlertBox(getActivity(),"Sorry We are not able to upload your data.");
+                    }else if(response.body().getResponse().equals("required_fields_missing")){
+                        Utils.showAlertBox(getActivity(),"All Fields are required.");
+                    }else{
+                        Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
+                    }
                 }
 
                 @Override
-                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
-                    Log.e("fuckeding", t.toString());
+                public void onFailure(Call<User> call, Throwable t) {
+                    Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
+                    Log.e("error",t.toString());
                 }
             });
+
         }
     }
 

@@ -43,7 +43,7 @@ public class RegistrationVerificationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_register_verification, container, false);
-        u = MainActivity.appPreference.getUserObject();
+        u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         verificationButton = view.findViewById(R.id.verificationButton);
         token = view.findViewById(R.id.et_verification_Token);
 

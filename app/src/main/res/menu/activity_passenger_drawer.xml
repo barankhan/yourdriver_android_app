@@ -20,18 +20,24 @@
             android:id="@+id/nav_tools"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_tools" />
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_menu_share"
+            android:title="@string/menu_share" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_logout" />
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Want to Earn">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/menu_share" />
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_logout" />
+                android:id="@+id/nav_partner"
+                android:icon="@drawable/ic_motor_bike_100"
+                android:title="Become a Partner" />
+
 
         </menu>
     </item>

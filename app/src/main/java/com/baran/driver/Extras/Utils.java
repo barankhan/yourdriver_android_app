@@ -15,6 +15,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -215,10 +217,11 @@ public class Utils {
 
 
     public static void showAlertBox(Activity a,String message){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(a);
-        builder.setTitle(message)
-                // Set the action buttons
-                .setPositiveButton(R.string.ok, null).create().show();
+        AlertDialog d =builder.setTitle(message)
+                .setPositiveButton(R.string.ok, null).create();
+        d.show();
     }
 
 

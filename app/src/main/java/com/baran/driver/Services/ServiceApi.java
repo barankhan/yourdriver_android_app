@@ -1,6 +1,7 @@
 package com.baran.driver.Services;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -42,15 +43,15 @@ public interface ServiceApi {
 
     @Multipart
     @POST("upload_driver_reg_step1.php")
-    Call <DriverServerResponse> doDriverRegistrationStep1(@Part MultipartBody.Part picture, @Part MultipartBody.Part licence,
-                                              @Part MultipartBody.Part cnic_front,@Part MultipartBody.Part cnic_rear,@Part("cnic") String cnic,
-                                              @Part("name") String name,@Part("father") String father,@Part("mobile") String mobile);
+    Call <User> doDriverRegistrationStep1(@Part MultipartBody.Part picture, @Part MultipartBody.Part licence,
+                                              @Part MultipartBody.Part cnic_front,@Part MultipartBody.Part cnic_rear,@Part("cnic") RequestBody cnic,
+                                              @Part("name") RequestBody name,@Part("father") RequestBody father,@Part("mobile") RequestBody mobile);
 
 
     @Multipart
     @POST("upload_driver_reg_step2.php")
-    Call <DriverServerResponse> doDriverRegistrationStep2(@Part MultipartBody.Part vehicle_front, @Part MultipartBody.Part vehicle_rear,
-                                                          @Part MultipartBody.Part registration,@Part MultipartBody.Part route,@Part("reg_alphabet") String reg_alphabet,
-                                                          @Part("reg_year") String reg_year,@Part("reg_no") String reg_no,@Part("mobile") String mobile);
+    Call <User> doDriverRegistrationStep2(@Part MultipartBody.Part vehicle_front, @Part MultipartBody.Part vehicle_rear,
+                                                          @Part MultipartBody.Part registration,@Part MultipartBody.Part route,@Part("reg_alphabet") RequestBody reg_alphabet,
+                                                          @Part("reg_year") RequestBody reg_year,@Part("reg_no") RequestBody reg_no,@Part("mobile") RequestBody mobile);
 
 }

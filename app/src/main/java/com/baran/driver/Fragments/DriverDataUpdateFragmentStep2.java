@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Extras.Utils;
+import com.baran.driver.Fragments.passenger.home.HomeFragment;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
@@ -41,6 +43,7 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
    ImageView imVehicleFront,imVehicleRear,imVehicleRegistration,imVehicleRoute;
    TextView tvVehicleFront,tvVehicleRear,tvVehicleRegistration,tvVehicleRoute;
    Button btnSaveStep2;
+    User current_user;
 
     public final int PICK_VEHICLE_ROUTE = 1;
     public final int PICK_VEHICLE_REGISTRATION = 2;
@@ -58,6 +61,7 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
                              Bundle savedInstanceState) {
         View root  = inflater.inflate(R.layout.fragment_driver_data_update_step_2, container, false);
 
+        current_user = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         etRegAlphabets = root.findViewById(R.id.et_vehicle_reg_alphabet);
         etRegYear = root.findViewById(R.id.et_vehicle_reg_year);
         etRegNo = root.findViewById(R.id.et_vehicle_reg_number);
@@ -210,6 +214,10 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
             RequestBody vehicleRearRequestBody = RequestBody.create(MediaType.parse("image/*"), vehicleRear);
             RequestBody registrationRequestBody = RequestBody.create(MediaType.parse("image/*"), registration);
 
+            RequestBody regAlphabetBody = RequestBody.create(MediaType.parse("text/plain"), regAlphabet);
+            RequestBody regYearBody = RequestBody.create(MediaType.parse("text/plain"), regYear);
+            RequestBody regNumberBody = RequestBody.create(MediaType.parse("text/plain"), regNumber);
+            RequestBody mobileBody = RequestBody.create(MediaType.parse("text/plain"), current_user.getMobile());
 
             MultipartBody.Part vehicleFrontToUpload = MultipartBody.Part.createFormData("vehicle_front", "vehicle_front_" + vehicleFront.getName(), vehicleFrontRequestBody);
             MultipartBody.Part vehicleRearToUpload = MultipartBody.Part.createFormData("vehicle_rear", "vehicle_rear_" + vehicleRear.getName(), vehicleRearRequestBody);
@@ -223,18 +231,28 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
                 routeToUpload = MultipartBody.Part.createFormData("route", "route_" + licence.getName(), licenceRequestBody);
             }
 
-
-            User u = MainActivity.appPreference.getUserObject();
-            String m = "03336126632";
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.doDriverRegistrationStep2(vehicleFrontToUpload,vehicleRearToUpload,registrationToUpload,routeToUpload,regAlphabet,regYear,regNumber,m);
-            userCall.enqueue(new Callback<DriverServerResponse>() {
+            Call<User> userCall = MainActivity.serviceApi.doDriverRegistrationStep2(vehicleFrontToUpload,
+                    vehicleRearToUpload,registrationToUpload,routeToUpload,regAlphabetBody,regYearBody,regNumberBody,mobileBody);
+            userCall.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-                    Log.e("fucked", response.body().getMessage());
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if(response.body().getResponse().equals("step2_completed")){
+                        MainActivity.appPreference.setUserObject(response.body());
+                        Utils.showAlertBox(getActivity(),"Thanks! your account will be activated shortly!");
+                        FragmentManager fragmentManager = getFragmentManager();
+                        HomeFragment home = new HomeFragment();
+                        fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, home).commit();
+                    }else if(response.body().getResponse().equals("error_uploading")){
+                        Utils.showAlertBox(getActivity(),"Sorry We are not able to upload your data.");
+                    }else if(response.body().getResponse().equals("required_fields_missing")){
+                        Utils.showAlertBox(getActivity(),"All Fields are required.");
+                    }else{
+                        Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
+                    }
                 }
                 @Override
-                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
-                    Log.e("fuckeding", t.toString());
+                public void onFailure(Call<User> call, Throwable t) {
+                    Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
                 }
             });
         }

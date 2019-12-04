@@ -41,7 +41,7 @@ public class ForgetPasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
-        u = MainActivity.appPreference.getUserObject();
+        u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         forgotPasswordButton = view.findViewById(R.id.bt_forgot_password);
         token = view.findViewById(R.id.et_forgot_password);
 
