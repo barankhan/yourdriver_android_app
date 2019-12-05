@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".Activity.DriverConfirmationActivity">
+            <intent-filter>
+                <action android:name="com.barankhan.driver.driver_confirmation_activity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".Services.FirebaseService"

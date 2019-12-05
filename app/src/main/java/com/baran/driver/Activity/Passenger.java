@@ -121,8 +121,10 @@ public class Passenger extends AppCompatActivity {
             return DriverDataUpdateFragmentStep1.class;
         }else if(currentUser.getDriverSteps()==1){
             return DriverDataUpdateFragmentStep2.class;
-        }else if(currentUser.getDriverSteps()==2){
+        }else if(currentUser.getDriverSteps()==2 && currentUser.getIsDriver()==0){
             Utils.showAlertBox(this,"Your Request is under review. Please wait.");
+        }else if(currentUser.getDriverSteps()==2 && currentUser.getIsDriver()==1){
+            Utils.showAlertBox(this,"You are a partner Boss!");
         }
         return null;
     }

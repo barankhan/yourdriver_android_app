@@ -35,7 +35,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="403dp"
         android:layout_height="118dp"
-        android:layout_marginBottom="22dp"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="@+id/map"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -67,16 +67,16 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="14dp"
             android:layout_marginBottom="26dp"
+            android:background="@drawable/button_style"
             android:text="Confirm DropOff"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_skip_drop_off"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:background="@drawable/button_style"
-            android:textColor="#FFFFFF"
-            android:textSize="20dp"
 
             />
 
@@ -105,15 +105,15 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="27dp"
             android:layout_marginBottom="33dp"
+            android:background="@drawable/button_style"
             android:text="Driver Bullain"
+            android:textSize="20dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
-            android:background="@drawable/button_style"
-            android:textSize="20dp"
 
 
             />
@@ -122,11 +122,10 @@
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:spinnerMode="dialog"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:spinnerMode="dialog"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
