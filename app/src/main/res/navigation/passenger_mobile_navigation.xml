@@ -3,12 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/d_nav_home">
+    app:startDestination="@id/nav_home">
 
     <fragment
-        android:id="@+id/d_nav_home"
-        android:name="com.baran.driver.Fragments.driver.home.HomeFragment"
+        android:id="@+id/nav_home"
+        android:name="com.baran.driver.Fragments.passenger.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/driver_fragment_home" />
+        tools:layout="@layout/passenger_fragment_home" />
+
+
+
 
 </navigation>

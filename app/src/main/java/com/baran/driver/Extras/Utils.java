@@ -1,6 +1,7 @@
 package com.baran.driver.Extras;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -15,8 +16,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,7 +38,7 @@ import androidx.core.content.res.ResourcesCompat;
 public class Utils {
 
     private  static boolean savedDeleteFlag = false;
-
+    private static  ProgressDialog progressDialog;
     public static BitmapDescriptor getBitmapFromVector(@NonNull Context context,
                                                        @DrawableRes int vectorResourceId) {
 
@@ -243,6 +242,21 @@ public class Utils {
 
         return  mediaPath;
     }
+
+
+    public static void showProgressBarSpinner(Context context){
+        progressDialog = ProgressDialog.show(context, "","Please Wait...", true);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+    }
+
+
+    public static void dismissProgressBarSpinner(){
+        progressDialog.dismiss();
+    }
+
+
 
 
 }

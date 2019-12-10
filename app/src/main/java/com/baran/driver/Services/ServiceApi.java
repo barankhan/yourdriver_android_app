@@ -53,5 +53,13 @@ public interface ServiceApi {
     Call <User> doDriverRegistrationStep2(@Part MultipartBody.Part vehicle_front, @Part MultipartBody.Part vehicle_rear,
                                                           @Part MultipartBody.Part registration,@Part MultipartBody.Part route,@Part("reg_alphabet") RequestBody reg_alphabet,
                                                           @Part("reg_year") RequestBody reg_year,@Part("reg_no") RequestBody reg_no,@Part("mobile") RequestBody mobile);
+    @FormUrlEncoded
+    @POST("update_lat_long.php")
+    Call <DriverServerResponse> doUpdateLatLong(@Field("mobile") String mobile, @Field("lat") Double lat, @Field("lng") Double lng);
+
+
+    @FormUrlEncoded
+    @POST("is_driver_online.php")
+    Call <DriverServerResponse> isDriverOnline(@Field("mobile") String mobile, @Field("is_driver_online") int is_driver_online);
 
 }

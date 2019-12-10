@@ -20,6 +20,8 @@ import com.baran.driver.Services.MyInterface;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.ServiceApi;
 
+import java.sql.Driver;
+
 
 public class MainActivity extends AppCompatActivity implements MyInterface {
 
@@ -71,8 +73,13 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         appPreference.setDisplayName(u.getName());
         appPreference.setDisplayEmail(u.getEmail());
         appPreference.setCreDate(u.getCreatedAt());
-        if(u.getIsVerified()==1 && u.getId()>0){
+        if(u.getIsVerified()==1 && u.getId()>0 && u.getIsDriver()==0){
             Intent intent = new Intent(this, Passenger.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }else if(u.getIsVerified()==1 && u.getId()>0 && u.getIsDriver()==1){
+            Intent intent = new Intent(this, DriverActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);

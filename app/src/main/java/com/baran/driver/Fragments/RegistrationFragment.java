@@ -23,6 +23,7 @@ import android.widget.EditText;
 
 
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
@@ -102,11 +103,13 @@ public class RegistrationFragment extends Fragment {
             MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
         }
         else {
+            Utils.showProgressBarSpinner(getContext());
 
             Call<User> userCall = MainActivity.serviceApi.doRegistration(name, email, phone, password,firebaseToken);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+                    Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
                         Log.e("Token Called","Called");
                         if(response.body().getResponse().equals("inserted")){
@@ -135,7 +138,9 @@ public class RegistrationFragment extends Fragment {
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+
                     Log.e("FIX",t.toString());
+                    Utils.dismissProgressBarSpinner();
                 }
             });
 

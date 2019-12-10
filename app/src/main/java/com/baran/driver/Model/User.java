@@ -36,11 +36,23 @@ public class User {
         return createdAt;
     }
 
+
     @SerializedName("isDeleted")
     private int isDeleted=0;
 
     @SerializedName("driverSteps")
     private int driverSteps=0;
+
+    public int getIsDriverOnline() {
+        return isDriverOnline;
+    }
+
+    public void setIsDriverOnline(int isDriverOnline) {
+        this.isDriverOnline = isDriverOnline;
+    }
+
+    @SerializedName("isDriverOnline")
+    private int isDriverOnline=0;
 
     @SerializedName("father")
     private String father;

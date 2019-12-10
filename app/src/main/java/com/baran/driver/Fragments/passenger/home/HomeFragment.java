@@ -114,7 +114,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
         stack = new ArrayDeque<String>();
 
-        View root = inflater.inflate(R.layout.fragment_passenger_home, container, false);
+        View root = inflater.inflate(R.layout.passenger_fragment_home, container, false);
 
         separator = root.findViewById(R.id.tv_pickup_drop_off_separator);
 

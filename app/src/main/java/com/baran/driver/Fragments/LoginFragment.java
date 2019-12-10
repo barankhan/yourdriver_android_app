@@ -18,6 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
@@ -113,16 +114,20 @@ public class LoginFragment extends Fragment {
         } else if (Password.length() < 6){
             MainActivity.appPreference.showToast("Password  may be at least 6 characters long.");
         } else {
+            Utils.showProgressBarSpinner(getContext());
+
             Call<User> userCall = MainActivity.serviceApi.doLogin(mobile_number, Password,firebaseToken);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
-
+                    Utils.dismissProgressBarSpinner();
                     if (response.body().getResponse().equals("data")){
                         MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
                         MainActivity.appPreference.setUserObject(response.body());
+
                         loginFromActivityListener.login(response.body());
                         Log.e("Login Activity","I'm here");
+
                     } else if (response.body().getResponse().equals("login_failed")){
                         MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
                         passwordInput.setText("");
@@ -130,7 +135,9 @@ public class LoginFragment extends Fragment {
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+                    Log.e("error",t.toString());
                     showAlertBox(getActivity(),"Unable to connect to server");
+                    Utils.dismissProgressBarSpinner();
                 }
             });
         }

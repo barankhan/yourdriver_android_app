@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
@@ -27,7 +28,6 @@ public class ForgetPasswordFragment extends Fragment {
 
     Button forgotPasswordButton;
     EditText token;
-    User u;
     private MyInterface registrationFromActivityListener;
 
     public ForgetPasswordFragment() {
@@ -41,7 +41,6 @@ public class ForgetPasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
-        u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         forgotPasswordButton = view.findViewById(R.id.bt_forgot_password);
         token = view.findViewById(R.id.et_forgot_password);
 
@@ -79,28 +78,33 @@ public class ForgetPasswordFragment extends Fragment {
 
         String Mobi = token.getText().toString();
 
-
-
+        if (Mobi.length() != 11) {
+            MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
+        } else {
+            Utils.showProgressBarSpinner(getContext());
             Call<DriverServerResponse> userCall = MainActivity.serviceApi.doSendPasswordViaSMS(Mobi);
             userCall.enqueue(new Callback<DriverServerResponse>() {
                 @Override
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-                        if(response.body().getResponse().equals("sms_sent")){
-                            MainActivity.appPreference.showToast("Please check your SMS");
-                            registrationFromActivityListener.loginFragment();
+                    Utils.dismissProgressBarSpinner();
+                    if (response.body().getResponse().equals("sms_sent")) {
+                        MainActivity.appPreference.showToast("Please check your SMS");
+                        registrationFromActivityListener.loginFragment();
 
-                        }else{
-                            showAlertBox(getActivity(),"Your mobile number is not registered with us.");
-                        }
+                    } else {
+                        showAlertBox(getActivity(), "Your mobile number is not registered with us.");
+                    }
                 }
+
                 @Override
                 public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                    Utils.dismissProgressBarSpinner();
                     MainActivity.appPreference.showToast("There is some error We can't communicate with Server");
                 }
             });
 
 
-
+        }
 
     }
 

@@ -3,8 +3,10 @@
     package="com.baran.driver">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -13,10 +15,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        >
+        <service
+            android:name=".Services.LocationBackgroundService"
+           ></service>
+
+        <activity
+            android:name=".Activity.DriverActivity"
+            android:label="@string/title_activity_driver"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activity.DriverConfirmationActivity">
             <intent-filter>
                 <action android:name="com.barankhan.driver.driver_confirmation_activity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

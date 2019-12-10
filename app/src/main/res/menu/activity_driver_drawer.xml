@@ -5,41 +5,47 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/d_nav_home"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_home" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/d_nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
             android:title="@string/menu_gallery" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/d_nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_slideshow" />
         <item
-            android:id="@+id/nav_tools"
+            android:id="@+id/d_nav_tools"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_tools" />
+
         <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_menu_share"
+            android:id="@+id/d_nav_share"
+            android:icon="@drawable/ic_menu_manage"
             android:title="@string/menu_share" />
+
         <item
-            android:id="@+id/nav_logout"
+            android:id="@+id/d_nav_send"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/menu_send" />
+
+
+        <item
+            android:id="@+id/d_nav_logout"
             android:icon="@drawable/ic_menu_send"
             android:title="@string/menu_logout" />
-
     </group>
 
-    <item android:title="Want to Earn">
-        <menu>
-            <item
-                android:id="@+id/nav_partner"
-                android:icon="@drawable/ic_motor_bike_100"
-                android:title="Become a Partner" />
+<!--    <item android:title="Communicate">-->
+<!--        <menu>-->
+<!--            <item-->
+<!--                android:id="@+id/d_switch_to_passenger"-->
+<!--                android:icon="@drawable/ic_menu_share"-->
+<!--                android:title="Switch to Passenger" />-->
 
-
-        </menu>
-    </item>
+<!--        </menu>-->
+<!--    </item>-->
 
 </menu>

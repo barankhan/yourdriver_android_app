@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
@@ -85,10 +86,12 @@ public class RegistrationVerificationFragment extends Fragment {
 
 
         if(u.getVerificationToken()==tokenValue){
+            Utils.showProgressBarSpinner(getContext());
             Call<User> userCall = MainActivity.serviceApi.doTokenVerification(u.getMobile(),tokenValue);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+                    Utils.dismissProgressBarSpinner();
                         if(response.body().getResponse().equals("verified")){
                             MainActivity.appPreference.setUserObject(response.body());
                             MainActivity.appPreference.setLoginStatus(true);
@@ -101,6 +104,7 @@ public class RegistrationVerificationFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+                    Utils.dismissProgressBarSpinner();
                     showAlertBox(getActivity(),"Sorry! Unable to verify your token at the moment!");
                 }
             });
