@@ -121,17 +121,22 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     Utils.dismissProgressBarSpinner();
-                    if (response.body().getResponse().equals("data")){
-                        MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
-                        MainActivity.appPreference.setUserObject(response.body());
+                    if(response.isSuccessful()){
+                        if (response.body().getResponse().equals("data")){
+                            MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
+                            MainActivity.appPreference.setUserObject(response.body());
 
-                        loginFromActivityListener.login(response.body());
-                        Log.e("Login Activity","I'm here");
+                            loginFromActivityListener.login(response.body());
+                            Log.e("Login Activity","I'm here");
 
-                    } else if (response.body().getResponse().equals("login_failed")){
-                        MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
-                        passwordInput.setText("");
+                        } else if (response.body().getResponse().equals("login_failed")){
+                            MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
+                            passwordInput.setText("");
+                        }
+                    }else{
+                        showAlertBox(getActivity(),"Unable to get the results from Server!");
                     }
+
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {

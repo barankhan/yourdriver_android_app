@@ -281,6 +281,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
 
         else {
 
+            Utils.showProgressBarSpinner(getContext());
             final Uri cnic_front_uri = (Uri) imDriverCNICFront.getTag(R.id.image_uri);
             final Uri cnic_rear_uri = (Uri) imDriverCNICRear.getTag(R.id.image_uri);
             final Uri picture_uri = (Uri) imDriverPic.getTag(R.id.image_uri);
@@ -327,6 +328,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
 
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+                    Utils.dismissProgressBarSpinner();
                     if(response.body().getResponse().equals("step1_completed")){
                         MainActivity.appPreference.setUserObject(response.body());
                         FragmentManager fragmentManager = getFragmentManager();
@@ -344,6 +346,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+                    Utils.dismissProgressBarSpinner();
                     Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
                     Log.e("error",t.toString());
                 }

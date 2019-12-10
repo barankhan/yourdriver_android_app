@@ -201,8 +201,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 btnConfirmDropOff.setVisibility(View.GONE);
                 btnConfirmPickup.setVisibility(View.GONE);
                 mSpinner.setVisibility(View.GONE);
-
                 stack.push("DRIVER_CALLED");
+
+
             }
         });
 

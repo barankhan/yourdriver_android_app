@@ -198,10 +198,18 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
             MainActivity.appPreference.showToast("Vehicle Registration Numbr is required");
         }
         else {
-
+            Utils.showProgressBarSpinner(getContext());
             final Uri vehicle_front_uri = (Uri) imVehicleFront.getTag(R.id.image_uri);
             final Uri vehicle_rear_uri = (Uri) imVehicleRear.getTag(R.id.image_uri);
             final Uri registration_uri = (Uri) imVehicleRegistration.getTag(R.id.image_uri);
+
+
+
+
+
+            String vehicleType = spVehicleType.getSelectedItem().toString();
+
+
 
 
             File vehicleFront = new File(Utils.getRealPathFromURI(getContext(), vehicle_front_uri));
@@ -218,6 +226,7 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
             RequestBody regYearBody = RequestBody.create(MediaType.parse("text/plain"), regYear);
             RequestBody regNumberBody = RequestBody.create(MediaType.parse("text/plain"), regNumber);
             RequestBody mobileBody = RequestBody.create(MediaType.parse("text/plain"), current_user.getMobile());
+            RequestBody vehicleTypeBody = RequestBody.create(MediaType.parse("text/plain"), vehicleType);
 
             MultipartBody.Part vehicleFrontToUpload = MultipartBody.Part.createFormData("vehicle_front", "vehicle_front_" + vehicleFront.getName(), vehicleFrontRequestBody);
             MultipartBody.Part vehicleRearToUpload = MultipartBody.Part.createFormData("vehicle_rear", "vehicle_rear_" + vehicleRear.getName(), vehicleRearRequestBody);
@@ -232,10 +241,11 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
             }
 
             Call<User> userCall = MainActivity.serviceApi.doDriverRegistrationStep2(vehicleFrontToUpload,
-                    vehicleRearToUpload,registrationToUpload,routeToUpload,regAlphabetBody,regYearBody,regNumberBody,mobileBody);
+                    vehicleRearToUpload,registrationToUpload,routeToUpload,regAlphabetBody,regYearBody,regNumberBody,mobileBody,vehicleTypeBody);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+                    Utils.dismissProgressBarSpinner();
                     if(response.body().getResponse().equals("step2_completed")){
                         MainActivity.appPreference.setUserObject(response.body());
                         Utils.showAlertBox(getActivity(),"Thanks! your account will be activated shortly!");
@@ -252,6 +262,7 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
+                    Utils.dismissProgressBarSpinner();
                     Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
                 }
             });

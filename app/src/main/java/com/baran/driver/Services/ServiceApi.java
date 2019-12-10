@@ -52,7 +52,8 @@ public interface ServiceApi {
     @POST("upload_driver_reg_step2.php")
     Call <User> doDriverRegistrationStep2(@Part MultipartBody.Part vehicle_front, @Part MultipartBody.Part vehicle_rear,
                                                           @Part MultipartBody.Part registration,@Part MultipartBody.Part route,@Part("reg_alphabet") RequestBody reg_alphabet,
-                                                          @Part("reg_year") RequestBody reg_year,@Part("reg_no") RequestBody reg_no,@Part("mobile") RequestBody mobile);
+                                                          @Part("reg_year") RequestBody reg_year,@Part("reg_no") RequestBody reg_no,@Part("mobile") RequestBody mobile
+            ,@Part("vehicle_type") RequestBody vehicle_type);
     @FormUrlEncoded
     @POST("update_lat_long.php")
     Call <DriverServerResponse> doUpdateLatLong(@Field("mobile") String mobile, @Field("lat") Double lat, @Field("lng") Double lng);
