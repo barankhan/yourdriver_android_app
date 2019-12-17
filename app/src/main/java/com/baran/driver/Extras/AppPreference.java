@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Activity.Passenger;
+import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.google.gson.Gson;
@@ -76,6 +77,19 @@ public class AppPreference {
         editor.commit();
     }
 
+    public void setRideObject(Ride r){
+        Gson gson = new Gson();
+        String json = gson.toJson(r); // myObject - instance of MyObject
+        editor.putString("RideObj", json);
+        editor.commit();
+    }
+
+    public Ride getRideObject(){
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("RideObj", null);
+        return  gson.fromJson(json, Ride.class);
+    }
+
 
     public User getUserObject(Context c,Activity a){
         Gson gson = new Gson();
@@ -99,5 +113,24 @@ public class AppPreference {
         return  user;
     }
 
+
+    // For Lat
+    public void setLat(String lat){
+        editor.putString("lat", lat);
+        editor.commit();
+    }
+    public String getLat(){
+        return sharedPreferences.getString("lat", "lat");
+    }
+
+
+    // For Lat
+    public void setLng(String lng){
+        editor.putString("lng", lng);
+        editor.commit();
+    }
+    public String getLng(){
+        return sharedPreferences.getString("lng", "lng");
+    }
 
 }

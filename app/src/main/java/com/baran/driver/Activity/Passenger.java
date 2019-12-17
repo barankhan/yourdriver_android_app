@@ -3,6 +3,7 @@ package com.baran.driver.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Fragments.DriverDataUpdateFragmentStep1;
@@ -22,6 +23,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.baran.driver.Services.RetrofitClient;
+import com.baran.driver.Services.RidesApi;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -41,6 +44,8 @@ public class Passenger extends AppCompatActivity {
     NavigationView navigation;
     ActionBarDrawerToggle action;
     Button btnDrawerToggle;
+    public static RidesApi ridesApi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +53,7 @@ public class Passenger extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
+        ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);

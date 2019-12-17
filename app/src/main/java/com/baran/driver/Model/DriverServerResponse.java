@@ -11,6 +11,20 @@ public class DriverServerResponse {
     @SerializedName("message")
     private String message;
 
+
+
+    @SerializedName("driver_id")
+    private String driverId;
+
+
+    public String getDriverId() {
+        return driverId;
+    }
+
+    public void setDriverId(String driverId) {
+        this.driverId = driverId;
+    }
+
     public String getResponse() {
         return response;
     }

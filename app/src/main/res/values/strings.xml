@@ -45,8 +45,8 @@
 
     <string-array name="driver_types">
         <item>Auto</item>
-        <item>Bike</item>
         <item>Car</item>
+        <item>Bike</item>
     </string-array>
     <string name="sample">sample</string>
     <string name="title_activity_partner_info">PartnerInfoActivity</string>

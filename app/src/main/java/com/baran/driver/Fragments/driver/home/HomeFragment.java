@@ -1,46 +1,45 @@
 package com.baran.driver.Fragments.driver.home;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Service;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.AudioAttributes;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Activity.RideAlertActivity;
+import com.baran.driver.BuildConfig;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
+import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
+import com.baran.driver.Services.DriverAlertReceiver;
 import com.baran.driver.Services.LocationBackgroundService;
 import com.baran.driver.Services.LocationServiceCallback;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -49,27 +48,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import android.content.Context;
-import android.widget.Button;
-import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
+import android.widget.Button;
+
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.concurrent.Executor;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import okhttp3.internal.Util;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -77,13 +66,15 @@ import retrofit2.Response;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static androidx.core.content.ContextCompat.getMainExecutor;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback{
 
 
     public LocationBackgroundService gpsService;
 
+    private final int RIDE_ALERT_REQUEST_CODE = 10001;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -175,6 +166,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private User currentUser;
     private Button btnOnOffLine;
     Intent serviceIntent;
+    DriverAlertReceiver receiver;
+    IntentFilter intentFilter;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -203,7 +196,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         serviceIntent = new Intent(getActivity().getApplication(), LocationBackgroundService.class);
         getActivity().getApplication().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
 
+        createNotificationChannel();
 
+
+        receiver = new DriverAlertReceiver();
+        intentFilter = new IntentFilter("com.barankhan.driver.ride_alerts");
+        getContext().registerReceiver(receiver, intentFilter);
 
         return root;
     }
@@ -278,7 +276,29 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     };
 
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver((mRideAlertReceiver),
+                new IntentFilter("RideAlert")
+        );
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mRideAlertReceiver);
+    }
+
+    private BroadcastReceiver mRideAlertReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e("RideAlertBraodCaster","i'm here");
+            Intent i = new Intent(getContext(), RideAlertActivity.class);
+            i.putExtras(intent.getExtras());
+            startActivityForResult(i, RIDE_ALERT_REQUEST_CODE);
+        }
+    };
 
     @Override
     public void onResume(){
@@ -447,11 +467,24 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         if (currentLocation != null) {
 
             MainActivity.appPreference.showToast(String.valueOf(currentLocation.getLatitude())+"=="+String.valueOf(currentLocation.getLongitude()));
+            MainActivity.appPreference.setLat(String.valueOf(currentLocation.getLatitude()));
+            MainActivity.appPreference.setLng(String.valueOf(currentLocation.getLongitude()));
+
+
+            Ride r ;
+            r = MainActivity.appPreference.getRideObject();
+            String ride_id="";
+            String passenger_id="";
+            if(r!=null){
+                ride_id=String.valueOf(r.getId());
+                passenger_id = String.valueOf(r.getPassengerId()) ;
+            }
+
 
             CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(round(currentLocation.getLatitude(),6),round(currentLocation.getLongitude(),6))).zoom(DEFAULT_PICKUP_ZOOM).build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.doUpdateLatLong(currentUser.getMobile(),currentLocation.getLatitude(),currentLocation.getLongitude());
+            Call<DriverServerResponse> userCall = MainActivity.serviceApi.doUpdateLatLong(currentUser.getMobile(),currentLocation.getLatitude(),currentLocation.getLongitude(),ride_id,passenger_id);
             userCall.enqueue(new Callback<DriverServerResponse>() {
                 @Override
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
@@ -523,4 +556,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         updateLocationOnServer(result);
 
     }
+
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Passenger Alert";
+            String description = "You will get alert when a Passenger will request for a ride";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("121212", name, importance);
+            channel.setDescription(description);
+            Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + BuildConfig.APPLICATION_ID + "/" + R.raw.ride_alert);
+            AudioAttributes att = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build();
+            channel.setSound(uri,att);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getContext().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
