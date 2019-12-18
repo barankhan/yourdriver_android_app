@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.baran.driver.Activity.DriverActivity;
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Activity.RideAlertActivity;
 import com.baran.driver.BuildConfig;
@@ -158,6 +159,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     Fragment mapFrag;
     private String provider;
+
     SupportMapFragment mapFragment;
 
     private LocationManager locationManager;
@@ -472,7 +474,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
             Ride r ;
-            r = MainActivity.appPreference.getRideObject();
+            r = DriverActivity.currentRide;
             String ride_id="";
             String passenger_id="";
             if(r!=null){

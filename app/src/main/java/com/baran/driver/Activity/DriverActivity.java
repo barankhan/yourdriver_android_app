@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.baran.driver.Fragments.driver.gallery.GalleryFragment;
 import com.baran.driver.Fragments.driver.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
+import com.baran.driver.Model.Ride;
 import com.baran.driver.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,7 +32,7 @@ import android.view.Menu;
 public class DriverActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-
+    public static Ride currentRide = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
