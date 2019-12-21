@@ -92,7 +92,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     LocationRequest mLocationRequest;
     Location mLastLocation;
     boolean isSourceSet = false, tripStarted = false, isPickupMode = true, isDropOffMode = false;
-    private static final int DEFAULT_PICKUP_ZOOM = 17;
+    private static float DEFAULT_PICKUP_ZOOM = 17;
     private static final int DEFAULT_DROP_OFF_ZOOM = 12;
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
@@ -258,7 +258,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     public void onFailure(Call<Ride> call, Throwable t) {
                         Utils.dismissProgressBarSpinner();
                         stack.pop();
-                        showAlertBox(getActivity(),"Unable to connect to server");
+                        showAlertBox(getActivity(),"Unable to connect to server"+t.toString());
                     }
                 });
 
@@ -588,8 +588,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             @Override
             public void onCameraMove() {
 
+                DEFAULT_PICKUP_ZOOM = mMap.getCameraPosition().zoom;
                 LatLng latLng = mMap.getCameraPosition().target;
-
 
                 if (isPickupMode) {
                     if (!pickUpMarker.isVisible()) {

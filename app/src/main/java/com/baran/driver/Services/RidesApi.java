@@ -2,6 +2,7 @@ package com.baran.driver.Services;
 
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
+import com.baran.driver.Model.DriverTransaction;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -29,5 +30,22 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("ride_alert_received.php")
     Call <DriverServerResponse> rideAlertReceived(@Field("mobile") String mobile, @Field("ride_id") String ride_id, @Field("firebase_message_id") String firebase_message_id);
+
+
+    @FormUrlEncoded
+    @POST("driver_arrived.php")
+    Call <Ride> driverArrived(@Field("mobile") String mobile,@Field("ride_id") int ride_id);
+
+    @FormUrlEncoded
+    @POST("start_ride.php")
+    Call <Ride> startRide(@Field("mobile") String mobile,@Field("ride_id") int ride_id);
+
+    @FormUrlEncoded
+    @POST("end_ride.php")
+    Call <DriverTransaction> endRide(@Field("mobile") String mobile, @Field("ride_id") int ride_id, @Field("distance") Double distance);
+
+    @FormUrlEncoded
+    @POST("transaction_amount_received.php")
+    Call <DriverServerResponse> updateTransaction(@Field("trans_id") int trans_id,@Field("amount_received") String amount);
 
 }

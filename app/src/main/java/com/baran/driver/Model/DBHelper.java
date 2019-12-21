@@ -18,6 +18,13 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "_driver.db";
     public static final String LOCATION_TABLE_NAME = "location";
+    public static final String RIDE_PATHS_TABLE_NAME = "ride_paths";
+
+    public static final String RIDE_PATHS_COLUMN_ID = "id";
+    public static final String RIDE_PATHS_LAT = "lat";
+    public static final String RIDE_PATHS_LNG = "lng";
+    public static final String RIDE_PATHS_RIDE_ID = "ride_id";
+
     public static final String LOCATION_COLUMN_ID = "id";
     public static final String LOCATION_COLUMN_GOOGLE_PLACE_ID = "place_id";
     public static final String LOCATION_COLUMN_GOOGLE_PLACE_P_TEXT = "primary_text";
@@ -25,6 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String LOCATION_COLUMN_LAT = "lat";
     public static final String LOCATION_COLUMN_LONG = "lng";
     public static final String LOCATION_COLUMN_TITLE = "title";
+
     private HashMap hp;
 
     public DBHelper(Context context) {
@@ -40,12 +48,19 @@ public class DBHelper extends SQLiteOpenHelper {
         );
 
 
+
+        db.execSQL(
+                "create table "+RIDE_PATHS_TABLE_NAME+" " +
+                        "("+RIDE_PATHS_COLUMN_ID+" integer primary key, "+RIDE_PATHS_LAT+" real,"+RIDE_PATHS_LNG+" real,"+RIDE_PATHS_RIDE_ID+" integer )"
+        );
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // TODO Auto-generated method stub
         db.execSQL("DROP TABLE IF EXISTS "+LOCATION_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+RIDE_PATHS_TABLE_NAME);
         onCreate(db);
     }
 
@@ -69,6 +84,17 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("lng", lng);
         contentValues.put("title", title);
         return db.insert(LOCATION_TABLE_NAME, null, contentValues);
+    }
+
+
+
+    public long insertRidePath (Double lat,Double lng,long rideId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(RIDE_PATHS_LAT, lat);
+        contentValues.put(RIDE_PATHS_LNG, lng);
+        contentValues.put(RIDE_PATHS_RIDE_ID, rideId);
+        return db.insert(RIDE_PATHS_TABLE_NAME, null, contentValues);
     }
 
 
@@ -150,6 +176,26 @@ public class DBHelper extends SQLiteOpenHelper {
         return rows;
     }
 
+
+
+    public List<RidePath> getRidePath(int rideId) {
+        List<RidePath> rows = new ArrayList<>();
+        //hp = new HashMap();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from "+RIDE_PATHS_TABLE_NAME+" WHERE "+RIDE_PATHS_RIDE_ID+" = "+rideId, null );
+        res.moveToFirst();
+
+        while(res.isAfterLast() == false){
+            RidePath r = new RidePath();
+            r.setId(res.getInt(res.getColumnIndex(RIDE_PATHS_COLUMN_ID)));
+            r.setLat(res.getDouble(res.getColumnIndex(RIDE_PATHS_LAT)));
+            r.setLng(res.getDouble(res.getColumnIndex(RIDE_PATHS_LNG)));
+            r.setRideId(res.getInt(res.getColumnIndex(RIDE_PATHS_RIDE_ID)));
+            rows.add(r);
+            res.moveToNext();
+        }
+        return rows;
+    }
 
 
 

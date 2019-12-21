@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,9 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activity.DriverTransactionActivity"></activity>
         <activity android:name=".Activity.RideAlertActivity">
             <intent-filter>
                 <action android:name="com.barankhan.driver.ride_alert_activity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -71,8 +72,7 @@
             </intent-filter>
         </activity>
 
-
-        <receiver android:name="Services.DriverAlertReceiver" >
+        <receiver android:name="Services.DriverAlertReceiver">
             <intent-filter>
                 <action android:name="com.barankhan.driver.ride_alerts" />
             </intent-filter>

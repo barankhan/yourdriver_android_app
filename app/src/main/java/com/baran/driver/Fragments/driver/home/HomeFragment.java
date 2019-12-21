@@ -26,12 +26,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.baran.driver.Activity.DriverActivity;
+import com.baran.driver.Activity.DriverTransactionActivity;
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Activity.RideAlertActivity;
 import com.baran.driver.BuildConfig;
 import com.baran.driver.Extras.Utils;
+import com.baran.driver.Model.DBHelper;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
+import com.baran.driver.Model.RidePath;
+import com.baran.driver.Model.DriverTransaction;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.baran.driver.Services.DriverAlertReceiver;
@@ -49,10 +53,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.widget.Button;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -67,10 +73,9 @@ import retrofit2.Response;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
-import static androidx.core.content.ContextCompat.getMainExecutor;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback{
+public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback, View.OnClickListener, GoogleMap.OnCameraMoveListener {
 
 
     public LocationBackgroundService gpsService;
@@ -150,7 +155,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     private Location mLastKnownLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private static final int DEFAULT_PICKUP_ZOOM = 18;
+    private static float DEFAULT_PICKUP_ZOOM = 18;
     private final LatLng mDefaultLocation = new LatLng(30.2223, 71.4703);
     private LocationCallback locationCallback;
     private Marker currentLocationMarker;
@@ -170,6 +175,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     Intent serviceIntent;
     DriverAlertReceiver receiver;
     IntentFilter intentFilter;
+    Button btnDriverArrived,btnCancelRide,btnStartRide,btnEndRide;
+    private Marker pickUpMarker=null, dropOffMarker=null;
+    private DBHelper dbHelper;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -179,6 +188,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         View frg = root.findViewById(R.id.driver_map);
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.driver_map);
 
+        btnDriverArrived = root.findViewById(R.id.btn_driver_arrived);
+        btnCancelRide = root.findViewById(R.id.btn_driver_ride_cancel);
+        btnStartRide = root.findViewById(R.id.btn_start_ride);
+        btnEndRide = root.findViewById(R.id.btn_end_ride);
+
+        btnDriverArrived.setOnClickListener(this);
+        btnCancelRide.setOnClickListener(this);
+        btnStartRide.setOnClickListener(this);
+        btnEndRide.setOnClickListener(this);
 
         btnOnOffLine = root.findViewById(R.id.btn_on_off_line);
         btnOnOffLine.setOnClickListener(new View.OnClickListener() {
@@ -188,6 +206,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             }
         });
 
+
+
+
+
+       
 
         mRequestingLocationUpdates = true;
         mLastUpdateTime = "";
@@ -217,7 +240,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 @Override
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
                     if(response.isSuccessful()){
-
                         currentUser.setIsDriverOnline(1);
                         btnOnOffLine.setTag(response.body().getMessage());
                         btnOnOffLine.setText(response.body().getMessage());
@@ -313,10 +335,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 requestPermissions();
             }
 
-
-
         }else{
             buildAlertMessageNoGps();
+        }
+
+        Log.e("here we resume","sure");
+
+        Ride r = MainActivity.appPreference.getRideObject();
+        if(r!=null) {
+            Location currentLocation = new Location("right now");
+            currentLocation.setLatitude(Double.valueOf(MainActivity.appPreference.getLat()));
+            currentLocation.setLongitude(Double.valueOf(MainActivity.appPreference.getLng()));
+            showArrivedButtons(r, currentLocation);
         }
 
     }
@@ -413,7 +443,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         getLocationPermission();
         updateLocationUI();
 
+        dropOffMarker = mMap.addMarker(new MarkerOptions()
+                .position(mDefaultLocation)
+                .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_drop_off_locatin_marker)));
+        dropOffMarker.setVisible(false);
 
+
+        pickUpMarker = mMap.addMarker(new MarkerOptions()
+                .position(mDefaultLocation)
+                .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
+        pickUpMarker.setVisible(false);
     }
 
 
@@ -474,15 +513,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
             Ride r ;
-            r = DriverActivity.currentRide;
+            r = MainActivity.appPreference.getRideObject();
             String ride_id="";
             String passenger_id="";
             if(r!=null){
                 ride_id=String.valueOf(r.getId());
                 passenger_id = String.valueOf(r.getPassengerId()) ;
+                showArrivedButtons(r,currentLocation);
+                if (r.getIsRideStarted()==1){
+                    dbHelper = new DBHelper(getContext());
+                    dbHelper.insertRidePath(currentLocation.getLatitude(),currentLocation.getLongitude(),r.getId());
+                }
             }
-
-
             CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(round(currentLocation.getLatitude(),6),round(currentLocation.getLongitude(),6))).zoom(DEFAULT_PICKUP_ZOOM).build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
@@ -500,6 +542,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             });
         }
 
+    }
+
+
+    private void showArrivedButtons(Ride r,Location currentLocation){
+
+        Location startPoint=new Location("pickup_location");
+        startPoint.setLatitude(r.getPickupLat());
+        startPoint.setLongitude(r.getPickupLng());
+        double distance=startPoint.distanceTo(currentLocation);
+        Log.e("distance",String.valueOf(distance));
+        if(distance<=50 && r.getIsRideStarted()==0){
+            btnDriverArrived.setVisibility(View.VISIBLE);
+            btnCancelRide.setVisibility(View.VISIBLE);
+        }else{
+            btnDriverArrived.setVisibility(View.GONE);
+            btnCancelRide.setVisibility(View.GONE);
+        }
     }
 
     public double round(double value, int precision) {
@@ -582,4 +641,153 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        Ride r = MainActivity.appPreference.getRideObject();
+        switch (v.getId()){
+            case R.id.btn_driver_arrived:
+
+                Call<Ride> userCall = DriverActivity.ridesApi.driverArrived(u.getMobile(),r.getId());
+                Utils.showProgressBarSpinner(getContext());
+                userCall.enqueue(new Callback<Ride>() {
+                    @Override
+                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                        Utils.dismissProgressBarSpinner();
+                        if(response.isSuccessful()){
+                            MainActivity.appPreference.setRideObject(response.body());
+                            btnDriverArrived.setVisibility(View.GONE);
+                            btnStartRide.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ride> call, Throwable t) {
+                        Utils.dismissProgressBarSpinner();
+                    }
+                });
+                break;
+            case R.id.btn_driver_ride_cancel:
+                Call<Ride> rideCall = DriverActivity.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
+                Utils.showProgressBarSpinner(getContext());
+                rideCall.enqueue(new Callback<Ride>() {
+                    @Override
+                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                        MainActivity.appPreference.setRideObject(response.body());
+                        Utils.dismissProgressBarSpinner();
+                        if(response.isSuccessful()){
+                            if(response.body().getResponse().equals("ride_cancelled_successfully")){
+                                btnStartRide.setVisibility(View.GONE);
+                                btnCancelRide.setVisibility(View.GONE);
+                                btnEndRide.setVisibility(View.GONE);
+                                btnDriverArrived.setVisibility(View.GONE);
+                                Utils.showAlertBox(getActivity(),"Ride Cancelled Successfully");
+                            }else if(response.body().getResponse().equals("ride_cancel_error") && response.body().getIsRideCancelled()==1){
+                                btnStartRide.setVisibility(View.GONE);
+                                btnCancelRide.setVisibility(View.GONE);
+                                btnEndRide.setVisibility(View.GONE);
+                                btnDriverArrived.setVisibility(View.GONE);
+                                Utils.showAlertBox(getActivity(),"Ride Cancelled Successfully");
+                            }else{
+                                Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
+                            }
+                        }else{
+                            Utils.showAlertBox(getActivity(),"Something went wrong. Please try again!");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ride> call, Throwable t) {
+                        Utils.dismissProgressBarSpinner();
+                        Utils.showAlertBox(getActivity(),"Unable to communicate with server.");
+                    }
+                });
+                break;
+
+            case R.id.btn_start_ride:
+                Call<Ride> startRideCall = DriverActivity.ridesApi.startRide(u.getMobile(),r.getId());
+                Utils.showProgressBarSpinner(getContext());
+                startRideCall.enqueue(new Callback<Ride>() {
+                    @Override
+                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                        if(response.isSuccessful()){
+
+                            MainActivity.appPreference.setRideObject(response.body());
+                            btnStartRide.setVisibility(View.GONE);
+                            btnCancelRide.setVisibility(View.GONE);
+                            btnDriverArrived.setVisibility(View.GONE);
+                            btnEndRide.setVisibility(View.VISIBLE);
+                            dbHelper = new DBHelper(getContext());
+                            dbHelper.insertRidePath(Double.valueOf(MainActivity.appPreference.getLat()),Double.valueOf(MainActivity.appPreference.getLng()),response.body().getId());
+                            Utils.dismissProgressBarSpinner();
+                        }
+                        Utils.dismissProgressBarSpinner();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ride> call, Throwable t) {
+                        Utils.dismissProgressBarSpinner();
+                    }
+                });
+                break;
+            case R.id.btn_end_ride:
+                Utils.showProgressBarSpinner(getContext());
+                // Loop through all the saved paths and update them.
+                List<RidePath> ridePathList = dbHelper.getRidePath(r.getId());
+
+                Location startPoint=new Location("first_mark");
+                Location endPoint=new Location("second_mark");
+
+
+
+                double distance=0;
+                for (int i=1;i<ridePathList.size();i++) {
+                    RidePath p1 = ridePathList.get(i-1);
+                    RidePath p2 = ridePathList.get(i);
+                    startPoint.setLatitude(p1.getLat());
+                    startPoint.setLongitude(p1.getLng());
+                    endPoint.setLatitude(p2.getLat());
+                    endPoint.setLongitude(p2.getLng());
+                    distance += startPoint.distanceTo(endPoint);
+                }
+
+                Call<DriverTransaction> endRideCall = DriverActivity.ridesApi.endRide(u.getMobile(),r.getId(),distance);
+
+                endRideCall.enqueue(new Callback<DriverTransaction>() {
+                    @Override
+                    public void onResponse(Call<DriverTransaction> call, Response<DriverTransaction> response) {
+
+                        if(response.isSuccessful()){
+                            MainActivity.appPreference.setDriverTransactionObject(response.body());
+                            MainActivity.appPreference.setRideObject(null);
+                            btnStartRide.setVisibility(View.GONE);
+                            btnCancelRide.setVisibility(View.GONE);
+                            btnEndRide.setVisibility(View.GONE);
+                            btnDriverArrived.setVisibility(View.GONE);
+                            Intent intent = new Intent(getContext(), DriverTransactionActivity.class);
+                            startActivity(intent);
+                            Utils.dismissProgressBarSpinner();
+                            Log.e("i got in full success",response.body().getResponse());
+                        }else{
+                            Log.e("i got in half success",response.body().getResponse());
+                            Utils.dismissProgressBarSpinner();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<DriverTransaction> call, Throwable t) {
+                        Utils.dismissProgressBarSpinner();
+                        Log.e("i got in failure",t.toString());
+                    }
+                });
+                break;
+
+        }
+    }
+
+    @Override
+    public void onCameraMove() {
+        DEFAULT_PICKUP_ZOOM = mMap.getCameraPosition().zoom;
+    }
 }

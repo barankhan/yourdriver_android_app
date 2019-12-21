@@ -2,11 +2,14 @@ package com.baran.driver.Activity;
 
 import android.os.Bundle;
 
+import com.baran.driver.Constants.Constant;
 import com.baran.driver.Fragments.driver.gallery.GalleryFragment;
 import com.baran.driver.Fragments.driver.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.R;
+import com.baran.driver.Services.RetrofitClient;
+import com.baran.driver.Services.RidesApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -33,13 +36,14 @@ public class DriverActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     public static Ride currentRide = null;
+    public static RidesApi ridesApi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
         final DrawerLayout drawer = findViewById(R.id.d_drawer_layout);
         NavigationView navigationView = findViewById(R.id.d_nav_view);
         // Passing each menu ID as a set of Ids because each

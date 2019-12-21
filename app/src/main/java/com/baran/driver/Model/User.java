@@ -4,6 +4,202 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
 
+    @SerializedName("licence")
+    private String licence;
+
+    @SerializedName("isActive")
+    private int isActive=1;
+
+    @SerializedName("isVerified")
+    private int isVerified=0;
+
+
+    @SerializedName("isDriver")
+    private int isDriver=0;
+
+
+    @SerializedName("response")
+    private String response;
+
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("id")
+    private int id=0;
+
+    @SerializedName("verificationToken")
+    private int verificationToken;
+
+
+    @SerializedName("email")
+    private String email;
+
+    @SerializedName("mobile")
+    private String mobile;
+
+    @SerializedName("createdAt")
+    private String createdAt;
+
+    @SerializedName("isDeleted")
+    private int isDeleted=0;
+
+    @SerializedName("driverSteps")
+    private int driverSteps=0;
+
+    @SerializedName("isDriverOnline")
+    private int isDriverOnline=0;
+
+    @SerializedName("father")
+    private String father;
+
+    @SerializedName("cnic")
+    private String cnic;
+    @SerializedName("cnicFront")
+    private String cnicFront;
+    @SerializedName("cnicRear")
+    private String cnicRear;
+
+    @SerializedName("updatedAt")
+    private String updatedAt;
+
+    @SerializedName("picture")
+    private String picture;
+
+    @SerializedName("vehicleFront")
+    private String vehicleFront;
+
+    @SerializedName("vehicleRear")
+    private String vehicleRear;
+
+    @SerializedName("registration")
+    private String registration;
+
+
+    @SerializedName("route")
+    private String route;
+
+    @SerializedName("regAlphabet")
+    private String regAlphabet;
+
+    @SerializedName("regYear")
+    private String regYear;
+
+    @SerializedName("regNo")
+    private String regNo;
+
+    @SerializedName("$vehicleType")
+    private String vehicleType;
+
+
+    @SerializedName("isDriverOnTrip")
+    private int isDriverOnTrip=0;
+
+
+    @SerializedName("balance")
+    private Double balance=0.0;
+
+
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public String getVehicleFront() {
+        return vehicleFront;
+    }
+
+    public void setVehicleFront(String vehicleFront) {
+        this.vehicleFront = vehicleFront;
+    }
+
+    public String getVehicleRear() {
+        return vehicleRear;
+    }
+
+    public void setVehicleRear(String vehicleRear) {
+        this.vehicleRear = vehicleRear;
+    }
+
+    public String getRegistration() {
+        return registration;
+    }
+
+    public void setRegistration(String registration) {
+        this.registration = registration;
+    }
+
+    public String getRoute() {
+        return route;
+    }
+
+    public void setRoute(String route) {
+        this.route = route;
+    }
+
+    public String getRegAlphabet() {
+        return regAlphabet;
+    }
+
+    public void setRegAlphabet(String regAlphabet) {
+        this.regAlphabet = regAlphabet;
+    }
+
+    public String getRegYear() {
+        return regYear;
+    }
+
+    public void setRegYear(String regYear) {
+        this.regYear = regYear;
+    }
+
+    public String getRegNo() {
+        return regNo;
+    }
+
+    public void setRegNo(String regNo) {
+        this.regNo = regNo;
+    }
+
+    public String getVehicleType() {
+        return vehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
+
+    public int getIsDriverOnTrip() {
+        return isDriverOnTrip;
+    }
+
+    public void setIsDriverOnTrip(int isDriverOnTrip) {
+        this.isDriverOnTrip = isDriverOnTrip;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
+
     public int getIsDeleted() {
         return isDeleted;
     }
@@ -37,11 +233,7 @@ public class User {
     }
 
 
-    @SerializedName("isDeleted")
-    private int isDeleted=0;
 
-    @SerializedName("driverSteps")
-    private int driverSteps=0;
 
     public int getIsDriverOnline() {
         return isDriverOnline;
@@ -51,18 +243,6 @@ public class User {
         this.isDriverOnline = isDriverOnline;
     }
 
-    @SerializedName("isDriverOnline")
-    private int isDriverOnline=0;
-
-    @SerializedName("father")
-    private String father;
-
-    @SerializedName("cnic")
-    private String cnic;
-    @SerializedName("cnicFront")
-    private String cnicFront;
-    @SerializedName("cnicRear")
-    private String cnicRear;
 
     public void setIsDeleted(int isDeleted) {
         this.isDeleted = isDeleted;
@@ -152,45 +332,6 @@ public class User {
         this.mobile = mobile;
     }
 
-    @SerializedName("licence")
-    private String licence;
-
-
-
-
-
-    @SerializedName("isActive")
-    private int isActive=1;
-
-    @SerializedName("isVerified")
-    private int isVerified=0;
-
-
-    @SerializedName("isDriver")
-    private int isDriver=0;
-
-
-    @SerializedName("response")
-    private String response;
-
-    @SerializedName("name")
-    private String name;
-
-    @SerializedName("id")
-    private int id=0;
-
-    @SerializedName("verificationToken")
-    private int verificationToken;
-
-
-    @SerializedName("email")
-    private String email;
-
-    @SerializedName("mobile")
-    private String mobile;
-
-    @SerializedName("createdAt")
-    private String createdAt;
 
     public String getResponse() {
         return response;
