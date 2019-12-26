@@ -197,11 +197,4 @@ public class DBHelper extends SQLiteOpenHelper {
         return rows;
     }
 
-
-
-
-
-
-
-
 }

@@ -28,8 +28,8 @@ public interface RidesApi {
     Call <Ride> cancelRide(@Field("mobile") String mobile,@Field("ride_id") String ride_id);
 
     @FormUrlEncoded
-    @POST("ride_alert_received.php")
-    Call <DriverServerResponse> rideAlertReceived(@Field("mobile") String mobile, @Field("ride_id") String ride_id, @Field("firebase_message_id") String firebase_message_id);
+    @POST("push_notification_received.php")
+    Call <DriverServerResponse> pushNotificationReceived(@Field("firebase_message_id") String firebase_message_id);
 
 
     @FormUrlEncoded
@@ -46,6 +46,6 @@ public interface RidesApi {
 
     @FormUrlEncoded
     @POST("transaction_amount_received.php")
-    Call <DriverServerResponse> updateTransaction(@Field("trans_id") int trans_id,@Field("amount_received") String amount);
+    Call <DriverServerResponse> updateTransaction(@Field("mobile") String mobile,@Field("trans_id") int trans_id,@Field("amount_received") String amount);
 
 }

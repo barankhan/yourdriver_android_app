@@ -66,7 +66,8 @@ public class DriverTransactionActivity extends AppCompatActivity {
                 }else{
 
                     Utils.showProgressBarSpinner(c);
-                    Call<DriverServerResponse> userCall = ridesApi.updateTransaction(driverTransaction.getId(),etTransAmount.getText().toString());
+                    User u = MainActivity.appPreference.getUserObject(c,DriverTransactionActivity.this);
+                    Call<DriverServerResponse> userCall = ridesApi.updateTransaction(u.getMobile(),driverTransaction.getId(),etTransAmount.getText().toString());
                     userCall.enqueue(new Callback<DriverServerResponse>() {
                         @Override
                         public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
@@ -113,7 +114,7 @@ public class DriverTransactionActivity extends AppCompatActivity {
                                       int before, int count) {
                 if(s.length()>1) {
                     Double enteredAmount = Double.valueOf(etTransAmount.getText().toString());
-                    tvChange.setText(String.valueOf(enteredAmount - driverTransaction.getTotalFare()));
+                    tvChange.setText(String.format(String.valueOf(enteredAmount - driverTransaction.getTotalFare()),"$%.2f"));
                 }
             }
         });

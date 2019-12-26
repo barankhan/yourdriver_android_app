@@ -135,6 +135,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                             MainActivity.appPreference.setRideObject(response.body());
                             DriverActivity.currentRide = response.body();
                             showAlertBox(RideAlertActivity.this, "Congratulation! You got the Ride!");
+                            finish();
                         } else {
                             showAlertBox(RideAlertActivity.this, "Sorry! Someone else got it.");
                         }

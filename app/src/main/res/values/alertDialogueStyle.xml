@@ -1,0 +1,8 @@
+<resources>
+    <style name="AppDialogScreenTheme" >
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name = "android:windowBackground">@android:color/transparent</item>
+    </style>
+</resources>

@@ -253,7 +253,12 @@ public class Utils {
 
 
     public static void dismissProgressBarSpinner(){
-        progressDialog.dismiss();
+       try {
+           progressDialog.dismiss();
+       }catch (NullPointerException e){
+
+       }
+
     }
 
 

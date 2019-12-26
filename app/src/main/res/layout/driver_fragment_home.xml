@@ -66,16 +66,17 @@
 
         <Button
             android:id="@+id/btn_driver_ride_cancel"
-            android:layout_width="292dp"
-            android:layout_height="71dp"
+            android:layout_width="264dp"
+            android:layout_height="66dp"
 
             android:layout_marginStart="50dp"
             android:layout_marginLeft="50dp"
             android:layout_marginEnd="50dp"
             android:layout_marginRight="50dp"
-            android:layout_marginBottom="6dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/button_style_red"
             android:text="Cancel Ride"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -127,6 +128,22 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
+
+        <Button
+            android:id="@+id/btn_navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="47dp"
+            android:layout_marginLeft="47dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginRight="28dp"
+            android:layout_marginBottom="3dp"
+            android:text="Navigation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_on_off_line"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

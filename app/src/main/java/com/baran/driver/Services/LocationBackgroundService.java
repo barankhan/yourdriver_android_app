@@ -54,7 +54,7 @@ public class LocationBackgroundService extends Service {
         {
             mLastLocation = location;
             myCallback.getResult(location);
-//            Log.i(TAG, "LocationChanged: "+location);
+            Log.e(TAG, "LocationChanged: "+location);
         }
 
         @Override
@@ -80,7 +80,7 @@ public class LocationBackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         super.onStartCommand(intent, flags, startId);
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package com.baran.driver.Services;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Activity.NotifActivity;
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
@@ -50,6 +52,21 @@ public class FirebaseService extends FirebaseMessagingService {
         Log.e(TAG, "From: " + remoteMessage.getFrom());
         Log.e(TAG,remoteMessage.getMessageId());
 
+        User u = MainActivity.appPreference.getUserObjectWithoutUserValidation();
+        Call<DriverServerResponse> rideCall = ridesApi.pushNotificationReceived(remoteMessage.getMessageId());
+        rideCall.enqueue(new Callback<DriverServerResponse>() {
+            @Override
+            public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+
+            }
+        });
+
+
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             if(remoteMessage.getData().get("key").equals("driver_successful")){
@@ -67,32 +84,50 @@ public class FirebaseService extends FirebaseMessagingService {
                 Log.e(TAG,"Boardcast Sent");
                 intent.setAction("com.barankhan.driver.ride_alerts");
                 sendBroadcast(intent);
-                User u = MainActivity.appPreference.getUserObjectWithoutUserValidation();
-                Call<DriverServerResponse> rideCall = ridesApi.rideAlertReceived(u.getMobile(),remoteMessage.getData().get("ride_id"),remoteMessage.getMessageId());
-                rideCall.enqueue(new Callback<DriverServerResponse>() {
-                    @Override
-                    public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<DriverServerResponse> call, Throwable t) {
-
-                    }
-                });
             }
-            else if(remoteMessage.getData().get("key").equals("ride_accepted")){
-                Intent intent = new Intent("RideAccepted");
-                intent.putExtra("phone", remoteMessage.getData().get("msg"));
-                intent.putExtra("lat", remoteMessage.getData().get("lat"));
-                intent.putExtra("lng", remoteMessage.getData().get("lng"));
-                intent.putExtra("driver_mobile", remoteMessage.getData().get("driver_mobile"));
-                broadcaster.sendBroadcast(intent);
+            else if(remoteMessage.getData().get("key").equals("p_ride_accepted")){
+                MainActivity.appPreference.setDriverObjectWithEncodedJson(remoteMessage.getData().get("driver"));
+                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("d_ride_cancelled")){
+                MainActivity.appPreference.setRideObject(null);
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("p_ride_cancelled")){
+                MainActivity.appPreference.setDriverObject(null);
+                MainActivity.appPreference.setRideObject(null);
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("p_driver_arrived")){
+                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("p_ride_started")){
+                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("driver_location_update")){
                 Intent intent = new Intent("DriverLocationUpdate");
                 intent.putExtra("lat", remoteMessage.getData().get("lat"));
                 intent.putExtra("lng", remoteMessage.getData().get("lng"));
                 broadcaster.sendBroadcast(intent);
+            }else if(remoteMessage.getData().get("key").equals("teasing")){
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message","hiere");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
             }
             Log.e(TAG, "Message data payload: " + remoteMessage.getData());
         }

@@ -8,6 +8,7 @@ public class Constant {
         public final static String BASE_URL_USERS_API = "https://yourdriver.live/users/api/";
         public final static String BASE_URL_RIDES_API = "https://yourdriver.live/rides/api/";
         public final static String IMAGE_BASE_URL = "";
+        public final static String UPLOADS_URL="https://yourdriver.live/uploads/";
     }
 
 

@@ -3,6 +3,7 @@ package com.baran.driver.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
@@ -17,6 +18,7 @@ import com.baran.driver.Fragments.RegistrationFragment;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.baran.driver.Services.MyInterface;
+import com.baran.driver.Services.NotificationAlertReceiver;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.ServiceApi;
 
@@ -29,7 +31,8 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
     public static String c_date;
 
     FrameLayout container_layout;
-
+    NotificationAlertReceiver notifReceiver;
+    IntentFilter notifIntentFilter;
     public static ServiceApi serviceApi;
 
     @Override
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
 
         container_layout = findViewById(R.id.fragment_container);
         appPreference = new AppPreference(this);
+
+//        notifReceiver = new NotificationAlertReceiver();
+//        notifIntentFilter = new IntentFilter("com.barankhan.driver.notif_alerts");
+//        registerReceiver(notifReceiver, notifIntentFilter);
 
         //Log.e("created_at: ", c_date);
 
@@ -51,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
             this.loginFragment();
 
         }
+
+
+
 
     } // ending onCreate
 

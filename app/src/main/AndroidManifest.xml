@@ -8,15 +8,37 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_driver_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_driver_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.DriverTransactionActivity"></activity>
+        <receiver
+            android:name=".Services.PopupReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+        </receiver>
+        <receiver android:name=".Services.NotificationAlertReceiver">
+            <intent-filter>
+                <action android:name="com.barankhan.driver.notif_generated" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".Activity.NotifActivity"
+            android:theme="@style/AppDialogScreenTheme">
+            <intent-filter>
+                <action android:name="com.barankhan.driver.notif_activity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activity.DriverTransactionActivity" />
         <activity android:name=".Activity.RideAlertActivity">
             <intent-filter>
                 <action android:name="com.barankhan.driver.ride_alert_activity" />
@@ -47,6 +69,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name=".Services.ChatHeadService"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity
             android:name=".Activity.SearchActivity"

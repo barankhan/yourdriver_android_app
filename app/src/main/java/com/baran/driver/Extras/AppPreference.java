@@ -78,6 +78,27 @@ public class AppPreference {
         editor.commit();
     }
 
+    public void setDriverObject(User u){
+        Gson gson = new Gson();
+        String json = gson.toJson(u); // myObject - instance of MyObject
+        editor.putString("DriverObj", json);
+        editor.commit();
+    }
+
+    public void setDriverObjectWithEncodedJson(String driverJSON){
+//        Gson gson = new Gson();
+//        String json = gson.toJson(u); // myObject - instance of MyObject
+        editor.putString("DriverObj", driverJSON);
+        editor.commit();
+    }
+
+    public void setRideObjectWithEncodedJson(String rideJSON){
+//        Gson gson = new Gson();
+//        String json = gson.toJson(r); // myObject - instance of MyObject
+        editor.putString("RideObj", rideJSON);
+        editor.commit();
+    }
+
     public void setRideObject(Ride r){
         Gson gson = new Gson();
         String json = gson.toJson(r); // myObject - instance of MyObject
@@ -132,6 +153,14 @@ public class AppPreference {
     public User getUserObjectWithoutUserValidation(){
         Gson gson = new Gson();
         String json = sharedPreferences.getString("UserObj", null);
+        User user = gson.fromJson(json, User.class);
+        return  user;
+    }
+
+
+    public User getDriverObject(){
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("DriverObj", null);
         User user = gson.fromJson(json, User.class);
         return  user;
     }
