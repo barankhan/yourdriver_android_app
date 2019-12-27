@@ -76,7 +76,10 @@
             android:layout_marginBottom="8dp"
             android:background="@drawable/button_style_red"
             android:text="Cancel Ride"
-            android:visibility="visible"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

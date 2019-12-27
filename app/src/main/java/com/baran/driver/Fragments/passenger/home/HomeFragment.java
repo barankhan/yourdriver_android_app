@@ -28,14 +28,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Activity.Passenger;
-import com.baran.driver.Activity.RideAlertActivity;
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Model.DBHelper;
 import com.baran.driver.Extras.AppPreference;
@@ -107,14 +105,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private static final String KEY_LOCATION = "location";
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private AutocompleteSupportFragment pickupAutoCompleteFragment, dropoffAutoCompleteFragment;
-    private Marker pickUpMarker, dropOffMarker;
+    private Marker pickUpMarker=null, dropOffMarker=null,vehicleMaker=null;
     private CameraPosition mCameraPosition;
     private Button btnConfirmPickup, btnConfirmDropOff, btnSkipDropOff, btnCallDriver,btnCancelRide;
     public static AppPreference appPreference;
     public Deque<String> stack;
     private int PICKUP_AUTOCOMPLETE_REQUEST_CODE = 1;
     private int DROP_OFF_AUTOCOMPLETE_REQUEST_CODE = 2;
-    private TextView pickupTextView, dropOffTextView,tvDriverName,tvVehicleNo,tvVehicleColor;
+    private TextView pickupTextView, dropOffTextView,tvDriverName,tvVehicleNo,tvDriverMobileNo;
     private ImageView pickUpSaveImage, dropOffSaveImage,dropOffIcon;
     private View separator;
     private static final String TAG = HomeFragment.class.getSimpleName();
@@ -172,6 +170,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         tvDriverName = root.findViewById(R.id.tv_driver_name);
         tvVehicleNo = root.findViewById(R.id.tv_vehicle_no);
+        tvDriverMobileNo = root.findViewById(R.id.tv_driver_mobile_no);
 
         try
         {
@@ -500,17 +499,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private BroadcastReceiver mDriverLocationReceived = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            Intent i = new Intent(getContext(), RideAlertActivity.class);
-//            i.putExtras(intent.getExtras());
-//            startActivityForResult(i, RIDE_ALERT_REQUEST_CODE);
-            //Utils.dismissProgressBarSpinner();
-
-
-            cameraPosition = new CameraPosition.Builder().target(new LatLng(Double.valueOf(intent.getStringExtra("lat")),Double.valueOf(intent.getStringExtra("lng")))).zoom(DEFAULT_PICKUP_ZOOM).build();
+            LatLng l = new LatLng(Double.valueOf(intent.getStringExtra("lat")),Double.valueOf(intent.getStringExtra("lng")));
+            cameraPosition = new CameraPosition.Builder().target(l).zoom(DEFAULT_PICKUP_ZOOM).build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            vehicleMaker.setVisible(true);
+            vehicleMaker.setPosition(l);
 
 
-            //showAlertBox(getActivity(),"Yo baby driver is coming to you.");
 
 
         }
@@ -520,10 +515,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public void onStart(){
         super.onStart();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver((mRideAcceptedReceiver),
-                new IntentFilter("RideAccepted")
-        );
-
         LocalBroadcastManager.getInstance(getContext()).registerReceiver((mDriverLocationReceived),
                 new IntentFilter("DriverLocationUpdate")
         );
@@ -532,10 +523,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mRideAcceptedReceiver);
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mDriverLocationReceived);
     }
-
 
 
     @Override
@@ -545,14 +534,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         Ride r = appPreference.getRideObject();
         User driver = appPreference.getDriverObject();
         if(r != null){
+            isPickupMode=false;
+            isDropOffMode=false;
             if(r.getDriverId()>0){
+
+
                 // I'm assuming passenger landed on the activity again. I have to close the spinner.
                 Utils.dismissProgressBarSpinner();
                 if(driver!=null){
                     tvDriverName.setVisibility(View.VISIBLE);
                     tvVehicleNo.setVisibility(View.VISIBLE);
                     imDriverImage.setVisibility(View.VISIBLE);
+                    tvDriverMobileNo.setVisibility(View.VISIBLE);
                     tvDriverName.setText(driver.getName());
+                    tvDriverMobileNo.setText(driver.getMobile());
                     tvVehicleNo.setText(driver.getRegAlphabet()+"-"+driver.getRegYear()+"-"+driver.getRegNo()+"(Honda-Black)");
                     if(driver.getPicture()!="") {
                         picasso.get().load(Constant.baseUrl.UPLOADS_URL+driver.getPicture()).noPlaceholder().fit().centerCrop()
@@ -560,9 +555,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     }
 
                 }
-
             }
-            btnCancelRide.setVisibility(View.VISIBLE);
+            if(r.getIsRideStarted()==0){
+                btnCancelRide.setVisibility(View.VISIBLE);
+            }else{
+                btnCancelRide.setVisibility(View.INVISIBLE);
+            }
+
         }else{
             initialState();
         }
@@ -724,16 +723,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         });
 
 
-        dropOffMarker = mMap.addMarker(new MarkerOptions()
-                .position(mDefaultLocation)
-                .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_drop_off_locatin_marker)));
-        dropOffMarker.setVisible(false);
+        if (dropOffMarker == null) {
+            dropOffMarker = mMap.addMarker(new MarkerOptions()
+                    .position(mDefaultLocation)
+                    .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_drop_off_locatin_marker)));
+            dropOffMarker.setVisible(false);
+        }
 
 
-        pickUpMarker = mMap.addMarker(new MarkerOptions()
-                .position(mDefaultLocation)
-                .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
-        pickUpMarker.setVisible(false);
+        if(pickUpMarker==null){
+            pickUpMarker = mMap.addMarker(new MarkerOptions()
+                    .position(mDefaultLocation)
+                    .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
+            pickUpMarker.setVisible(false);
+        }
+
+        if(vehicleMaker==null){
+            vehicleMaker = mMap.addMarker(new MarkerOptions()
+                    .position(mDefaultLocation).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_current_vehicle))
+                    .draggable(true));
+            vehicleMaker.setVisible(false);
+        }
+
+
+        Ride r = MainActivity.appPreference.getRideObject();
+        if(r!=null){
+            vehicleMaker.setVisible(true);
+        }
 
 
     }
@@ -897,7 +913,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         btnCallDriver.setVisibility(View.GONE);
         btnSkipDropOff.setVisibility(View.GONE);
         btnConfirmDropOff.setVisibility(View.GONE);
-
+        tvDriverMobileNo.setVisibility(View.GONE);
+        isPickupMode=true;
+        if(vehicleMaker!=null)vehicleMaker.setVisible(false);
+        if(pickUpMarker!=null)pickUpMarker.setVisible(false);
+        if(dropOffMarker!=null)dropOffMarker.setVisible(false);
 
     }
 

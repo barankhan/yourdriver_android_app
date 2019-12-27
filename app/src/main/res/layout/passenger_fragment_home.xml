@@ -64,14 +64,13 @@
 
         <Button
             android:id="@+id/btn_cancel_ride"
-            android:layout_width="188dp"
-            android:layout_height="52dp"
+            android:layout_width="198dp"
+            android:layout_height="35dp"
 
-            android:layout_marginTop="8dp"
             android:background="@drawable/button_style_red"
             android:text="Cancel Ride"
             android:textColor="#FFFFFF"
-            android:textSize="20dp"
+            android:textSize="14sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -174,6 +173,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/tv_driver_mobile_no"
+            android:layout_width="185dp"
+            android:layout_height="20dp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_no"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/im_driver_image"
+            app:layout_constraintTop_toBottomOf="@+id/tv_driver_name" />
+
+        <TextView
             android:id="@+id/tv_vehicle_no"
             android:layout_width="185dp"
             android:layout_height="20dp"
@@ -185,7 +198,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btn_cancel_ride"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toBottomOf="@+id/tv_driver_name" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_driver_mobile_no" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
