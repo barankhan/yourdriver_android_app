@@ -6,5 +6,12 @@
         <certificates src="system"/>
     </trust-anchors>
 </base-config>
+<domain-config>
+    <domain includeSubdomains="false">yourdriver.live</domain>
+    <trust-anchors>
+        <certificates src="@raw/my_certificate"/>
+    </trust-anchors>
+
+</domain-config>
 </network-security-config>
 

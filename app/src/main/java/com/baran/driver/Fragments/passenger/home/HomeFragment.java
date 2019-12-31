@@ -557,8 +557,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             }
             if(r.getIsRideStarted()==0){
                 btnCancelRide.setVisibility(View.VISIBLE);
+                imCallButton.setVisibility(View.VISIBLE);
             }else{
                 btnCancelRide.setVisibility(View.INVISIBLE);
+                imCallButton.setVisibility(View.GONE);
             }
 
         }else{
@@ -876,6 +878,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         if(response.isSuccessful()){
                             MainActivity.appPreference.setDriverObject(null);
                             MainActivity.appPreference.setRideObject(null);
+                            MainActivity.appPreference.setIsDropoffMode(false);
+                            MainActivity.appPreference.setIsPickupMode(true);
                             initialState();
                         }else{
 
