@@ -24,6 +24,9 @@ import com.baran.driver.R;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.RidesApi;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 
 public class DriverTransactionActivity extends AppCompatActivity {
 
@@ -114,7 +117,13 @@ public class DriverTransactionActivity extends AppCompatActivity {
                                       int before, int count) {
                 if(s.length()>1) {
                     Double enteredAmount = Double.valueOf(etTransAmount.getText().toString());
-                    tvChange.setText(String.format(String.valueOf(enteredAmount - driverTransaction.getTotalFare()),"$%.2f"));
+
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    df.setRoundingMode(RoundingMode.FLOOR);
+                    double roundOff = enteredAmount- driverTransaction.getTotalFare();
+                    tvChange.setText(df.format(roundOff));
+                }else{
+                    tvChange.setText("");
                 }
             }
         });

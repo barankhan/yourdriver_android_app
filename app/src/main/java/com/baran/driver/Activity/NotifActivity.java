@@ -3,6 +3,7 @@ package com.baran.driver.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.baran.driver.R;
@@ -20,6 +22,10 @@ import com.baran.driver.R;
 public class NotifActivity extends Activity {
     private Button btnOkay;
     private TextView tvAlertMessage;
+    private Ringtone r;
+    private ImageView imCallStart,imCallEnd;
+    private String agoraChannel;
+    private int rideId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +35,9 @@ public class NotifActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         btnOkay = findViewById(R.id.btn_pop_up_ok);
         tvAlertMessage = findViewById(R.id.tv_pop_notification_msg);
+        imCallStart = findViewById(R.id.im_attend_call);
+        imCallEnd = findViewById(R.id.im_end_call);
+
 
         int width = dm.widthPixels;
         int height = dm.heightPixels;
@@ -36,6 +45,28 @@ public class NotifActivity extends Activity {
         if (getIntent().getExtras() != null) {
             if(getIntent().getExtras().containsKey("message")) {
                 tvAlertMessage.setText(getIntent().getExtras().getString("message"));
+            }
+            if(getIntent().getExtras().containsKey("agora_channel")) {
+                agoraChannel = getIntent().getExtras().getString("agora_channel");
+                rideId = getIntent().getExtras().getInt("ride_id");
+                btnOkay.setVisibility(View.INVISIBLE);
+                imCallStart.setVisibility(View.VISIBLE);
+                imCallEnd.setVisibility(View.VISIBLE);
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+                    r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                    r.play();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -55,19 +86,34 @@ public class NotifActivity extends Activity {
         );
 
 
-        try {
-            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-            r.play();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
         btnOkay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                r.stop();
                 finish();
             }
         });
+
+
+        imCallStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(NotifActivity.this, VoiceChatViewActivity.class);
+                intent.putExtra("agora_channel", agoraChannel);
+                intent.putExtra("ride_id", rideId);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+    }
+
+
+    @Override
+    public void onStop () {
+//do your stuff here
+        super.onStop();
+        r.stop();
     }
 }

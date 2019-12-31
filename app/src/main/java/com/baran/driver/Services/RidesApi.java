@@ -3,6 +3,7 @@ package com.baran.driver.Services;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.DriverTransaction;
+import com.baran.driver.Model.UserRide;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -16,7 +17,7 @@ public interface RidesApi {
                            @Field("pickup_lat_lng") String pickup_lat_lng, @Field("dropoff_lat_lng") String dropoff_lat_lng);
     @FormUrlEncoded
     @POST("accept_ride.php")
-    Call <Ride> acceptRide(@Field("mobile") String mobile,@Field("ride_id") String ride_id,@Field("driver_lat")String lat,@Field("driver_lng")String lng);
+    Call <UserRide> acceptRide(@Field("mobile") String mobile, @Field("ride_id") String ride_id, @Field("driver_lat")String lat, @Field("driver_lng")String lng);
 
     @FormUrlEncoded
     @POST("reject_ride.php")
@@ -47,5 +48,11 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("transaction_amount_received.php")
     Call <DriverServerResponse> updateTransaction(@Field("mobile") String mobile,@Field("trans_id") int trans_id,@Field("amount_received") String amount);
+
+
+    @FormUrlEncoded
+    @POST("ride_agora_call.php")
+    Call <DriverServerResponse> triggerAgoraCall(@Field("from_mobile") String callerMobile,@Field("to_mobile") String receiver_mobile,@Field("ride_id") int rideId);
+
 
 }

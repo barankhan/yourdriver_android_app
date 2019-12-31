@@ -1,7 +1,9 @@
 package com.baran.driver.Services;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.baran.driver.R;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -35,8 +37,8 @@ public class RetrofitClient {
 
     public static Retrofit getApiClient(String baseUrl) {
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
 
         X509TrustManager trustManager;
@@ -51,7 +53,7 @@ public class RetrofitClient {
         }
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
+//                .addInterceptor(interceptor)
                 .sslSocketFactory(sslSocketFactory, trustManager)
                 .hostnameVerifier(new HostnameVerifier() {
                     @Override
@@ -67,7 +69,7 @@ public class RetrofitClient {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .client(client)
+//                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -80,8 +82,8 @@ public class RetrofitClient {
 
 
     public static OkHttpClient okClient(){
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
 
         X509TrustManager trustManager;
@@ -96,7 +98,7 @@ public class RetrofitClient {
         }
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
+//                .addInterceptor(interceptor)
                 .sslSocketFactory(sslSocketFactory, trustManager)
                 .hostnameVerifier(new HostnameVerifier() {
                     @Override
@@ -199,4 +201,28 @@ public class RetrofitClient {
                 .writeUtf8(comodoRsaCertificationAuthority)
                 .inputStream();
     }
+
+
+
+//    KeyStore readKeyStore(Context context) throws Exception{
+//        KeyStore ks;
+//        ks = KeyStore.getInstance(KeyStore.getDefaultType());
+//
+//
+//
+//        // get user password and file input stream
+//        char[] password = getPassword();
+//
+//        java.io.FileInputStream fis = context.getResources().openRawResource(R.raw.your_keystore_filename);;
+//        try {
+//            fis = new java.io.FileInputStream("keyStoreName");
+//            ks.load(fis, password);
+//        }catch (Exception e){}
+//        finally {
+//            if (fis != null) {
+//                fis.close();
+//            }
+//        }
+//        return ks;
+//    }
 }

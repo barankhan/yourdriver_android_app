@@ -28,7 +28,8 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-
+    <string name="agora_app_id">755b883342664214adf7efd371fe3634</string>
+    <string name="agora_access_token">#YOUR ACCESS TOKEN#</string>
     <item name="image_uri" type="id" />
     <item name="media_path" type="id" />
     <item name="place_id" type="id" />

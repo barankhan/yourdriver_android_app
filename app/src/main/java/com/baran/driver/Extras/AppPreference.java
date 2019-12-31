@@ -78,6 +78,21 @@ public class AppPreference {
         editor.commit();
     }
 
+
+    public void setPassengerObject(User u){
+        Gson gson = new Gson();
+        String json = gson.toJson(u); // myObject - instance of MyObject
+        editor.putString("PassengerObj", json);
+        editor.commit();
+    }
+
+    public User getPassengerObject(){
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString("PassengerObj", null);
+        User user = gson.fromJson(json, User.class);
+        return  user;
+    }
+
     public void setDriverObject(User u){
         Gson gson = new Gson();
         String json = gson.toJson(u); // myObject - instance of MyObject
@@ -183,6 +198,27 @@ public class AppPreference {
     }
     public String getLng(){
         return sharedPreferences.getString("lng", "0");
+    }
+
+
+
+    public void setIsPickupMode(Boolean mode){
+        editor.putBoolean("isPickupMode", mode);
+        editor.commit();
+    }
+
+    public Boolean getIsPickupMode(){
+        return sharedPreferences.getBoolean("isPickupMode", true);
+    }
+
+
+    public void setIsDropoffMode(Boolean mode){
+        editor.putBoolean("isDropoffMode", mode);
+        editor.commit();
+    }
+
+    public Boolean getIsDropoffMode(){
+        return sharedPreferences.getBoolean("isDropoffMode", true);
     }
 
 }

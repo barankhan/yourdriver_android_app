@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Activity.NotifActivity;
+import com.baran.driver.Activity.RideAlertActivity;
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
@@ -76,14 +77,13 @@ public class FirebaseService extends FirebaseMessagingService {
                 startMain.setFlags(FLAG_ACTIVITY_NEW_TASK);
                 startActivity(startMain);
             }else if(remoteMessage.getData().get("key").equals("ride_alert")){
-                Intent intent = new Intent();
+                Intent intent = new Intent(this, RideAlertActivity.class);
                 intent.putExtra("phone", remoteMessage.getData().get("msg"));
                 intent.putExtra("lat", remoteMessage.getData().get("lat"));
                 intent.putExtra("lng", remoteMessage.getData().get("lng"));
                 intent.putExtra("ride_id", remoteMessage.getData().get("ride_id"));
-                Log.e(TAG,"Boardcast Sent");
-                intent.setAction("com.barankhan.driver.ride_alerts");
-                sendBroadcast(intent);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
             else if(remoteMessage.getData().get("key").equals("p_ride_accepted")){
                 MainActivity.appPreference.setDriverObjectWithEncodedJson(remoteMessage.getData().get("driver"));
@@ -101,6 +101,7 @@ public class FirebaseService extends FirebaseMessagingService {
             }else if(remoteMessage.getData().get("key").equals("p_ride_cancelled")){
                 MainActivity.appPreference.setDriverObject(null);
                 MainActivity.appPreference.setRideObject(null);
+                MainActivity.appPreference.setPassengerObject(null);
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -120,6 +121,7 @@ public class FirebaseService extends FirebaseMessagingService {
             }else if(remoteMessage.getData().get("key").equals("p_ride_ended")){
                 MainActivity.appPreference.setRideObject(null);
                 MainActivity.appPreference.setDriverObject(null);
+                MainActivity.appPreference.setPassengerObject(null);
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -129,12 +131,18 @@ public class FirebaseService extends FirebaseMessagingService {
                 intent.putExtra("lat", remoteMessage.getData().get("lat"));
                 intent.putExtra("lng", remoteMessage.getData().get("lng"));
                 broadcaster.sendBroadcast(intent);
+            }else if(remoteMessage.getData().get("key").equals("call_alert")){
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.putExtra("agora_channel", remoteMessage.getData().get("agora_channel"));
+                intent.putExtra("ride_id", remoteMessage.getData().get("ride_id"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("teasing")){
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message","hiere");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-
             }
             Log.e(TAG, "Message data payload: " + remoteMessage.getData());
         }

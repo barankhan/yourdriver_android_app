@@ -33,12 +33,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Activity.NotifActivity;
 import com.baran.driver.Activity.Passenger;
+import com.baran.driver.Activity.VoiceChatViewActivity;
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Model.DBHelper;
 import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.Extras.SavedLocationData;
 import com.baran.driver.Extras.Utils;
+import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
 import com.baran.driver.R;
@@ -125,7 +128,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private String vehicleType;
     CameraPosition cameraPosition ;
     private Picasso picasso=null;
-    private ImageView imPassengerImage,imDriverImage;
+    private ImageView imPassengerImage,imDriverImage,imCallButton;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -134,6 +137,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         appPreference = MainActivity.appPreference;
         stack = new ArrayDeque<String>();
 
+
+        MainActivity.appPreference.setIsPickupMode(true);
+        MainActivity.appPreference.setIsDropoffMode(false);
         currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
 
         View root = inflater.inflate(R.layout.passenger_fragment_home, container, false);
@@ -150,9 +156,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         imPassengerImage = headerView.findViewById(R.id.im_passenger_image);
         imDriverImage = root.findViewById(R.id.im_driver_image);
+        imCallButton = root.findViewById(R.id.im_call_button);
 
 
-
+        imCallButton.setOnClickListener(this);
 
 
         pickupTextView = root.findViewById(R.id.tv_pickup_location);
@@ -202,23 +209,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         btnConfirmPickup.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                pickupTextView.setClickable(false);
-                dropOffTextView.setVisibility(View.VISIBLE);
-                dropOffIcon.setVisibility(View.VISIBLE);
-                separator.setVisibility(View.VISIBLE);
-                pickUpMarker.setVisible(true);
-
                 isPickupMode = false;
                 isDropOffMode = true;
-
-                v.setVisibility(View.GONE);
-                btnConfirmDropOff.setVisibility(View.VISIBLE);
-                btnSkipDropOff.setVisibility(View.VISIBLE);
-                mSpinner.setVisibility(View.GONE);
-                pickUpLatLng = pickUpMarker.getPosition();
                 stack.push("CONFIRM_PICK_UP");
-
+                dropoffState();
             }
         });
 
@@ -425,23 +419,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                                 stack.pop();
                                 return true;
                             case "CONFIRM_PICK_UP":
-                                dropOffTextView.setVisibility(View.GONE);
-                                dropOffIcon.setVisibility(View.GONE);
-                                separator.setVisibility(View.GONE);
-                                dropOffSaveImage.setVisibility(View.GONE);
                                 isDropOffMode = false;
                                 isPickupMode = true;
-                                btnConfirmPickup.setVisibility(View.VISIBLE);
-                                mSpinner.setVisibility(View.VISIBLE);
-                                btnSkipDropOff.setVisibility(View.GONE);
-                                btnConfirmDropOff.setVisibility(View.GONE);
-                                btnCallDriver.setVisibility(View.GONE);
+                                stack.pop();
                                 dropOffMarker.setVisible(false);
                                 cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
                                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                                dropOffTextView.setText("Please Select Drop Off Location");
-                                pickupTextView.setClickable(true);
-                                stack.pop();
+                                pickupState();
                                 return true;
                             default:
                                 return false;
@@ -528,8 +512,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        MainActivity.appPreference.setIsPickupMode(isPickupMode);
+        MainActivity.appPreference.setIsDropoffMode(isDropOffMode);
+
+    }
+
+
+
+    @Override
     public void onResume() {
         super.onResume();
+
+        isPickupMode = MainActivity.appPreference.getIsPickupMode();
+        isDropOffMode = MainActivity.appPreference.getIsDropoffMode();
 
         Ride r = appPreference.getRideObject();
         User driver = appPreference.getDriverObject();
@@ -545,6 +543,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     tvDriverName.setVisibility(View.VISIBLE);
                     tvVehicleNo.setVisibility(View.VISIBLE);
                     imDriverImage.setVisibility(View.VISIBLE);
+                    imCallButton.setVisibility(View.VISIBLE);
                     tvDriverMobileNo.setVisibility(View.VISIBLE);
                     tvDriverName.setText(driver.getName());
                     tvDriverMobileNo.setText(driver.getMobile());
@@ -863,31 +862,60 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
     @Override
     public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.btn_cancel_ride:
-                    Ride r = appPreference.getRideObject();
-                    Call<Ride> rideCall = Passenger.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
-                    Utils.showProgressBarSpinner(getContext());
-                    rideCall.enqueue(new Callback<Ride>() {
-                        @Override
-                        public void onResponse(Call<Ride> call, Response<Ride> response) {
-                            Utils.dismissProgressBarSpinner();
-                            if(response.isSuccessful()){
-                                MainActivity.appPreference.setDriverObject(null);
-                                MainActivity.appPreference.setRideObject(null);
-                                initialState();
-                            }else{
+        final Ride r = appPreference.getRideObject();
+        User d = appPreference.getDriverObject();
+        switch (v.getId()){
+            case R.id.btn_cancel_ride:
+
+                Call<Ride> rideCall = Passenger.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
+                Utils.showProgressBarSpinner(getContext());
+                rideCall.enqueue(new Callback<Ride>() {
+                    @Override
+                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                        Utils.dismissProgressBarSpinner();
+                        if(response.isSuccessful()){
+                            MainActivity.appPreference.setDriverObject(null);
+                            MainActivity.appPreference.setRideObject(null);
+                            initialState();
+                        }else{
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ride> call, Throwable t) {
+
+                    }
+                });
+                break;
+            case R.id.im_call_button:
+                if(r!=null){
+                    if(r.getDriverId()>0 && d.getId()>0){
+                        Call<DriverServerResponse> initiateCall = Passenger.ridesApi.triggerAgoraCall(currentUser.getMobile(),d.getMobile(),r.getId());
+                        Utils.showProgressBarSpinner(getContext());
+                        initiateCall.enqueue(new Callback<DriverServerResponse>() {
+                            @Override
+                            public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                                Utils.dismissProgressBarSpinner();
+                                if(response.isSuccessful()){
+                                    Intent intent = new Intent(getContext(), VoiceChatViewActivity.class);
+                                    intent.putExtra("agora_channel", "ride_call_"+r.getId());
+                                    intent.putExtra("ride_id", r.getId());
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
 
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<Ride> call, Throwable t) {
+                            @Override
+                            public void onFailure(Call<DriverServerResponse> call, Throwable t) {
 
-                        }
-                    });
-                    break;
-            }
+                            }
+                        });
+                    }
+                }
+                break;
+        }
     }
 
 
@@ -896,14 +924,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
          imDriverImage.setVisibility(View.GONE);
          tvDriverName.setVisibility(View.GONE);
          tvVehicleNo.setVisibility(View.GONE);
-
+         imCallButton.setVisibility(View.GONE);
     }
 
 
     private void initialState(){
         hideDriverInfoBox();
         btnConfirmPickup.setVisibility(View.VISIBLE);
-        stack.clear();
         mSpinner.setVisibility(View.VISIBLE);
         pickupTextView.setClickable(true);
         dropOffTextView.setClickable(true);
@@ -914,11 +941,58 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         btnSkipDropOff.setVisibility(View.GONE);
         btnConfirmDropOff.setVisibility(View.GONE);
         tvDriverMobileNo.setVisibility(View.GONE);
-        isPickupMode=true;
+
+        isPickupMode = MainActivity.appPreference.getIsPickupMode();
+        isDropOffMode = MainActivity.appPreference.getIsDropoffMode();
+
+
+
         if(vehicleMaker!=null)vehicleMaker.setVisible(false);
         if(pickUpMarker!=null)pickUpMarker.setVisible(false);
         if(dropOffMarker!=null)dropOffMarker.setVisible(false);
 
+
+
+        if(isPickupMode){
+            stack.clear();
+            pickupState();
+        }
+
+        if(isDropOffMode){
+            dropoffState();
+        }
+
+    }
+
+
+    private void dropoffState(){
+        btnConfirmPickup.setVisibility(View.GONE);
+        pickupTextView.setClickable(false);
+        dropOffTextView.setVisibility(View.VISIBLE);
+        dropOffIcon.setVisibility(View.VISIBLE);
+        separator.setVisibility(View.VISIBLE);
+        pickUpMarker.setVisible(true);
+        btnConfirmDropOff.setVisibility(View.VISIBLE);
+        btnSkipDropOff.setVisibility(View.VISIBLE);
+        mSpinner.setVisibility(View.GONE);
+        pickUpLatLng = pickUpMarker.getPosition();
+
+    }
+
+
+    private void pickupState(){
+        dropOffTextView.setVisibility(View.GONE);
+        dropOffIcon.setVisibility(View.GONE);
+        separator.setVisibility(View.GONE);
+        dropOffSaveImage.setVisibility(View.GONE);
+        btnConfirmPickup.setVisibility(View.VISIBLE);
+        mSpinner.setVisibility(View.VISIBLE);
+        btnSkipDropOff.setVisibility(View.GONE);
+        btnConfirmDropOff.setVisibility(View.GONE);
+        btnCallDriver.setVisibility(View.GONE);
+
+        dropOffTextView.setText("Please Select Drop Off Location");
+        pickupTextView.setClickable(true);
     }
 
 

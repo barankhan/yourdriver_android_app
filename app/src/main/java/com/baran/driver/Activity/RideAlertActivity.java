@@ -21,6 +21,7 @@ import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
+import com.baran.driver.Model.UserRide;
 import com.baran.driver.R;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.RidesApi;
@@ -125,16 +126,15 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
         if(v.getId()==R.id.btn_accept_ride) {
             timer.cancel();
             Utils.showProgressBarSpinner(this);
-            Call<Ride> userCall = this.ridesApi.acceptRide(currentUser.getMobile(), getIntent().getExtras().getString("ride_id"),MainActivity.appPreference.getLat(),MainActivity.appPreference.getLng());
-            userCall.enqueue(new Callback<Ride>() {
+            Call<UserRide> userCall = this.ridesApi.acceptRide(currentUser.getMobile(), getIntent().getExtras().getString("ride_id"),MainActivity.appPreference.getLat(),MainActivity.appPreference.getLng());
+            userCall.enqueue(new Callback<UserRide>() {
                 @Override
-                public void onResponse(Call<Ride> call, Response<Ride> response) {
+                public void onResponse(Call<UserRide> call, Response<UserRide> response) {
                     Utils.dismissProgressBarSpinner();
                     if (response.isSuccessful()) {
                         if (response.body().getResponse().equals("you_got_it")) {
-                            MainActivity.appPreference.setRideObject(response.body());
-                            DriverActivity.currentRide = response.body();
-                            showAlertBox(RideAlertActivity.this, "Congratulation! You got the Ride!");
+                            MainActivity.appPreference.setRideObject(response.body().getRide());
+                            MainActivity.appPreference.setPassengerObject(response.body().getUser());
                             finish();
                         } else {
                             showAlertBox(RideAlertActivity.this, "Sorry! Someone else got it.");
@@ -146,11 +146,20 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                 }
 
                 @Override
-                public void onFailure(Call<Ride> call, Throwable t) {
+                public void onFailure(Call<UserRide> call, Throwable t) {
                     Utils.dismissProgressBarSpinner();
                     showAlertBox(RideAlertActivity.this, "Unable to connect to server");
                 }
             });
         }
     }
+
+
+    @Override
+    public void onStop () {
+        super.onStop();
+        mediaPlayer.stop();
+    }
+
+
 }

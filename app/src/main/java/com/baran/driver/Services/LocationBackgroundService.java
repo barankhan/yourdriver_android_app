@@ -54,25 +54,25 @@ public class LocationBackgroundService extends Service {
         {
             mLastLocation = location;
             myCallback.getResult(location);
-            Log.e(TAG, "LocationChanged: "+location);
+//            Log.e(TAG, "LocationChanged: "+location);
         }
 
         @Override
         public void onProviderDisabled(String provider)
         {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+//            Log.e(TAG, "onProviderDisabled: " + provider);
         }
 
         @Override
         public void onProviderEnabled(String provider)
         {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+//            Log.e(TAG, "onProviderEnabled: " + provider);
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras)
         {
-            Log.e(TAG, "onStatusChanged: " + status);
+//            Log.e(TAG, "onStatusChanged: " + status);
         }
     }
 
@@ -86,7 +86,7 @@ public class LocationBackgroundService extends Service {
     @Override
     public void onCreate()
     {
-        Log.i(TAG, "onCreate");
+//        Log.i(TAG, "onCreate");
         startForeground(12345678, getNotification());
     }
 

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -23,6 +22,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +30,9 @@ import android.view.ViewGroup;
 import com.baran.driver.Activity.DriverActivity;
 import com.baran.driver.Activity.DriverTransactionActivity;
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Activity.Passenger;
 import com.baran.driver.Activity.RideAlertActivity;
+import com.baran.driver.Activity.VoiceChatViewActivity;
 import com.baran.driver.BuildConfig;
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.Utils;
@@ -45,20 +47,21 @@ import com.baran.driver.Services.ChatHeadService;
 import com.baran.driver.Services.DriverAlertReceiver;
 import com.baran.driver.Services.LocationBackgroundService;
 import com.baran.driver.Services.LocationServiceCallback;
-import com.baran.driver.Services.NotificationAlertReceiver;
-import com.baran.driver.Services.PopupReceiver;
+
 import com.baran.driver.Services.RetrofitClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.navigation.NavigationView;
@@ -79,7 +82,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -188,7 +190,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private Button btnOnOffLine;
     Intent serviceIntent;
     DriverAlertReceiver receiver;
-    NotificationAlertReceiver notifReceiver;
     IntentFilter intentFilter,intentFilter1;
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
     Button btnDriverArrived,btnCancelRide,btnStartRide,btnEndRide,btnNavigation;
@@ -198,7 +199,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private View headerView;
     private Picasso picasso=null;
     private static boolean initializedPicasso = false;
-
+    private ImageView imCallPassenger,imDriverAvatar;
+    private TextView tvPassengerName;
+    private LatLngBounds.Builder latLngBuilder = new LatLngBounds.Builder();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -208,15 +211,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 //        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
 
-
-        notifReceiver = new NotificationAlertReceiver();
-        intentFilter1 = new IntentFilter();
-        intentFilter1.addAction("com.barankhan.driver.notif_generated1");
-        getContext().registerReceiver(notifReceiver, intentFilter1);
-
-
-
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
 
          mNavigationView = getActivity().findViewById(R.id.d_nav_view);
         headerView = mNavigationView.getHeaderView(0);
@@ -228,30 +222,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
 
-        ImageView imageView = headerView.findViewById(R.id.im_driver_pic_hd);
+        imDriverAvatar = headerView.findViewById(R.id.im_driver_pic_hd);
 
-
-        if(currentUser.getPicture()!="") {
-            try
-            {
-                Picasso.Builder picassoBuilder = new Picasso.Builder(getContext());
-                picassoBuilder.downloader(new OkHttp3Downloader(RetrofitClient.okClient()));
-                picasso = picassoBuilder.build();
-                Picasso.setSingletonInstance(picasso); //apply to default singleton instance
-            }
-
-            catch ( IllegalStateException e )
-            {
-                //TODO
-            }
-
-
-            picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
-                    .into(imageView);
-
-        }
 
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.driver_map);
+
+        imCallPassenger = root.findViewById(R.id.im_call_passenger);
+        tvPassengerName = root.findViewById(R.id.tv_passenger_name);
 
         btnDriverArrived = root.findViewById(R.id.btn_driver_arrived);
         btnCancelRide = root.findViewById(R.id.btn_driver_ride_cancel);
@@ -264,6 +241,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         btnStartRide.setOnClickListener(this);
         btnEndRide.setOnClickListener(this);
         btnNavigation.setOnClickListener(this);
+
+        imCallPassenger.setOnClickListener(this);
 
         btnOnOffLine = root.findViewById(R.id.btn_on_off_line);
         btnOnOffLine.setOnClickListener(new View.OnClickListener() {
@@ -322,7 +301,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getContext().unregisterReceiver(notifReceiver);
 
     }
 
@@ -400,30 +378,35 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onStart(){
         super.onStart();
-        LocalBroadcastManager.getInstance(getContext()).registerReceiver((mRideAlertReceiver),
-                new IntentFilter("RideAlert")
-        );
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mRideAlertReceiver);
+
     }
 
-    private BroadcastReceiver mRideAlertReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.e("RideAlertBraodCaster","i'm here");
-            Intent i = new Intent(getContext(), RideAlertActivity.class);
-            i.putExtras(intent.getExtras());
-            startActivityForResult(i, RIDE_ALERT_REQUEST_CODE);
-        }
-    };
+
 
     @Override
     public void onResume(){
         super.onResume();
+        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        if(currentUser.getPicture()!="") {
+            try
+            {   Picasso.Builder picassoBuilder = new Picasso.Builder(getContext());
+                picassoBuilder.downloader(new OkHttp3Downloader(RetrofitClient.okClient()));
+                picasso = picassoBuilder.build();
+                Picasso.setSingletonInstance(picasso); //apply to default singleton instance
+            }
+            catch ( IllegalStateException e )
+            {}
+            picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
+                    .into(imDriverAvatar);
+
+        }
+
         if (isLocationEnabled()) {
             mapFragment.getMapAsync(this);
             if (mRequestingLocationUpdates && checkPermissions()) {
@@ -437,9 +420,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         }
 
         Ride r = MainActivity.appPreference.getRideObject();
-
-
-
+        navigationButtonVisibility(r);
         if(r!=null) {
             if(pickUpMarker!=null) {
                 pickUpMarker.setPosition(new LatLng(r.getPickupLat(), r.getPickupLng()));
@@ -454,8 +435,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             Location currentLocation = new Location("right now");
             currentLocation.setLatitude(Double.valueOf(MainActivity.appPreference.getLat()));
             currentLocation.setLongitude(Double.valueOf(MainActivity.appPreference.getLng()));
-            btnCancelRide.setVisibility(View.VISIBLE);
+            if(r.getIsRideStarted()!=1){
+                btnCancelRide.setVisibility(View.VISIBLE);
+            }
+
+
+            User passenger = MainActivity.appPreference.getPassengerObject();
+            if(passenger!=null){
+                tvPassengerName.setText(passenger.getName());
+                tvPassengerName.setVisibility(View.VISIBLE);
+                imCallPassenger.setVisibility(View.VISIBLE);
+            }
+
             showArrivedButtons(r, currentLocation);
+
+            showEndRideButton(r);
+
+
+
+
+
+
+
         }else{
             initialState();
         }
@@ -470,6 +471,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
             }
         }
+
+
+
 
         TextView driverBalance = headerView.findViewById(R.id.tv_driver_balance);
         driverBalance.setText(String.valueOf(currentUser.getBalance()));
@@ -541,7 +545,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 // again" prompts). Therefore, a user interface affordance is typically implemented
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
-                Log.e("permission","fucked");
+//                Log.e("permission","fucked");
             }
         }
     }
@@ -606,7 +610,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         DEFAULT_PICKUP_ZOOM = 17;
 
 
-        Log.e("On Map Ready","In map Ready");
+//        Log.e("On Map Ready","In map Ready");
 
         if(MainActivity.appPreference.getLat()!="0" && MainActivity.appPreference.getLng()!="0") {
             cameraPosition = new CameraPosition.Builder().target(new LatLng(Double.valueOf(MainActivity.appPreference.getLat()), Double.valueOf(MainActivity.appPreference.getLng()))).zoom(DEFAULT_PICKUP_ZOOM).build();
@@ -672,8 +676,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             MainActivity.appPreference.setLat(String.valueOf(currentLocation.getLatitude()));
             MainActivity.appPreference.setLng(String.valueOf(currentLocation.getLongitude()));
 
-            Log.e("current lat",String.valueOf(currentLocation.getLatitude()));
-            Log.e("current lng",String.valueOf(currentLocation.getLongitude()));
+
 
             Ride r ;
             r = MainActivity.appPreference.getRideObject();
@@ -682,16 +685,42 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             if(r!=null){
                 ride_id=String.valueOf(r.getId());
                 passenger_id = String.valueOf(r.getPassengerId()) ;
-                showArrivedButtons(r,currentLocation);
+
+                Location startPoint=new Location("pickup_location");
+                startPoint.setLatitude(r.getPickupLat());
+                startPoint.setLongitude(r.getPickupLng());
+                double distance=startPoint.distanceTo(currentLocation);
+                showArrivedButtonsWithDistance(r,distance);
                 if (r.getIsRideStarted()==1){
                     DBHelper dbHelper;
                     dbHelper = new DBHelper(getContext());
                     dbHelper.insertRidePath(currentLocation.getLatitude(),currentLocation.getLongitude(),r.getId());
                     dbHelper.close();
                 }
+
+                if(r.getIsRideStarted()==0){
+
+                    latLngBuilder.include(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).include(new LatLng(r.getPickupLat(),r.getPickupLng()));
+                    //Animate to the bounds
+                    LatLng center = latLngBuilder.build().getCenter();
+                    cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(getZoomLevel(distance*1.5)).build();
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                }else if(r.getIsRideStarted()==1 && r.getDropoffLat()!=null && r.getDropoffLng()!=null){
+                    latLngBuilder.include(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).include(new LatLng(r.getDropoffLat(),r.getDropoffLng()));
+                    //Animate to the bounds
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBuilder.build(), 400, 400, 5);
+                    mMap.moveCamera(cameraUpdate);
+                }else{
+                    cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(DEFAULT_PICKUP_ZOOM).build();
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                }
+
+            }else{
+                cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(DEFAULT_PICKUP_ZOOM).build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
-            cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(DEFAULT_PICKUP_ZOOM).build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
 
             Call<DriverServerResponse> userCall = MainActivity.serviceApi.doUpdateLatLong(currentUser.getMobile(),currentLocation.getLatitude(),currentLocation.getLongitude(),ride_id,passenger_id);
             userCall.enqueue(new Callback<DriverServerResponse>() {
@@ -710,19 +739,48 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     }
 
 
+    private int getZoomLevel(double radius){
+        double scale = radius / 500;
+        int a =  ((int) (16 - Math.log(scale) / Math.log(2)));
+        return a;
+    }
+
+
+
     private void showArrivedButtons(Ride r,Location currentLocation){
 
         Location startPoint=new Location("pickup_location");
         startPoint.setLatitude(r.getPickupLat());
         startPoint.setLongitude(r.getPickupLng());
         double distance=startPoint.distanceTo(currentLocation);
-        Log.e("distance",String.valueOf(distance));
         if(distance<=50 && r.getIsRideStarted()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
         }else{
-            btnDriverArrived.setVisibility(View.GONE);
+            btnDriverArrived.setVisibility(View.INVISIBLE);
         }
     }
+
+
+    private void showArrivedButtonsWithDistance(Ride r,Double distance){
+        if(distance<=50 && r.getIsRideStarted()==0){
+            btnDriverArrived.setVisibility(View.VISIBLE);
+        }else{
+            btnDriverArrived.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
+    private void showEndRideButton(Ride r){
+        if(r.getIsRideStarted()==1){
+            btnEndRide.setVisibility(View.VISIBLE);
+            imCallPassenger.setVisibility(View.GONE);
+            btnStartRide.setVisibility(View.GONE);
+            btnCancelRide.setVisibility(View.GONE);
+            btnDriverArrived.setVisibility(View.GONE);
+            btnEndRide.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     public double round(double value, int precision) {
         int scale = (int) Math.pow(10, precision);
@@ -761,11 +819,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.i(TAG, "User agreed to make required location settings changes.");
+//                        Log.i(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.i(TAG, "User chose not to make required location settings changes.");
+//                        Log.i(TAG, "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
                         break;
                 }
@@ -817,7 +875,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onClick(View v) {
         User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
-        Ride r = MainActivity.appPreference.getRideObject();
+        final Ride r = MainActivity.appPreference.getRideObject();
+        User p = MainActivity.appPreference.getPassengerObject();
         switch (v.getId()){
             case R.id.btn_driver_arrived:
 
@@ -830,8 +889,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                         if(response.isSuccessful()){
                             if(response.body().getResponse().equals("driver_arrived")){
                                 MainActivity.appPreference.setRideObject(response.body());
-                                btnDriverArrived.setVisibility(View.GONE);
+                                btnDriverArrived.setVisibility(View.INVISIBLE);
                                 btnStartRide.setVisibility(View.VISIBLE);
+                                navigationButtonVisibility(response.body());
                             }else{
                                 Utils.showAlertBox(getActivity(),"Ride has been cancelled by the User!.");
                                 initialState();
@@ -852,15 +912,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 rideCall.enqueue(new Callback<Ride>() {
                     @Override
                     public void onResponse(Call<Ride> call, Response<Ride> response) {
-                        MainActivity.appPreference.setRideObject(response.body());
+                        // When cancelling the ride; ride & passenger object should be removed from shared preference.
+
+
+
                         Utils.dismissProgressBarSpinner();
                         if(response.isSuccessful()){
-                            if(response.body().getResponse().equals("ride_cancelled_successfully")){
+                            if(response.body().getIsRideCancelled()==1){
                                 initialState();
                                 Utils.showAlertBox(getActivity(),"Ride Cancelled Successfully");
-                            }else if(response.body().getResponse().equals("ride_cancel_error") && response.body().getIsRideCancelled()==1){
-                                initialState();
-                                Utils.showAlertBox(getActivity(),"Ride Cancelled Successfully");
+                                MainActivity.appPreference.setRideObject(null);
+                                MainActivity.appPreference.setPassengerObject(null);
                             }else{
                                 Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
                             }
@@ -884,12 +946,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     @Override
                     public void onResponse(Call<Ride> call, Response<Ride> response) {
                         if(response.isSuccessful()){
-
                             MainActivity.appPreference.setRideObject(response.body());
-                            btnStartRide.setVisibility(View.GONE);
-                            btnCancelRide.setVisibility(View.GONE);
-                            btnDriverArrived.setVisibility(View.GONE);
-                            btnEndRide.setVisibility(View.VISIBLE);
+
+                            showEndRideButton(response.body());
+                            navigationButtonVisibility(response.body());
                             DBHelper dbHelper;
                             dbHelper = new DBHelper(getContext());
                             dbHelper.insertRidePath(Double.valueOf(MainActivity.appPreference.getLat()),Double.valueOf(MainActivity.appPreference.getLng()),response.body().getId());
@@ -937,13 +997,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                         if(response.isSuccessful()){
                             MainActivity.appPreference.setDriverTransactionObject(response.body());
                             MainActivity.appPreference.setRideObject(null);
+                            MainActivity.appPreference.setPassengerObject(null);
+
                             initialState();
                             Intent intent = new Intent(getContext(), DriverTransactionActivity.class);
                             startActivity(intent);
                             Utils.dismissProgressBarSpinner();
-                            Log.e("i got in full success",response.body().getResponse());
+//                            Log.e("i got in full success",response.body().getResponse());
                         }else{
-                            Log.e("i got in half success",response.errorBody().toString());
+//                            Log.e("i got in half success",response.errorBody().toString());
                             Utils.dismissProgressBarSpinner();
                         }
 
@@ -952,26 +1014,65 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     @Override
                     public void onFailure(Call<DriverTransaction> call, Throwable t) {
                         Utils.dismissProgressBarSpinner();
-                        Log.e("i got in failure",t.toString());
+//                        Log.e("i got in failure",t.toString());
                     }
                 });
                 break;
             case R.id.btn_navigation:
-//                getContext().startService(new Intent(getContext(), ChatHeadService.class));
-//                Uri gmmIntentUri = Uri.parse("google.navigation:q="+r.getPickupLat()+","+r.getPickupLng()+"&mode=d");
-//                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-//                mapIntent.setPackage("com.google.android.apps.maps");
-//                startActivity(mapIntent);
 
-                Log.e("notif","sending");
-                Intent intent = new Intent("com.barankhan.driver.notif_generated1");
-                intent.putExtra("message","hi");
-                getContext().sendBroadcast(intent);
+                if(r.getIsDriverArrived()==0){
+                    getContext().startService(new Intent(getContext(), ChatHeadService.class));
+                    Uri gmmIntentUri;
+                    gmmIntentUri = Uri.parse("google.navigation:q="+r.getPickupLat()+","+r.getPickupLng()+"&mode=d");
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(mapIntent);
+                }else if(r.getIsDriverArrived()==1 && r.getDropoffLat()>0 && r.getDropoffLng() > 0){
+                    getContext().startService(new Intent(getContext(), ChatHeadService.class));
+                    Uri gmmIntentUri;
+                    gmmIntentUri = Uri.parse("google.navigation:q="+r.getDropoffLat()+","+r.getDropoffLng()+"&mode=d");
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(mapIntent);
+                }
+
+
+//                Log.e("notif","sending");
+//                Intent intent = new Intent("com.barankhan.driver.notif_generated1");
+//                intent.putExtra("message","hi");
+//                getContext().sendBroadcast(intent);
 
 
 
 
 
+                break;
+            case R.id.im_call_passenger:
+                if(r!=null && p!=null){
+                    if(r.getPassengerId()>0 && r.getId()>0){
+                        Call<DriverServerResponse> initiateCall = Passenger.ridesApi.triggerAgoraCall(u.getMobile(),p.getMobile(),r.getId());
+                        Utils.showProgressBarSpinner(getContext());
+                        initiateCall.enqueue(new Callback<DriverServerResponse>() {
+                            @Override
+                            public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                                Utils.dismissProgressBarSpinner();
+                                if(response.isSuccessful()){
+                                    Intent intent = new Intent(getContext(), VoiceChatViewActivity.class);
+                                    intent.putExtra("agora_channel", "ride_call_"+r.getId());
+                                    intent.putExtra("ride_id", r.getId());
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
                 break;
 
         }
@@ -979,9 +1080,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onCameraMove() {
-        if(mMap.getCameraPosition().zoom>10){
-            DEFAULT_PICKUP_ZOOM =mMap.getCameraPosition().zoom;
-        }
+//        if(mMap.getCameraPosition().zoom>10){
+//            DEFAULT_PICKUP_ZOOM =mMap.getCameraPosition().zoom;
+//        }
 
 
 //        Log.e("In move Camera","I just got Lucky!"+DEFAULT_PICKUP_ZOOM);
@@ -993,7 +1094,26 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         btnCancelRide.setVisibility(View.GONE);
         btnEndRide.setVisibility(View.GONE);
         btnDriverArrived.setVisibility(View.GONE);
+        imCallPassenger.setVisibility(View.GONE);
+        tvPassengerName.setVisibility(View.GONE);
+        btnNavigation.setVisibility(View.GONE);
         if(pickUpMarker!=null) pickUpMarker.setVisible(false);
         if(dropOffMarker!=null) dropOffMarker.setVisible(false);
+        navigationButtonVisibility(null);
+    }
+
+
+
+    private void navigationButtonVisibility(Ride r){
+        if(r !=null){
+            if(r.getIsDriverArrived()==0 || (r.getDropoffLng() !=null && r.getDropoffLat() !=null )){
+                btnNavigation.setVisibility(View.VISIBLE);
+            }else{
+                btnNavigation.setVisibility(View.GONE);
+            }
+        }else{
+            btnNavigation.setVisibility(View.GONE);
+        }
+
     }
 }
