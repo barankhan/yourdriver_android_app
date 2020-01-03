@@ -3,18 +3,15 @@ package com.baran.driver.Activity;
 import android.os.Bundle;
 
 import com.baran.driver.Constants.Constant;
-import com.baran.driver.Fragments.driver.gallery.GalleryFragment;
+import com.baran.driver.Fragments.driver.transactions.TransactionsFragment;
 import com.baran.driver.Fragments.driver.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.R;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.RidesApi;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -77,7 +74,7 @@ public class DriverActivity extends AppCompatActivity {
                 fragmentClass = HomeFragment.class;
                 break;
             case R.id.d_nav_gallery:
-                fragmentClass = GalleryFragment.class;
+                fragmentClass = TransactionsFragment.class;
                 break;
             case R.id.d_nav_logout:
                 fragmentClass = LogoutFragment.class;

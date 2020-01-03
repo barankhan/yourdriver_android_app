@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -18,26 +17,21 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
 
-
-
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_driver_icon"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_driver_icon_round"
         android:supportsRtl="true"
-        android:requestLegacyExternalStorage="true"
-        android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/network_security_config"
-        >
+        android:theme="@style/AppTheme">
+        <activity android:name=".Activity.ChatActivity"></activity>
+
         <receiver
             android:name=".Services.PopupReceiver"
             android:enabled="true"
-            android:exported="true">
-
-        </receiver>
+            android:exported="true"></receiver>
         <receiver android:name=".Services.NotificationAlertReceiver">
             <intent-filter>
                 <action android:name="com.barankhan.driver.notif_generated" />
@@ -46,9 +40,7 @@
 
         <activity
             android:name=".Activity.NotifActivity"
-            android:theme="@style/AppDialogScreenTheme">
-
-        </activity>
+            android:theme="@style/AppDialogScreenTheme"></activity>
         <activity android:name=".Activity.DriverTransactionActivity" />
         <activity android:name=".Activity.RideAlertActivity">
             <intent-filter>
@@ -104,6 +96,7 @@
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -114,8 +107,7 @@
             </intent-filter>
         </receiver>
 
-
-        <activity android:name=".Activity.VoiceChatViewActivity"></activity>
+        <activity android:name=".Activity.VoiceChatViewActivity" />
     </application>
 
 </manifest>
