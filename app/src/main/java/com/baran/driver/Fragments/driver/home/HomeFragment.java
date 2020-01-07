@@ -193,7 +193,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private User currentUser;
     private Button btnOnOffLine;
     Intent serviceIntent;
-    DriverAlertReceiver receiver;
     IntentFilter intentFilter,intentFilter1;
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
     Button btnDriverArrived,btnCancelRide,btnStartRide,btnEndRide,btnNavigation;
@@ -277,9 +276,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         createNotificationChannel();
 
 
-        receiver = new DriverAlertReceiver();
-        intentFilter = new IntentFilter("com.barankhan.driver.ride_alerts");
-        getContext().registerReceiver(receiver, intentFilter);
+
 
 
 

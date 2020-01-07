@@ -23,7 +23,7 @@ public class TransactionDetailsFragment extends Fragment {
 
     private TextView tvTransactionId,tvTransactionType,tvDriverStartupFare,tvCompanyServiceCharges,
             tvTimeElapsedMinutes,tvTimeElapsedRate,tvKmTravelled,tvKmTravelledRate,tvTotalFare,tvAmountReceived,tvDistanceAmount,tvTimeAmount,
-            tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt;
+            tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating;
 
 
     @Override
@@ -54,6 +54,7 @@ public class TransactionDetailsFragment extends Fragment {
         tvDriverArrivedAt = root.findViewById(R.id.tv_driver_arrived_at);
         tvRideStartedAt = root.findViewById(R.id.tv_ride_started_at);
         tvRideEndedAt = root.findViewById(R.id.tv_ride_ended_at);
+        tvRideRating = root.findViewById(R.id.tv_ride_rating);
 
 
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
@@ -101,6 +102,7 @@ public class TransactionDetailsFragment extends Fragment {
                         tvDriverArrivedAt.setText(response.body().getRide().getDriverArrivedAt());
                         tvRideStartedAt.setText(response.body().getRide().getRideStartedAt());
                         tvRideEndedAt.setText(response.body().getRide().getRideEndedAt());
+                        tvRideRating.setText(String.valueOf(response.body().getRide().getRating()));
 
                         tvPassengerName.setText(response.body().getUser().getName());
                     }

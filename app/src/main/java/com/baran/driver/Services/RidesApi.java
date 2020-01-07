@@ -17,7 +17,7 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("register_ride.php")
     Call <Ride> findDriver(@Field("mobile") String mobile, @Field("vehicle_type") String vehicle_type,
-                           @Field("pickup_lat_lng") String pickup_lat_lng, @Field("dropoff_lat_lng") String dropoff_lat_lng);
+                           @Field("pickup_lat_lng") String pickup_lat_lng, @Field("dropoff_lat_lng") String dropoff_lat_lng, @Field("firebaseToken") String firebaseToken);
     @FormUrlEncoded
     @POST("accept_ride.php")
     Call <UserRide> acceptRide(@Field("mobile") String mobile, @Field("ride_id") String ride_id, @Field("driver_lat")String lat, @Field("driver_lng")String lng);
@@ -66,6 +66,12 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("get_chat.php")
     Call <List<ChatMessage>> getChat(@Field("user_id") int userId, @Field("ride_id") int rideId);
+
+
+
+    @FormUrlEncoded
+    @POST("ride_rating.php")
+    Call <DriverServerResponse> setRating(@Field("driver_id") int driverId, @Field("ride_id") int rideId,@Field("rating") float rating);
 
 
 

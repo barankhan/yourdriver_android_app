@@ -19,11 +19,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -34,6 +36,7 @@ import retrofit2.Response;
 
 import com.baran.driver.Activity.ChatActivity;
 import com.baran.driver.Activity.MainActivity;
+import com.baran.driver.Activity.NotifActivity;
 import com.baran.driver.Activity.Passenger;
 import com.baran.driver.Activity.VoiceChatViewActivity;
 import com.baran.driver.Constants.Constant;
@@ -66,6 +69,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -73,6 +77,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -110,7 +116,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private AutocompleteSupportFragment pickupAutoCompleteFragment, dropoffAutoCompleteFragment;
     private Marker pickUpMarker=null, dropOffMarker=null,vehicleMaker=null;
     private CameraPosition mCameraPosition;
-    private Button btnConfirmPickup, btnConfirmDropOff, btnSkipDropOff, btnCallDriver,btnCancelRide;
+    private Button btnConfirmPickup, btnConfirmDropOff, btnSkipDropOff, btnCallDriver,btnCancelRide,btnFeedback;
     public static AppPreference appPreference;
     public Deque<String> stack;
     private int PICKUP_AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -129,6 +135,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     CameraPosition cameraPosition ;
     private Picasso picasso=null;
     private ImageView imPassengerImage,imDriverImage,imCallButton,imMessageButton;
+    private RatingBar driverRating;
+    private ConstraintLayout ratingLayout;
+    String firebaseToken;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -153,6 +162,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         TextView userEmail = headerView.findViewById(R.id.nav_user_email);
         userEmail.setText(appPreference.getDisplayEmail());
 
+
+        ratingLayout = root.findViewById(R.id.rating_layout);
+        btnFeedback = root.findViewById(R.id.btn_feedback);
+        driverRating = root.findViewById(R.id.rating_driver);
+
+        btnFeedback.setOnClickListener(this);
 
         imPassengerImage = headerView.findViewById(R.id.im_passenger_image);
         imDriverImage = root.findViewById(R.id.im_driver_image);
@@ -270,7 +285,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     strDropOffLatLng =dropOffLatLng.latitude+","+dropOffLatLng.longitude;
                 }
 
-                Call<Ride> userCall = Passenger.ridesApi.findDriver(currentUser.getMobile(),vehicleType, strPickupLatLng,strDropOffLatLng);
+                Call<Ride> userCall = Passenger.ridesApi.findDriver(currentUser.getMobile(),vehicleType, strPickupLatLng,strDropOffLatLng,firebaseToken);
                 Utils.showProgressBarSpinner(getContext());
                 userCall.enqueue(new Callback<Ride>() {
                     @Override
@@ -524,6 +539,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public void onResume() {
         super.onResume();
 
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String mToken = instanceIdResult.getToken();
+                firebaseToken = mToken;
+
+            }
+        });
+
         isPickupMode = MainActivity.appPreference.getIsPickupMode();
         isDropOffMode = MainActivity.appPreference.getIsDropoffMode();
 
@@ -560,6 +584,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             }else{
                 btnCancelRide.setVisibility(View.INVISIBLE);
                 imCallButton.setVisibility(View.GONE);
+            }
+
+
+            if(r.getIsRideEnded()==1){
+//                TODO show feed back contracint layout
+                ratingLayout.setVisibility(View.VISIBLE);
+            }else{
+                ratingLayout.setVisibility(View.GONE);
             }
 
         }else{
@@ -925,6 +957,39 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
+                break;
+            case R.id.btn_feedback:
+                if(r!=null && d!=null){
+                    Call<DriverServerResponse> ratingCall = Passenger.ridesApi.setRating(d.getId(),r.getId(),driverRating.getRating());
+                    Utils.showProgressBarSpinner(getContext());
+                    ratingCall.enqueue(new Callback<DriverServerResponse>() {
+                        @Override
+                        public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                            Utils.dismissProgressBarSpinner();
+                            if(response.isSuccessful()){
+                                MainActivity.appPreference.setRideObject(null);
+                                MainActivity.appPreference.setDriverObject(null);
+                                MainActivity.appPreference.setIsDropoffMode(false);
+                                MainActivity.appPreference.setIsPickupMode(true);
+                                Intent intent = new Intent(getContext(), NotifActivity.class);
+                                intent.putExtra("message", "Thanks a lot! for your feedback");
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+
+                            }else{
+                                Utils.showAlertBox(getActivity(),"Unable to save data on the server");
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                            Utils.dismissProgressBarSpinner();
+                            Utils.showAlertBox(getActivity(),"Unable to Connect to server.");
+                        }
+                    });
+                }
+                break;
         }
     }
 
@@ -972,7 +1037,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         if(isDropOffMode){
             dropoffState();
         }
-
+        ratingLayout.setVisibility(View.GONE);
     }
 
 

@@ -78,6 +78,18 @@ public class Ride {
     private  Double distance;
 
 
+    @SerializedName("rating")
+    private  int rating;
+
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
     public Double getDistance() {
         return distance;
     }

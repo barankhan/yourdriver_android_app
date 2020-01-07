@@ -122,11 +122,8 @@ public class FirebaseService extends FirebaseMessagingService {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("p_ride_ended")){
-                MainActivity.appPreference.setRideObject(null);
-                MainActivity.appPreference.setDriverObject(null);
-                MainActivity.appPreference.setPassengerObject(null);
-                MainActivity.appPreference.setIsDropoffMode(false);
-                MainActivity.appPreference.setIsPickupMode(true);
+                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
