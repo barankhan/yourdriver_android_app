@@ -14,7 +14,7 @@ import com.baran.driver.Model.User;
 import com.baran.driver.R;
 import com.baran.driver.Services.DriverTransactionApi;
 import com.baran.driver.Services.RetrofitClient;
-import com.baran.driver.adapters.DriverTransactionAdapter;
+import com.baran.driver.Adapters.DriverTransactionAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

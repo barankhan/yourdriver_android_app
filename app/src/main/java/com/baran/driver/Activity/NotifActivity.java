@@ -105,6 +105,7 @@ public class NotifActivity extends Activity {
                 intent.putExtra("ride_id", rideId);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
         });
     }

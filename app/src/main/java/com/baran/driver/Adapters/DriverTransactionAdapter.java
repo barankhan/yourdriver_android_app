@@ -1,4 +1,4 @@
-package com.baran.driver.adapters;
+package com.baran.driver.Adapters;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baran.driver.Fragments.driver.transactions.TransactionDetailsFragment;
 import com.baran.driver.Model.DriverTransaction;

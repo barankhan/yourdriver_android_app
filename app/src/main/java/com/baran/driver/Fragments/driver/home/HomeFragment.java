@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.baran.driver.Activity.ChatActivity;
 import com.baran.driver.Activity.DriverActivity;
 import com.baran.driver.Activity.DriverTransactionActivity;
 import com.baran.driver.Activity.MainActivity;
@@ -64,7 +65,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
@@ -199,9 +203,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private View headerView;
     private Picasso picasso=null;
     private static boolean initializedPicasso = false;
-    private ImageView imCallPassenger,imDriverAvatar;
+    private ImageView imCallPassenger,imDriverAvatar,imMessagePassenger;
     private TextView tvPassengerName;
     private LatLngBounds.Builder latLngBuilder = new LatLngBounds.Builder();
+    private String firebaseToken;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -229,6 +234,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
         imCallPassenger = root.findViewById(R.id.im_call_passenger);
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
+        imMessagePassenger = root.findViewById(R.id.im_message_passenger);
 
         btnDriverArrived = root.findViewById(R.id.btn_driver_arrived);
         btnCancelRide = root.findViewById(R.id.btn_driver_ride_cancel);
@@ -243,6 +249,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         btnNavigation.setOnClickListener(this);
 
         imCallPassenger.setOnClickListener(this);
+        imMessagePassenger.setOnClickListener(this);
 
         btnOnOffLine = root.findViewById(R.id.btn_on_off_line);
         btnOnOffLine.setOnClickListener(new View.OnClickListener() {
@@ -309,7 +316,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private void onlineOffLineButtonClicked(){
         String status= btnOnOffLine.getTag().toString();
         if(status.equals("Offline")){
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1);
+            Call<DriverServerResponse> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
             userCall.enqueue(new Callback<DriverServerResponse>() {
                 @Override
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
@@ -331,7 +338,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 }
             });
         }else{
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0);
+            Call<DriverServerResponse> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
             userCall.enqueue(new Callback<DriverServerResponse>() {
                 @Override
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
@@ -392,6 +399,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onResume(){
         super.onResume();
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String mToken = instanceIdResult.getToken();
+                firebaseToken = mToken;
+
+            }
+        });
         currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         if(currentUser.getPicture()!="") {
             try
@@ -445,6 +460,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 tvPassengerName.setText(passenger.getName());
                 tvPassengerName.setVisibility(View.VISIBLE);
                 imCallPassenger.setVisibility(View.VISIBLE);
+                imMessagePassenger.setVisibility(View.VISIBLE);
             }
 
             showArrivedButtons(r, currentLocation);
@@ -1050,7 +1066,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             case R.id.im_call_passenger:
                 if(r!=null && p!=null){
                     if(r.getPassengerId()>0 && r.getId()>0){
-                        Call<DriverServerResponse> initiateCall = Passenger.ridesApi.triggerAgoraCall(u.getMobile(),p.getMobile(),r.getId());
+                        Call<DriverServerResponse> initiateCall = DriverActivity.ridesApi.triggerAgoraCall(u.getMobile(),p.getMobile(),r.getId());
                         Utils.showProgressBarSpinner(getContext());
                         initiateCall.enqueue(new Callback<DriverServerResponse>() {
                             @Override
@@ -1075,6 +1091,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 }
                 break;
 
+            case R.id.im_message_passenger:
+                if (r != null) {
+                    Intent intent = new Intent(getContext(), ChatActivity.class);
+                    intent.putExtra("ride_id",""+r.getId());
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                break;
+
         }
     }
 
@@ -1095,6 +1120,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         btnEndRide.setVisibility(View.GONE);
         btnDriverArrived.setVisibility(View.GONE);
         imCallPassenger.setVisibility(View.GONE);
+        imMessagePassenger.setVisibility(View.GONE);
         tvPassengerName.setVisibility(View.GONE);
         btnNavigation.setVisibility(View.GONE);
         if(pickUpMarker!=null) pickUpMarker.setVisible(false);

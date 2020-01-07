@@ -1,9 +1,12 @@
 package com.baran.driver.Services;
 
+import com.baran.driver.Model.ChatMessage;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.DriverTransaction;
 import com.baran.driver.Model.UserRide;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -53,6 +56,17 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("ride_agora_call.php")
     Call <DriverServerResponse> triggerAgoraCall(@Field("from_mobile") String callerMobile,@Field("to_mobile") String receiver_mobile,@Field("ride_id") int rideId);
+
+
+    @FormUrlEncoded
+    @POST("insert_chat.php")
+    Call <DriverServerResponse> insertChat(@Field("sender_id") int senderId,@Field("message") String message,@Field("ride_id") int rideId);
+
+
+    @FormUrlEncoded
+    @POST("get_chat.php")
+    Call <List<ChatMessage>> getChat(@Field("user_id") int userId, @Field("ride_id") int rideId);
+
 
 
 }

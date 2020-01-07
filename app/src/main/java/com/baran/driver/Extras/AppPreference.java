@@ -65,7 +65,7 @@ public class AppPreference {
         return sharedPreferences.getString(String.valueOf(R.string.s_pref_date), "date");
     }
 
-    // For TOAST Message for response
+    // For TOAST ChatMessage for response
     public void showToast(String message){
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
     }

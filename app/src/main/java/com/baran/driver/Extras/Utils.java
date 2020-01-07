@@ -171,7 +171,7 @@ public class Utils {
 
             // closed
 
-            // Showing Alert Message
+            // Showing Alert ChatMessage
             alertDialog.setView(view);
             alertDialog.show();
 

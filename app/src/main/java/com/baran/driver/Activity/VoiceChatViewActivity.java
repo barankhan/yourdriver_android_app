@@ -47,6 +47,9 @@ public class VoiceChatViewActivity extends AppCompatActivity {
 
 
 
+
+
+
 //        @Override
 //        public void onUserMuteAudio(final int uid, final boolean muted) { // Tutorial Step 6
 //            runOnUiThread(new Runnable() {
@@ -160,6 +163,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
         try {
             mRtcEngine = RtcEngine.create(getBaseContext(), getString(R.string.agora_app_id), mRtcEventHandler);
             mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION);
+            mRtcEngine.setEnableSpeakerphone(false);
         } catch (Exception e) {
             Log.e(LOG_TAG, Log.getStackTraceString(e));
 

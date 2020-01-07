@@ -32,8 +32,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.baran.driver.Activity.ChatActivity;
 import com.baran.driver.Activity.MainActivity;
-import com.baran.driver.Activity.NotifActivity;
 import com.baran.driver.Activity.Passenger;
 import com.baran.driver.Activity.VoiceChatViewActivity;
 import com.baran.driver.Constants.Constant;
@@ -48,7 +48,7 @@ import com.baran.driver.R;
 
 import com.baran.driver.Activity.SearchActivity;
 import com.baran.driver.Services.RetrofitClient;
-import com.baran.driver.adapters.DriverTypeSpinnerAdapter;
+import com.baran.driver.Adapters.DriverTypeSpinnerAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private String vehicleType;
     CameraPosition cameraPosition ;
     private Picasso picasso=null;
-    private ImageView imPassengerImage,imDriverImage,imCallButton;
+    private ImageView imPassengerImage,imDriverImage,imCallButton,imMessageButton;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -157,9 +157,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         imPassengerImage = headerView.findViewById(R.id.im_passenger_image);
         imDriverImage = root.findViewById(R.id.im_driver_image);
         imCallButton = root.findViewById(R.id.im_call_button);
+        imMessageButton = root.findViewById(R.id.im_message_button);
 
 
         imCallButton.setOnClickListener(this);
+        imMessageButton.setOnClickListener(this);
 
 
         pickupTextView = root.findViewById(R.id.tv_pickup_location);
@@ -488,10 +490,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             vehicleMaker.setVisible(true);
             vehicleMaker.setPosition(l);
-
-
-
-
         }
     };
 
@@ -544,6 +542,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     tvVehicleNo.setVisibility(View.VISIBLE);
                     imDriverImage.setVisibility(View.VISIBLE);
                     imCallButton.setVisibility(View.VISIBLE);
+                    imMessageButton.setVisibility(View.VISIBLE);
                     tvDriverMobileNo.setVisibility(View.VISIBLE);
                     tvDriverName.setText(driver.getName());
                     tvDriverMobileNo.setText(driver.getMobile());
@@ -919,6 +918,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     }
                 }
                 break;
+            case R.id.im_message_button:
+                if (r != null) {
+                    Intent intent = new Intent(getContext(), ChatActivity.class);
+                    intent.putExtra("ride_id",""+r.getId());
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
         }
     }
 
@@ -929,6 +935,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
          tvDriverName.setVisibility(View.GONE);
          tvVehicleNo.setVisibility(View.GONE);
          imCallButton.setVisibility(View.GONE);
+         imMessageButton.setVisibility(View.GONE);
     }
 
 

@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,12 @@
         android:roundIcon="@mipmap/ic_driver_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.ChatActivity"></activity>
+        <activity android:name=".Activity.ChatActivity">
+            <intent-filter>
+                <action android:name="com.barankhan.driver.chat" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <receiver
             android:name=".Services.PopupReceiver"
@@ -96,7 +102,6 @@
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -108,6 +113,9 @@
         </receiver>
 
         <activity android:name=".Activity.VoiceChatViewActivity" />
+
+
+
     </application>
 
 </manifest>

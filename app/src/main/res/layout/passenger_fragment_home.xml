@@ -33,6 +33,57 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rating_layout"
+        android:layout_width="match_parent"
+        android:layout_height="169dp"
+        android:layout_marginBottom="16dp"
+        android:background="#ffffff"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayoutButtons"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
+            android:text="Please rate your last trip:"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RatingBar
+            android:id="@+id/rating_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:max="5"
+            android:numStars="5"
+            android:stepSize="1"
+            app:layout_constraintBottom_toTopOf="@+id/btn_feedback"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+        <Button
+            android:id="@+id/btn_feedback"
+            android:layout_width="336dp"
+            android:layout_height="64dp"
+            android:background="@drawable/button_style"
+            android:text="Feedback"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rating_driver" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayoutButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -146,7 +197,7 @@
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
             app:layout_constraintTop_toBottomOf="@+id/tv_driver_name"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_driver_name"
@@ -161,7 +212,7 @@
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
             app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_vehicle_no"
@@ -176,7 +227,7 @@
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
             app:layout_constraintTop_toBottomOf="@+id/tv_driver_mobile_no"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/im_driver_image"
@@ -189,7 +240,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_driver_icon_background"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/btn_cancel_ride"
@@ -205,18 +256,28 @@
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
             app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_no"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/im_message_button"
+            android:layout_width="38dp"
+            android:layout_height="36dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_cancel_ride"
+            app:srcCompat="@drawable/ic_message_blue_24dp"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/im_call_button"
-            android:layout_width="39dp"
-            android:layout_height="66dp"
+            android:layout_width="38dp"
+            android:layout_height="53dp"
             app:layout_constraintBottom_toTopOf="@+id/btn_cancel_ride"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_driver_mobile_no"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_call_black_24dp"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

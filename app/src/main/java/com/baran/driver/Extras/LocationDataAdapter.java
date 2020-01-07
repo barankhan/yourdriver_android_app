@@ -202,7 +202,7 @@ public class LocationDataAdapter extends ArrayAdapter<SavedLocationData> {
 
             // closed
 
-            // Showing Alert Message
+            // Showing Alert ChatMessage
             alertDialog.setView(view);
             alertDialog.show();
 

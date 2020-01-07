@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 
+import com.baran.driver.Activity.ChatActivity;
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Activity.NotifActivity;
 import com.baran.driver.Activity.RideAlertActivity;
@@ -142,19 +143,32 @@ public class FirebaseService extends FirebaseMessagingService {
                 intent.putExtra("ride_id", remoteMessage.getData().get("ride_id"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("chat_message_received")){
+                if(ChatActivity.inFront){
+                    Intent intent = new Intent("NewChatMessageReceived");
+                    intent.putExtra("message", remoteMessage.getData().get("message"));
+                    intent.putExtra("sender_id", remoteMessage.getData().get("sender_id"));
+                    broadcaster.sendBroadcast(intent);
+                }else{
+                    Intent intent = new Intent(this, ChatActivity.class);
+                    intent.putExtra("ride_id",remoteMessage.getData().get("ride_id"));
+                    intent.putExtra("new_message_received","aahoo");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
             }else if(remoteMessage.getData().get("key").equals("teasing")){
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message","hiere");
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
-            Log.e(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.e(TAG, "ChatMessage data payload: " + remoteMessage.getData());
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
 
-            Log.e(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            Log.e(TAG, "ChatMessage Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
 

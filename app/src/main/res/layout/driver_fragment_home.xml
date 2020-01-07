@@ -102,36 +102,47 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_passenger_name"
-            android:layout_width="317dp"
-            android:layout_height="47dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="85dp"
+            android:layout_width="276dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="90dp"
             android:text="PassengerName"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/im_call_passenger"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:visibility="gone" />
 
         <ImageView
             android:id="@+id/im_call_passenger"
             android:layout_width="56dp"
-            android:layout_height="64dp"
+            android:layout_height="47dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_passenger_name"
+            app:layout_constraintStart_toEndOf="@+id/im_message_passenger"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_call_black_24dp"
+            tools:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/im_message_passenger"
+            android:layout_width="46dp"
+            android:layout_height="47dp"
+            app:layout_constraintEnd_toStartOf="@+id/im_call_passenger"
+            app:layout_constraintStart_toEndOf="@+id/tv_passenger_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_message_blue_24dp"
             tools:visibility="gone" />
 
 
