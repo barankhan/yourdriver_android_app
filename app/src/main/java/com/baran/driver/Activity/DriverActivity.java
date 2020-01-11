@@ -3,6 +3,7 @@ package com.baran.driver.Activity;
 import android.os.Bundle;
 
 import com.baran.driver.Constants.Constant;
+import com.baran.driver.Fragments.driver.recharge.RechargeFragment;
 import com.baran.driver.Fragments.driver.transactions.TransactionsFragment;
 import com.baran.driver.Fragments.driver.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
@@ -78,6 +79,9 @@ public class DriverActivity extends AppCompatActivity {
                 break;
             case R.id.d_nav_logout:
                 fragmentClass = LogoutFragment.class;
+                break;
+            case R.id.d_nav_recharge:
+                fragmentClass = RechargeFragment.class;
                 break;
 //            case R.id.d_switch_to_passenger:
 //                fragmentClass = null;

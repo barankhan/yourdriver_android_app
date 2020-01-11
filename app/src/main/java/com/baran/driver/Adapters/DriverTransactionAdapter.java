@@ -41,7 +41,12 @@ public class DriverTransactionAdapter extends RecyclerView.Adapter<DriverTransac
         final DriverTransaction transaction = transactions.get(position);
         holder.transactionId.setText(String.valueOf(transaction.getId()));
         holder.itemView.setTag(transaction.getId());
-        holder.transactionAmount.setText(String.valueOf(transaction.getTotalFare()));
+        if(transaction.getTransactionType().equals("CREDIT")){
+            holder.transactionAmount.setText(String.valueOf(transaction.getAmountReceived()));
+        }else{
+            holder.transactionAmount.setText(String.valueOf(transaction.getTotalFare()));
+        }
+
         holder.transactionDate.setText(String.valueOf(transaction.getCreatedAt()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

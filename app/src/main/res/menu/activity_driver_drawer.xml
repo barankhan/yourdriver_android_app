@@ -27,9 +27,9 @@
             android:title="@string/menu_share" />
 
         <item
-            android:id="@+id/d_nav_send"
+            android:id="@+id/d_nav_recharge"
             android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_send" />
+            android:title="Recharge" />
 
 
         <item

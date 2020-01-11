@@ -21,6 +21,9 @@ public class User {
     @SerializedName("response")
     private String response;
 
+    @SerializedName("message")
+    private String message;
+
     @SerializedName("name")
     private String name;
 
@@ -99,6 +102,13 @@ public class User {
     private Double balance=0.0;
 
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;

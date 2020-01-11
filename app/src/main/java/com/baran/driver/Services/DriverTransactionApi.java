@@ -2,6 +2,7 @@ package com.baran.driver.Services;
 
 import com.baran.driver.Model.DriverTransaction;
 import com.baran.driver.Model.Ride;
+import com.baran.driver.Model.User;
 import com.baran.driver.Model.UserRideTransaction;
 
 import java.util.List;
@@ -21,5 +22,10 @@ public interface DriverTransactionApi {
     @POST("driver_transaction_details.php")
     Call <UserRideTransaction> getTransactionDetails(@Field("trans_id") int   transId);
 
+
+    @FormUrlEncoded
+    @POST("recharge_account.php")
+    Call <User> recharge(@Field("user_id") int userId,@Field("payment_type") String transactionType,
+                         @Field("transaction_id") String transactionId,@Field("amount") Double amount);
 
 }

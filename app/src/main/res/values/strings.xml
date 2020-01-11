@@ -49,6 +49,15 @@
         <item>Car</item>
         <item>Bike</item>
     </string-array>
+
+    <string-array name="payment_types">
+        <item>JazzCash</item>
+        <item>Easypaisa</item>
+        <item>UPaisa</item>
+    </string-array>
+
+
+
     <string name="sample">sample</string>
     <string name="title_activity_partner_info">PartnerInfoActivity</string>
     <string name="large_text">

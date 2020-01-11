@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +32,7 @@ public class TransactionDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root =  inflater.inflate(R.layout.fragment_transaction_details, container, false);
 
-        tvTransactionId = root.findViewById(R.id.tv_transaction_id);
+        tvTransactionId = root.findViewById(R.id.et_transaction_id);
         tvTransactionType = root.findViewById(R.id.tv_transaction_type);
 
         tvDriverStartupFare = root.findViewById(R.id.tv_driver_startup_fare);
@@ -110,7 +111,8 @@ public class TransactionDetailsFragment extends Fragment {
 
                 @Override
                 public void onFailure(Call<UserRideTransaction> call, Throwable t) {
-
+                        Utils.dismissProgressBarSpinner();
+                        Log.e("error",t.toString());
                 }
             });
         }else{
