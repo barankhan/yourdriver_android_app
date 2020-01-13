@@ -259,11 +259,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         });
 
 
-
-
-
-       
-
         mRequestingLocationUpdates = true;
         mLastUpdateTime = "";
 
@@ -276,13 +271,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         createNotificationChannel();
 
 
+        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        if(currentUser.getPicture()!="") {
+            try
+            {   Picasso.Builder picassoBuilder = new Picasso.Builder(getContext());
+                picassoBuilder.downloader(new OkHttp3Downloader(RetrofitClient.okClient()));
+                picasso = picassoBuilder.build();
+                Picasso.setSingletonInstance(picasso); //apply to default singleton instance
+            }
+            catch ( IllegalStateException e )
+            {}
+            picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
+                    .into(imDriverAvatar);
 
-
-
-
-
-
-
+        }
 
 
 
@@ -296,6 +298,29 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         }else{
 
         }
+
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {
+                android.Manifest.permission.INTERNET,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.FOREGROUND_SERVICE,
+                android.Manifest.permission.SYSTEM_ALERT_WINDOW,
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                android.Manifest.permission.READ_PHONE_STATE,
+                android.Manifest.permission.RECORD_AUDIO,
+                android.Manifest.permission.MODIFY_AUDIO_SETTINGS,
+                android.Manifest.permission.ACCESS_NETWORK_STATE,
+                android.Manifest.permission.BLUETOOTH,
+                android.Manifest.permission.ACCESS_WIFI_STATE,
+                android.Manifest.permission.BLUETOOTH_ADMIN
+        };
+
+        if (!hasPermissions(getContext(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
+        }
+
 
 
         return root;
@@ -313,46 +338,56 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private void onlineOffLineButtonClicked(){
         String status= btnOnOffLine.getTag().toString();
         if(status.equals("Offline")){
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
-            userCall.enqueue(new Callback<DriverServerResponse>() {
+            Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
+            userCall.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                public void onResponse(Call<User> call, Response<User> response) {
                     if(response.isSuccessful()){
-                        currentUser.setIsDriverOnline(1);
-                        btnOnOffLine.setTag(response.body().getMessage());
-                        btnOnOffLine.setText(response.body().getMessage());
-                        MainActivity.appPreference.setUserObject(currentUser);
-                        btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.online));
-                        gpsService.startTracking();
+                        MainActivity.appPreference.setUserObject(response.body());
+                        currentUser = response.body();
+                        if(currentUser.getIsDriverOnline()==1){
+                            btnOnOffLine.setTag(response.body().getMessage());
+                            btnOnOffLine.setText(response.body().getMessage());
+                            btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.online));
+                            gpsService.startTracking();
+
+                        }else{
+                            Utils.showAlertBox(getActivity(),currentUser.getMessage());
+                        }
                     }else{
                         Utils.showAlertBox(getActivity(),"Sorry! Please try again later!");
                     }
                 }
 
                 @Override
-                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                public void onFailure(Call<User> call, Throwable t) {
                     Utils.showAlertBox(getActivity(),"Something went wrong! Please try again later.");
                 }
             });
         }else{
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
-            userCall.enqueue(new Callback<DriverServerResponse>() {
+            Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
+            userCall.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                public void onResponse(Call<User> call, Response<User> response) {
                     if(response.isSuccessful()){
-                        currentUser.setIsDriverOnline(0);
-                        btnOnOffLine.setTag(response.body().getMessage());
-                        btnOnOffLine.setText(response.body().getMessage());
-                        MainActivity.appPreference.setUserObject(currentUser);
-                        gpsService.stopTracking();
-                        btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.offline));
+                        MainActivity.appPreference.setUserObject(response.body());
+                        currentUser = response.body();
+                        if(response.body().getResponse().equals("success")){
+                            btnOnOffLine.setTag(response.body().getMessage());
+                            btnOnOffLine.setText(response.body().getMessage());
+                            gpsService.stopTracking();
+                            btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.offline));
+                        }else{
+                            Utils.showAlertBox(getActivity(),response.body().getMessage());
+                        }
+
                     }else{
                         Utils.showAlertBox(getActivity(),"Sorry! Please try again later!");
                     }
                 }
 
                 @Override
-                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                public void onFailure(Call<User> call, Throwable t) {
                     Utils.showAlertBox(getActivity(),"Something went wrong! Please try again later.");
                 }
             });
@@ -366,7 +401,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             if (name.endsWith("LocationBackgroundService")) {
                 gpsService = ((LocationBackgroundService.LocationServiceBinder) service).getService();
                 gpsService.registerCallBack(HomeFragment.this);
-                gpsService.startTracking();
+
 
             }
         }
@@ -404,20 +439,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
             }
         });
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
-        if(currentUser.getPicture()!="") {
-            try
-            {   Picasso.Builder picassoBuilder = new Picasso.Builder(getContext());
-                picassoBuilder.downloader(new OkHttp3Downloader(RetrofitClient.okClient()));
-                picasso = picassoBuilder.build();
-                Picasso.setSingletonInstance(picasso); //apply to default singleton instance
-            }
-            catch ( IllegalStateException e )
-            {}
-            picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
-                    .into(imDriverAvatar);
 
-        }
 
         if (isLocationEnabled()) {
             mapFragment.getMapAsync(this);
@@ -497,6 +519,22 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
     }
+
+
+    public static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+
     private boolean checkPermissions() {
         int permissionState = ActivityCompat.checkSelfPermission(getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION);

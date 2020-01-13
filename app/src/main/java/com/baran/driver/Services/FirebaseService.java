@@ -184,21 +184,7 @@ public class FirebaseService extends FirebaseMessagingService {
      */
     @Override
     public void onNewToken(String token) {
-        User u =  MainActivity.appPreference.getUserObjectWithoutUserValidation();
-        if(u!=null){
-            Call<User> userCall = MainActivity.serviceApi.doFirebaseTokenUpdate(u.getMobile(), token);
-            userCall.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    Log.e("TokenUpdate","OnNewToken Update failed");
-                }
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Log.e("TokenUpdate","OnNewToken Update failed");
-                }
-            });
-        }
     }
 
 

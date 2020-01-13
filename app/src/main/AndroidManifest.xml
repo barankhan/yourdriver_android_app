@@ -27,9 +27,18 @@
         android:roundIcon="@mipmap/ic_driver_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activity.SplashActivity"
+            android:theme="@style/SplashTheme"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Activity.ChatActivity">
             <intent-filter>
                 <action android:name="com.barankhan.driver.chat" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -37,7 +46,7 @@
         <receiver
             android:name=".Services.PopupReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
         <receiver android:name=".Services.NotificationAlertReceiver">
             <intent-filter>
                 <action android:name="com.barankhan.driver.notif_generated" />
@@ -46,7 +55,7 @@
 
         <activity
             android:name=".Activity.NotifActivity"
-            android:theme="@style/AppDialogScreenTheme"></activity>
+            android:theme="@style/AppDialogScreenTheme" />
         <activity android:name=".Activity.DriverTransactionActivity" />
         <activity android:name=".Activity.RideAlertActivity">
             <intent-filter>
@@ -99,12 +108,14 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <activity android:name=".Activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity
+            android:name=".Activity.MainActivity"
+            >
+
         </activity>
+
+
+
 
         <receiver android:name="Services.DriverAlertReceiver">
             <intent-filter>
@@ -113,9 +124,6 @@
         </receiver>
 
         <activity android:name=".Activity.VoiceChatViewActivity" />
-
-
-
     </application>
 
 </manifest>

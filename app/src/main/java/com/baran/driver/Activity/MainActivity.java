@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         setContentView(R.layout.activity_main);
 
         container_layout = findViewById(R.id.fragment_container);
+        
         appPreference = new AppPreference(this);
 
 //        notifReceiver = new NotificationAlertReceiver();

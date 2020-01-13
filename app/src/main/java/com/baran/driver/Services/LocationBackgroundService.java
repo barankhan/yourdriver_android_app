@@ -17,6 +17,8 @@ import android.util.Log;
 
 import com.baran.driver.R;
 
+import java.util.Random;
+
 import androidx.core.app.NotificationCompat;
 
 public class LocationBackgroundService extends Service {
@@ -28,6 +30,7 @@ public class LocationBackgroundService extends Service {
     private LocationServiceCallback myCallback;
     private final int LOCATION_INTERVAL = 500;
     private final int LOCATION_DISTANCE = 10;
+    private static int srId=0;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -87,7 +90,7 @@ public class LocationBackgroundService extends Service {
     public void onCreate()
     {
 //        Log.i(TAG, "onCreate");
-        startForeground(12345678, getNotification());
+
     }
 
     @Override
@@ -110,6 +113,8 @@ public class LocationBackgroundService extends Service {
     }
 
     public void startTracking() {
+        srId+=1;
+        startForeground(srId, getNotification());
         initializeLocationManager();
         mLocationListener = new LocationListener(LocationManager.GPS_PROVIDER);
 
@@ -125,6 +130,7 @@ public class LocationBackgroundService extends Service {
     }
 
     public void stopTracking() {
+        stopForeground(true);
         this.onDestroy();
     }
 

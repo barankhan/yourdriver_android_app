@@ -10,6 +10,7 @@ import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -195,6 +196,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         tvDriverName = root.findViewById(R.id.tv_driver_name);
         tvVehicleNo = root.findViewById(R.id.tv_vehicle_no);
         tvDriverMobileNo = root.findViewById(R.id.tv_driver_mobile_no);
+        tvDriverMobileNo.setOnClickListener(this);
+        tvDriverName.setOnClickListener(this);
 
         try
         {
@@ -990,6 +993,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     });
                 }
                 break;
+            case R.id.tv_driver_name:
+            case R.id.tv_driver_mobile_no:
+                if(d!=null){
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_DIAL); // Action for what intent called for
+                    intent.setData(Uri.parse("tel: " + d.getMobile())); // Data with intent respective action on intent
+                    startActivity(intent);
+                }
+                break;
+
         }
     }
 
