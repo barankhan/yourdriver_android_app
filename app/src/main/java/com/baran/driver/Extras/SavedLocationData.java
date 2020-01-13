@@ -3,9 +3,12 @@ package com.baran.driver.Extras;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+
 public class SavedLocationData implements Parcelable {
     private  int id;
     private  String title,lat,lng,primary_text,secondary_text,place_id;
+    private AutocompleteSessionToken token;
     public SavedLocationData(int id,String title,String lat,String lng,String primary_text,String secondary_text,String place_id){
         this.id=id;
         this.title=title;
@@ -17,15 +20,18 @@ public class SavedLocationData implements Parcelable {
     }
 
 
-    public SavedLocationData(String primary_text,String secondary_text,String place_id){
+    public SavedLocationData(String primary_text,String secondary_text,String place_id,AutocompleteSessionToken token){
 
         this.primary_text=primary_text;
         this.secondary_text=secondary_text;
         this.place_id=place_id;
+        this.token = token;
     }
 
 
-
+    public AutocompleteSessionToken getToken() {
+        return token;
+    }
 
     public int getId(){
         return  this.id;

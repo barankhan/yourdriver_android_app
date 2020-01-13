@@ -297,6 +297,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                                 if(response.body().getResponse().equals("no_driver_found")){
                                     Utils.dismissProgressBarSpinner();
                                     showAlertBox(getActivity(),response.body().getMessage());
+                                    MainActivity.appPreference.setIsPickupMode(true);
+                                    MainActivity.appPreference.setIsDropoffMode(false);
                                     initialState();
 
                                 }else if(response.body().getResponse().equals("alert_sent_to_driver")){

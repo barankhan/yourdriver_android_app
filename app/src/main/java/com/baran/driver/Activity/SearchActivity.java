@@ -47,6 +47,10 @@ public class SearchActivity extends AppCompatActivity  {
     LinearLayout linearLayout;
     DBHelper mydb;
     PlacesClient placesClient;
+
+    public static boolean generateNewToken=false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +68,7 @@ public class SearchActivity extends AppCompatActivity  {
         placesClient = Places.createClient(SearchActivity.this);
 
         SavedLocationDataAdapter adapter = new SavedLocationDataAdapter(this, arrayOfUsers,SearchActivity.this);
+        token = AutocompleteSessionToken.newInstance();
         final LocationDataAdapter locationAdapter = new LocationDataAdapter(this, arrayOfSuggestions,placesClient,SearchActivity.this,adapter);
 
 
@@ -87,7 +92,7 @@ public class SearchActivity extends AppCompatActivity  {
             adapter.add(array_list.get(i));
         }
 
-        token = AutocompleteSessionToken.newInstance();
+
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
@@ -109,6 +114,10 @@ public class SearchActivity extends AppCompatActivity  {
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                     if(s.length()>2){
+                        if(generateNewToken){
+                            token = AutocompleteSessionToken.newInstance();
+                            generateNewToken = false;
+                        }
                         RectangularBounds bounds = RectangularBounds.newInstance(
                                 new LatLng(30.0519792, 71.3039295),new LatLng(30.3105332, 71.64538709999999));
                         request = FindAutocompletePredictionsRequest.builder()
@@ -125,7 +134,7 @@ public class SearchActivity extends AppCompatActivity  {
                                     String pText=prediction.getPrimaryText(null).toString();
                                     String sText=prediction.getSecondaryText(null).toString();
                                     String placeId=prediction.getPlaceId();
-                                    locationAdapter.add(new SavedLocationData(pText,sText,placeId));
+                                    locationAdapter.add(new SavedLocationData(pText,sText,placeId,token));
 
                                 }
                             }

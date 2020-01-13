@@ -33,6 +33,7 @@
     <item name="image_uri" type="id" />
     <item name="media_path" type="id" />
     <item name="place_id" type="id" />
+    <item name="places_token" type="id" />
     <item name="primary_text" type="id" />
     <item name="secondary_text" type="id" />
     <item name="saved_location_object" type="id" />
