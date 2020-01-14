@@ -199,23 +199,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         tvDriverMobileNo.setOnClickListener(this);
         tvDriverName.setOnClickListener(this);
 
-        try
-        {
-            Picasso.Builder picassoBuilder = new Picasso.Builder(getContext());
-            picassoBuilder.downloader(new OkHttp3Downloader(RetrofitClient.okClient()));
-            picasso = picassoBuilder.build();
-            Picasso.setSingletonInstance(picasso); //apply to default singleton instance
-        }
 
-        catch ( IllegalStateException e )
-        {
-            //TODO
-        }
-
-        if(currentUser.getPicture()!="") {
-            picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
-                    .into(imPassengerImage);
-        }
 
 
 

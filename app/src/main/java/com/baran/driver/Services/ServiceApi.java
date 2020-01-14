@@ -71,4 +71,15 @@ public interface ServiceApi {
     Call <DriverServerResponse> findDriver(@Field("mobile") String mobile, @Field("lat") double lat,
                                            @Field("lng") double lng,@Field("rejected_ids") String rejected_ids);
 
+
+    @FormUrlEncoded
+    @POST("update_profile.php")
+    Call<User> updateProfile(@Field("mobile") String mobile,@Field("name") String name, @Field("father") String father,@Field("email") String email);
+
+
+
+    @Multipart
+    @POST("update_profile_picture.php")
+    Call <User> updateProfilePicture(@Part MultipartBody.Part picture,@Part("mobile") RequestBody mobile);
+
 }
