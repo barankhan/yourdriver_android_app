@@ -317,7 +317,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 android.Manifest.permission.BLUETOOTH_ADMIN
         };
 
-        if (!hasPermissions(getContext(), PERMISSIONS)) {
+        if (!Utils.hasPermissions(getContext(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
         }
 
@@ -521,16 +521,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     }
 
 
-    public static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+
 
 
 

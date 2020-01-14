@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -71,6 +72,19 @@ public class ProfilePictureFragment extends Fragment implements View.OnClickList
         return root;
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String[] PERMISSIONS = {
+                android.Manifest.permission.INTERNET,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+        };
+
+        if (!Utils.hasPermissions(getContext(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
+        }
+    }
 
     @Override
     public void onClick(View v) {
