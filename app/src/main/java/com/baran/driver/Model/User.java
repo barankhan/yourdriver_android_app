@@ -109,6 +109,41 @@ public class User {
     private String vehicleColor;
 
 
+    @SerializedName("totalRides")
+    private int totalRides;
+
+
+    @SerializedName("rating")
+    private int rating;
+
+    @SerializedName("acceptancePoints")
+    private int acceptancePoints;
+
+
+    public int getTotalRides() {
+        return totalRides;
+    }
+
+    public void setTotalRides(int totalRides) {
+        this.totalRides = totalRides;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
+    }
+
+    public int getAcceptancePoints() {
+        return acceptancePoints;
+    }
+
+    public void setAcceptancePoints(int acceptancePoints) {
+        this.acceptancePoints = acceptancePoints;
+    }
+
     public String getVehicleMade() {
         return vehicleMade;
     }

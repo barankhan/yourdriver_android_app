@@ -71,9 +71,13 @@ public class DriverActivity extends AppCompatActivity {
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_SETTLING && !drawer.isDrawerOpen(GravityCompat.START)) {
                     User currentUser  = MainActivity.appPreference.getUserObjectWithoutUserValidation();
-                    Log.e("drawer opening","here we go");
                     TextView driverBalance = headerView.findViewById(R.id.tv_driver_balance);
-                    driverBalance.setText(String.valueOf(currentUser.getBalance()));
+                    driverBalance.setText("Balance: "+String.valueOf(currentUser.getBalance()));
+                    TextView rating = headerView.findViewById(R.id.tv_acceptance_rating);
+                    rating.setText("Rating: "+String.valueOf(currentUser.getRating())+", "+String.valueOf(currentUser.getAcceptancePoints()));
+                    TextView tvRides = headerView.findViewById(R.id.tv_total_rides);
+                    tvRides.setText("Total Rides: "+String.valueOf(currentUser.getTotalRides()));
+
                 }
             }
         });
