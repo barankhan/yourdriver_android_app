@@ -559,7 +559,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     tvDriverMobileNo.setVisibility(View.VISIBLE);
                     tvDriverName.setText(driver.getName());
                     tvDriverMobileNo.setText(driver.getMobile());
-                    tvVehicleNo.setText(driver.getRegAlphabet()+"-"+driver.getRegYear()+"-"+driver.getRegNo()+"(Honda-Black)");
+                    tvVehicleNo.setText(driver.getRegAlphabet()+"-"+driver.getRegYear()+"-"+driver.getRegNo()+"("+driver.getVehicleMade()+"-"+driver.getVehicleColor()+")");
                     if(driver.getPicture()!="") {
                         picasso.get().load(Constant.baseUrl.UPLOADS_URL+driver.getPicture()).noPlaceholder().fit().centerCrop()
                                 .into(imDriverImage);

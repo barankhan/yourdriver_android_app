@@ -28,7 +28,7 @@
         android:layout_marginTop="9dp"
         android:gravity="left|center"
         android:text="TextView"
-        android:textColor="@color/colorAccentOld"
+        android:textColor="@color/colorAccent"
         android:textSize="20dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -20,7 +20,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginTop="2dp"
         android:text="Balance:"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
@@ -31,7 +31,7 @@
         android:layout_marginTop="2dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/textView5"
         app:layout_constraintTop_toBottomOf="@+id/textView9" />
@@ -43,7 +43,7 @@
         android:layout_marginTop="2dp"
         android:text="TextView"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/textView9"
         app:layout_constraintTop_toBottomOf="@+id/tv_driver_email" />
@@ -74,7 +74,7 @@
         android:layout_marginTop="2dp"
         android:text="@string/nav_header_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toTopOf="@+id/tv_driver_email"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/im_driver_pic_hd" />
@@ -88,7 +88,7 @@
         android:layout_marginTop="2dp"
         android:text="@string/nav_header_subtitle"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_driver_name" />
@@ -101,7 +101,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginTop="2dp"
         android:text="Acceptance Rating:"
-        android:textColor="#000000"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toStartOf="@+id/tv_acceptance_rating"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_driver_email" />

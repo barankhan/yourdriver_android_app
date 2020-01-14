@@ -90,7 +90,7 @@ public class User {
     @SerializedName("regNo")
     private String regNo;
 
-    @SerializedName("$vehicleType")
+    @SerializedName("vehicleType")
     private String vehicleType;
 
 
@@ -101,6 +101,29 @@ public class User {
     @SerializedName("balance")
     private Double balance=0.0;
 
+
+    @SerializedName("vehicleMade")
+    private String vehicleMade;
+
+    @SerializedName("vehicleColor")
+    private String vehicleColor;
+
+
+    public String getVehicleMade() {
+        return vehicleMade;
+    }
+
+    public void setVehicleMade(String vehicleMade) {
+        this.vehicleMade = vehicleMade;
+    }
+
+    public String getVehicleColor() {
+        return vehicleColor;
+    }
+
+    public void setVehicleColor(String vehicleColor) {
+        this.vehicleColor = vehicleColor;
+    }
 
     public String getMessage() {
         return message;

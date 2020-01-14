@@ -186,7 +186,7 @@
 
         <TextView
             android:id="@+id/tv_driver_mobile_no"
-            android:layout_width="185dp"
+            android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:gravity="center"
             android:textAllCaps="true"
@@ -201,7 +201,7 @@
 
         <TextView
             android:id="@+id/tv_driver_name"
-            android:layout_width="184dp"
+            android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:gravity="center"
             android:textAllCaps="true"
@@ -216,7 +216,7 @@
 
         <TextView
             android:id="@+id/tv_vehicle_no"
-            android:layout_width="185dp"
+            android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:gravity="center"
             android:textAllCaps="true"
