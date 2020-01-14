@@ -91,9 +91,15 @@ public class Passenger extends AppCompatActivity {
                     User currentUser  = MainActivity.appPreference.getUserObjectWithoutUserValidation();
                     TextView tvUserName = headerView.findViewById(R.id.nav_user_name);
                     TextView tvUserEmail = headerView.findViewById(R.id.nav_user_email);
+                    TextView tvBalance = headerView.findViewById(R.id.nav_user_balance);
+                    TextView tvMobile = headerView.findViewById(R.id.nav_user_mobile);
+
                     ImageView imPassengerIcon =  headerView.findViewById(R.id.im_passenger_image);
                     tvUserName.setText(currentUser.getName());
                     tvUserEmail.setText(currentUser.getEmail());
+                    tvBalance.setText("Balance: "+currentUser.getBalance());
+                    tvMobile.setText(currentUser.getMobile());
+
 
 
 
@@ -209,12 +215,12 @@ public class Passenger extends AppCompatActivity {
 
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.passenger, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.passenger, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onSupportNavigateUp() {

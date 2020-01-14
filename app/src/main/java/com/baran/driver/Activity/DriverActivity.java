@@ -58,8 +58,10 @@ public class DriverActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.d_nav_home, R.id.d_nav_transactions, R.id.d_nav_slideshow,
-                R.id.d_nav_tools, R.id.d_nav_share)
+                R.id.d_nav_home, R.id.d_nav_transactions
+//                , R.id.d_nav_slideshow
+//                ,R.id.d_nav_tools, R.id.d_nav_share
+        )
                 .setDrawerLayout(drawer)
                 .build();
 
@@ -135,12 +137,12 @@ public class DriverActivity extends AppCompatActivity {
         drawer.closeDrawers();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.driver, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.driver, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onSupportNavigateUp() {

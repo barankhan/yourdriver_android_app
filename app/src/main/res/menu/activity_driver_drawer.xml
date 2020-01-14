@@ -12,19 +12,19 @@
             android:id="@+id/d_nav_transactions"
             android:icon="@drawable/ic_transaction_24dp"
             android:title="Transactions" />
-        <item
-            android:id="@+id/d_nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/d_nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+<!--        <item-->
+<!--            android:id="@+id/d_nav_slideshow"-->
+<!--            android:icon="@drawable/ic_menu_slideshow"-->
+<!--            android:title="@string/menu_slideshow" />-->
+<!--        <item-->
+<!--            android:id="@+id/d_nav_tools"-->
+<!--            android:icon="@drawable/ic_menu_manage"-->
+<!--            android:title="@string/menu_tools" />-->
 
-        <item
-            android:id="@+id/d_nav_share"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_share" />
+<!--        <item-->
+<!--            android:id="@+id/d_nav_share"-->
+<!--            android:icon="@drawable/ic_menu_manage"-->
+<!--            android:title="@string/menu_share" />-->
 
         <item
             android:id="@+id/d_nav_recharge"

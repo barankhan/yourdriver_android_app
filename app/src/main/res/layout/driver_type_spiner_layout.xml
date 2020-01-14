@@ -26,14 +26,13 @@
         android:layout_width="199dp"
         android:layout_height="39dp"
         android:layout_marginTop="9dp"
-        android:text="TextView"
         android:gravity="left|center"
+        android:text="TextView"
+        android:textColor="@color/colorAccentOld"
         android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvDriverTypeImg"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="@color/colorAccent"
-        android:textStyle="bold"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
