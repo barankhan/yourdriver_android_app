@@ -4,13 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.baran.driver.Constants.Constant;
-import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Fragments.DriverDataUpdateFragmentStep1;
 import com.baran.driver.Fragments.DriverDataUpdateFragmentStep2;
 import com.baran.driver.Fragments.ProfileFragment;
 import com.baran.driver.Fragments.ProfilePictureFragment;
-import com.baran.driver.Fragments.passenger.gallery.GalleryFragment;
+import com.baran.driver.Fragments.passenger.transactions.TransactionsFragment;
 import com.baran.driver.Fragments.passenger.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
 import com.baran.driver.Model.User;
@@ -37,12 +36,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -114,8 +111,9 @@ public class Passenger extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_profile,
-                R.id.nav_tools, R.id.nav_share, R.id.nav_logout)
+                R.id.nav_home, R.id.nav_passenger_transactions, R.id.nav_profile,
+//                R.id.nav_tools, R.id.nav_share,
+                R.id.nav_logout)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -162,8 +160,8 @@ public class Passenger extends AppCompatActivity {
             case R.id.nav_home:
                 fragmentClass = HomeFragment.class;
                 break;
-            case R.id.nav_gallery:
-                fragmentClass = GalleryFragment.class;
+            case R.id.nav_passenger_transactions:
+                fragmentClass = TransactionsFragment.class;
                 break;
             case R.id.nav_logout:
                 fragmentClass = LogoutFragment.class;

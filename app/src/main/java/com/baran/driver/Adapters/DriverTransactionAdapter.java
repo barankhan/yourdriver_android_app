@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Fragments.driver.transactions.TransactionDetailsFragment;
+
+
 import com.baran.driver.Model.DriverTransaction;
 import com.baran.driver.R;
 
@@ -54,11 +57,21 @@ public class DriverTransactionAdapter extends RecyclerView.Adapter<DriverTransac
             public void onClick(View v) {
                 Bundle b = new Bundle();
                 b.putInt("transactionId",Integer.valueOf(v.getTag().toString()));
-                TransactionDetailsFragment transactionDetailsFragment = new TransactionDetailsFragment();
-                transactionDetailsFragment.setArguments(b);
+
 
                 FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.d_nav_host_fragment, transactionDetailsFragment).addToBackStack("@@").commit();
+
+                if(MainActivity.appPreference.getUserObjectWithoutUserValidation().getId()==transaction.getPassengerId()){
+                    com.baran.driver.Fragments.passenger.transactions.TransactionDetailsFragment transactionDetailsFragment =
+                            new com.baran.driver.Fragments.passenger.transactions.TransactionDetailsFragment();
+                    transactionDetailsFragment.setArguments(b);
+                    fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, transactionDetailsFragment).addToBackStack("@@").commit();
+                }else{
+                    TransactionDetailsFragment transactionDetailsFragment = new TransactionDetailsFragment();
+                    transactionDetailsFragment.setArguments(b);
+                    fragmentManager.beginTransaction().replace(R.id.d_nav_host_fragment, transactionDetailsFragment).addToBackStack("@@").commit();
+                }
+
             }
         });
     }

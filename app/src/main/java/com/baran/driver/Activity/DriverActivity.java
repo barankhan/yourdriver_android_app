@@ -58,7 +58,7 @@ public class DriverActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.d_nav_home, R.id.d_nav_gallery, R.id.d_nav_slideshow,
+                R.id.d_nav_home, R.id.d_nav_transactions, R.id.d_nav_slideshow,
                 R.id.d_nav_tools, R.id.d_nav_share)
                 .setDrawerLayout(drawer)
                 .build();
@@ -98,7 +98,7 @@ public class DriverActivity extends AppCompatActivity {
             case R.id.d_nav_home:
                 fragmentClass = HomeFragment.class;
                 break;
-            case R.id.d_nav_gallery:
+            case R.id.d_nav_transactions:
                 fragmentClass = TransactionsFragment.class;
                 break;
             case R.id.d_nav_logout:
