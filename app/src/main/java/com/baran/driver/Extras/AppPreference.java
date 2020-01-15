@@ -114,6 +114,13 @@ public class AppPreference {
         editor.commit();
     }
 
+    public void setUserObjectWithEncodedJson(String rideJSON){
+//        Gson gson = new Gson();
+//        String json = gson.toJson(r); // myObject - instance of MyObject
+        editor.putString("UserObj", rideJSON);
+        editor.commit();
+    }
+
     public void setRideObject(Ride r){
         Gson gson = new Gson();
         String json = gson.toJson(r); // myObject - instance of MyObject

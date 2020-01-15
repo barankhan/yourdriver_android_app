@@ -18,7 +18,7 @@ public interface PassengerTransactionApi {
     Call <List<DriverTransaction>> getTransactions(@Field("passenger_id") int PassengerID, @Field("page_no") int pageNo);
 
     @FormUrlEncoded
-    @POST("driver_transaction_details.php")
+    @POST("passenger_transaction_details.php")
     Call <UserRideTransaction> getTransactionDetails(@Field("trans_id") int transId);
 
 

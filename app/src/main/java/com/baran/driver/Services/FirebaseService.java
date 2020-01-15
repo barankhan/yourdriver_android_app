@@ -95,6 +95,7 @@ public class FirebaseService extends FirebaseMessagingService {
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("d_ride_cancelled")){
                 MainActivity.appPreference.setRideObject(null);
+                MainActivity.appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

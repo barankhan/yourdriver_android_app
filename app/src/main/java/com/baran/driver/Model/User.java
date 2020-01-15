@@ -114,7 +114,7 @@ public class User {
 
 
     @SerializedName("rating")
-    private int rating;
+    private double rating;
 
     @SerializedName("acceptancePoints")
     private int acceptancePoints;
@@ -128,11 +128,11 @@ public class User {
         this.totalRides = totalRides;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 

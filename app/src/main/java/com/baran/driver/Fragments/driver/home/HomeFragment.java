@@ -727,11 +727,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             if(r!=null){
                 ride_id=String.valueOf(r.getId());
                 passenger_id = String.valueOf(r.getPassengerId()) ;
+                double distance=0;
+                if(r.getIsRideStarted()==0) {
 
-                Location startPoint=new Location("pickup_location");
-                startPoint.setLatitude(r.getPickupLat());
-                startPoint.setLongitude(r.getPickupLng());
-                double distance=startPoint.distanceTo(currentLocation);
+                    Location startPoint = new Location("pickup_location");
+                    startPoint.setLatitude(r.getPickupLat());
+                    startPoint.setLongitude(r.getPickupLng());
+                    distance = startPoint.distanceTo(currentLocation);
+                }else if(r.getIsRideStarted()==1 && r.getDropoffLat()!=null && r.getDropoffLng()!=null){
+                    Location startPoint = new Location("dropoff_location");
+                    startPoint.setLatitude(r.getDropoffLat());
+                    startPoint.setLongitude(r.getDropoffLng());
+                    distance = startPoint.distanceTo(currentLocation);
+                }
                 showArrivedButtonsWithDistance(r,distance);
                 if (r.getIsRideStarted()==1){
                     DBHelper dbHelper;
@@ -742,16 +750,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
                 if(r.getIsRideStarted()==0){
 
-                    latLngBuilder.include(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).include(new LatLng(r.getPickupLat(),r.getPickupLng()));
+//                    latLngBuilder.include(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).include(new LatLng(r.getPickupLat(),r.getPickupLng()));
                     //Animate to the bounds
-                    LatLng center = latLngBuilder.build().getCenter();
                     cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(getZoomLevel(distance*1.5)).build();
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 }else if(r.getIsRideStarted()==1 && r.getDropoffLat()!=null && r.getDropoffLng()!=null){
-                    latLngBuilder.include(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).include(new LatLng(r.getDropoffLat(),r.getDropoffLng()));
+//                    latLngBuilder.include(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).include(new LatLng(r.getDropoffLat(),r.getDropoffLng()));
                     //Animate to the bounds
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(latLngBuilder.build(), 400, 400, 5);
-                    mMap.moveCamera(cameraUpdate);
+                    cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(getZoomLevel(distance*1.5)).build();
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 }else{
                     cameraPosition = new CameraPosition.Builder().target(new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude())).zoom(DEFAULT_PICKUP_ZOOM).build();
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
