@@ -43,6 +43,7 @@ import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.RidePath;
 import com.baran.driver.Model.DriverTransaction;
 import com.baran.driver.Model.User;
+import com.baran.driver.Model.UserRide;
 import com.baran.driver.R;
 import com.baran.driver.Services.ChatHeadService;
 import com.baran.driver.Services.DriverAlertReceiver;
@@ -956,22 +957,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 });
                 break;
             case R.id.btn_driver_ride_cancel:
-                Call<Ride> rideCall = DriverActivity.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
+                Call<UserRide> rideCall = DriverActivity.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
                 Utils.showProgressBarSpinner(getContext());
-                rideCall.enqueue(new Callback<Ride>() {
+                rideCall.enqueue(new Callback<UserRide>() {
                     @Override
-                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                    public void onResponse(Call<UserRide> call, Response<UserRide> response) {
                         // When cancelling the ride; ride & passenger object should be removed from shared preference.
-
-
-
                         Utils.dismissProgressBarSpinner();
                         if(response.isSuccessful()){
-                            if(response.body().getIsRideCancelled()==1){
+                            if(response.body().getResponse().equals("ride_cancelled_successfully")){
                                 initialState();
                                 Utils.showAlertBox(getActivity(),"Ride Cancelled Successfully");
                                 MainActivity.appPreference.setRideObject(null);
                                 MainActivity.appPreference.setPassengerObject(null);
+                                MainActivity.appPreference.setUserObject(response.body().getUser());
                             }else{
                                 Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
                             }
@@ -981,7 +980,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     }
 
                     @Override
-                    public void onFailure(Call<Ride> call, Throwable t) {
+                    public void onFailure(Call<UserRide> call, Throwable t) {
                         Utils.dismissProgressBarSpinner();
                         Utils.showAlertBox(getActivity(),"Unable to communicate with server.");
                     }

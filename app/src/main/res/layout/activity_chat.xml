@@ -20,17 +20,35 @@
 
     <EditText
         android:id="@+id/userInput"
+        android:layout_width="339dp"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
-        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/chat_bg_edit_text"
         android:hint="Type your message..."
-        android:inputType="text"
-        android:textColor="#fff"
-        android:padding="12dp"
         android:imeActionId="4"
         android:imeOptions="actionSend"
+        android:inputType="text"
+        android:padding="12dp"
+        android:textColor="#fff"
         android:textColorHint="#fff"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/btn_send_chat"
+        android:layout_width="53dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="8dp"
+
+        android:layout_marginBottom="11dp"
+        android:background="@android:drawable/ic_menu_send"
+        android:imeOptions="actionSend"
+        android:text=">" />
 </RelativeLayout>

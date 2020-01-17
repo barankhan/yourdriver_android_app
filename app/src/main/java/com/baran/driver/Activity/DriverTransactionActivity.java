@@ -18,8 +18,8 @@ import com.baran.driver.Constants.Constant;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.DriverTransaction;
-import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
+import com.baran.driver.Model.UserTransaction;
 import com.baran.driver.R;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.RidesApi;
@@ -44,7 +44,8 @@ public class DriverTransactionActivity extends AppCompatActivity {
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
 
         tvChange = findViewById(R.id.tv_passenger_change);
-        tvTotalFare = findViewById(R.id.tv_total_fare_amount);
+
+        tvTotalFare = findViewById(R.id.tv_payable_amount);
 
         etTransAmount = findViewById(R.id.et_trans_amount);
 
@@ -55,34 +56,32 @@ public class DriverTransactionActivity extends AppCompatActivity {
         if(driverTransaction==null){
             Utils.showAlertBox(this,"There is some problem in the transaction!");
         }else{
-            tvTotalFare.setText(driverTransaction.getTotalFare().toString());
+            tvTotalFare.setText(driverTransaction.getPayableAmount().toString());
         }
 
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if( Double.valueOf(etTransAmount.getText().toString())> Math.floor(driverTransaction.getTotalFare())){
-                    Utils.showAlertBox(DriverTransactionActivity.this,"You can't charge extra Amount");
-                }else if(Double.valueOf(etTransAmount.getText().toString())<Math.floor(driverTransaction.getTotalFare())){
+                if(Double.valueOf(etTransAmount.getText().toString())<Math.floor(driverTransaction.getPayableAmount())){
                     Utils.showAlertBox(DriverTransactionActivity.this,"You can't charge less Amount");
                 }else{
 
                     Utils.showProgressBarSpinner(c);
                     User u = MainActivity.appPreference.getUserObject(c,DriverTransactionActivity.this);
-                    Call<DriverServerResponse> userCall = ridesApi.updateTransaction(u.getMobile(),driverTransaction.getId(),etTransAmount.getText().toString());
-                    userCall.enqueue(new Callback<DriverServerResponse>() {
+                    Call<UserTransaction> userCall = ridesApi.updateTransaction(u.getMobile(),driverTransaction.getId(),etTransAmount.getText().toString());
+                    userCall.enqueue(new Callback<UserTransaction>() {
                         @Override
-                        public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                        public void onResponse(Call<UserTransaction> call, Response<UserTransaction> response) {
                             Utils.dismissProgressBarSpinner();
                             if(response.isSuccessful()){
-
-                                User u = MainActivity.appPreference.getUserObjectWithoutUserValidation();
-                                u.setBalance(driverTransaction.getDriverBalance());
-                                MainActivity.appPreference.setUserObject(u);
-
-                                MainActivity.appPreference.setDriverTransactionObject(null);
-                                finish();
+                                if(response.body().getResponse().equals("amount_update_success")){
+                                    MainActivity.appPreference.setUserObject(response.body().getUser());
+                                    MainActivity.appPreference.setDriverTransactionObject(null);
+                                    finish();
+                                }else {
+                                    Utils.showAlertBox(DriverTransactionActivity.this,response.body().getMessage());
+                                }
 
                             }else{
                                 Utils.showAlertBox(DriverTransactionActivity.this,"Unable to update on server!");
@@ -90,7 +89,7 @@ public class DriverTransactionActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                        public void onFailure(Call<UserTransaction> call, Throwable t) {
                             Utils.showAlertBox(DriverTransactionActivity.this,"Unable to connect to the server!");
                         }
                     });
@@ -120,7 +119,7 @@ public class DriverTransactionActivity extends AppCompatActivity {
 
                     DecimalFormat df = new DecimalFormat("#.##");
                     df.setRoundingMode(RoundingMode.FLOOR);
-                    double roundOff = enteredAmount- driverTransaction.getTotalFare();
+                    double roundOff = enteredAmount- driverTransaction.getPayableAmount();
                     tvChange.setText(df.format(roundOff));
                 }else{
                     tvChange.setText("");

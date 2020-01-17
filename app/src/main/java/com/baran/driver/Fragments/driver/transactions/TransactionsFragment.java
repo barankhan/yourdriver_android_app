@@ -1,6 +1,7 @@
 package com.baran.driver.Fragments.driver.transactions;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,6 +121,7 @@ public class TransactionsFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<DriverTransaction>> call, Throwable t) {
+                Log.e("error",t.toString());
 
             }
         });

@@ -1,5 +1,6 @@
 package com.baran.driver.Fragments.driver.transactions;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,8 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.baran.driver.Activity.DriverTransactionActivity;
+import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.UserRideTransaction;
 import com.baran.driver.R;
@@ -24,13 +28,19 @@ public class TransactionDetailsFragment extends Fragment {
 
     private TextView tvTransactionId,tvTransactionType,tvDriverStartupFare,tvCompanyServiceCharges,
             tvTimeElapsedMinutes,tvTimeElapsedRate,tvKmTravelled,tvKmTravelledRate,tvTotalFare,tvAmountReceived,tvDistanceAmount,tvTimeAmount,
-            tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating;
+            tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating,
+            tvCompanyInwardHead,tvInwardHeadAmount,tvCompanyOutwardHead,tvOutwardHeadAmount;
+
+    private Button btnEnterCash;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root =  inflater.inflate(R.layout.fragment_transaction_details, container, false);
+
+        btnEnterCash = root.findViewById(R.id.btn_enter_cash);
+
 
         tvTransactionId = root.findViewById(R.id.et_transaction_id);
         tvTransactionType = root.findViewById(R.id.tv_transaction_type);
@@ -61,6 +71,15 @@ public class TransactionDetailsFragment extends Fragment {
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
 
 
+        tvCompanyInwardHead = root.findViewById(R.id.tv_company_inward_head);
+        tvCompanyOutwardHead = root.findViewById(R.id.tv_company_outward_head);
+
+        tvInwardHeadAmount = root.findViewById(R.id.tv_inward_head_amount);
+        tvOutwardHeadAmount = root.findViewById(R.id.tv_outward_head_amount);
+
+
+
+
 
 
 
@@ -73,6 +92,13 @@ public class TransactionDetailsFragment extends Fragment {
                 public void onResponse(Call<UserRideTransaction> call, Response<UserRideTransaction> response) {
                     Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
+                        if(response.body().getDriverTransaction().getTransactionCompleted()==0){
+                            MainActivity.appPreference.setDriverTransactionObject(response.body().getDriverTransaction());
+                            btnEnterCash.setVisibility(View.VISIBLE);
+                        }
+
+
+
                         tvTransactionId.setText(String.valueOf(response.body().getDriverTransaction().getId()));
                         tvTransactionType.setText(String.valueOf(response.body().getDriverTransaction().getTransactionType()));
 
@@ -95,6 +121,26 @@ public class TransactionDetailsFragment extends Fragment {
                         tvDistanceAmount.setText(String.valueOf(Double.valueOf(df.format(ka))));
 
                         tvTotalFare.setText(String.valueOf(response.body().getDriverTransaction().getTotalFare()));
+
+                        if(response.body().getDriverTransaction().getCompanyInwardHead()!=null){
+                            tvCompanyInwardHead.setText(response.body().getDriverTransaction().getCompanyInwardHead());
+                            tvInwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getInwardHeadAmount()));
+
+                            tvCompanyInwardHead.setVisibility(View.VISIBLE);
+                            tvInwardHeadAmount.setVisibility(View.VISIBLE);
+                        }
+
+
+                        if(response.body().getDriverTransaction().getCompanyOutwardHead()!=null){
+                            tvCompanyOutwardHead.setText(response.body().getDriverTransaction().getCompanyOutwardHead());
+                            tvOutwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getOutwardHeadAmount()));
+
+                            tvCompanyOutwardHead.setVisibility(View.VISIBLE);
+                            tvOutwardHeadAmount.setVisibility(View.VISIBLE);
+                        }
+
+
+
                         tvAmountReceived.setText(String.valueOf(response.body().getDriverTransaction().getAmountReceived()));
 
                         tvTransactionCreatedAt.setText(response.body().getDriverTransaction().getCreatedAt());
@@ -104,6 +150,7 @@ public class TransactionDetailsFragment extends Fragment {
                         tvRideStartedAt.setText(response.body().getRide().getRideStartedAt());
                         tvRideEndedAt.setText(response.body().getRide().getRideEndedAt());
                         tvRideRating.setText(String.valueOf(response.body().getRide().getRating()));
+
 
                         tvPassengerName.setText(response.body().getUser().getName());
                     }
@@ -119,6 +166,16 @@ public class TransactionDetailsFragment extends Fragment {
             getActivity().getFragmentManager().popBackStack();
         }
 
+
+
+        btnEnterCash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                v.setVisibility(View.INVISIBLE);
+                Intent intent = new Intent(getContext(), DriverTransactionActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
 

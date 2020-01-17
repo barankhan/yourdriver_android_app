@@ -45,7 +45,7 @@ public class LogoutFragment extends Fragment {
 
 
         User u = appPreference.getUserObject(getContext(),getActivity());
-        if(u.getIsDriverOnline()==1){
+        if(u.getIsDriverOnline()==1 && u.getIsDriver()==1){
             Utils.showAlertBox(getActivity(),"You Can't Logout, Please go offline first!");
             FragmentManager fragmentManager = getFragmentManager();
             Fragment fragment = new HomeFragment();

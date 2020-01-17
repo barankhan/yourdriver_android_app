@@ -67,6 +67,103 @@ public class DriverTransaction {
     private Double totalAmount=0.0;
 
 
+//    $companyHead,$headAmount,$payableAmount
+
+
+    @SerializedName("payableAmount")
+    private Double payableAmount=0.0;
+
+
+    @SerializedName("inwardHeadAmount")
+    private Double inwardHeadAmount;
+
+    @SerializedName("companyInwardHead")
+    private  String companyInwardHead;
+
+
+
+    @SerializedName("outwardHeadAmount")
+    private Double outwardHeadAmount;
+
+    @SerializedName("companyOutwardHead")
+    private  String companyOutwardHead;
+
+
+    @SerializedName("transactionCompleted")
+    private int transactionCompleted;
+
+    @SerializedName("driverInitialBalance")
+    private double driverInitialBalance;
+
+    @SerializedName("passengerInitialBalance")
+    private double passengerInitialBalance;
+
+
+    public int getTransactionCompleted() {
+        return transactionCompleted;
+    }
+
+    public void setTransactionCompleted(int transactionCompleted) {
+        this.transactionCompleted = transactionCompleted;
+    }
+
+    public double getDriverInitialBalance() {
+        return driverInitialBalance;
+    }
+
+    public void setDriverInitialBalance(double driverInitialBalance) {
+        this.driverInitialBalance = driverInitialBalance;
+    }
+
+    public double getPassengerInitialBalance() {
+        return passengerInitialBalance;
+    }
+
+    public void setPassengerInitialBalance(double passengerInitialBalance) {
+        this.passengerInitialBalance = passengerInitialBalance;
+    }
+
+    public Double getOutwardHeadAmount() {
+        return outwardHeadAmount;
+    }
+
+    public void setOutwardHeadAmount(Double outwardHeadAmount) {
+        this.outwardHeadAmount = outwardHeadAmount;
+    }
+
+    public String getCompanyOutwardHead() {
+        return companyOutwardHead;
+    }
+
+    public void setCompanyOutwardHead(String companyOutwardHead) {
+        this.companyOutwardHead = companyOutwardHead;
+    }
+
+    public Double getInwardHeadAmount() {
+        return inwardHeadAmount;
+    }
+
+    public void setInwardHeadAmount(Double inwardHeadAmount) {
+        this.inwardHeadAmount = inwardHeadAmount;
+    }
+
+    public String getCompanyInwardHead() {
+        return companyInwardHead;
+    }
+
+    public void setCompanyInwardHead(String companyInwardHead) {
+        this.companyInwardHead = companyInwardHead;
+    }
+
+    public Double getPayableAmount() {
+        return payableAmount;
+    }
+
+    public void setPayableAmount(Double payableAmount) {
+        this.payableAmount = payableAmount;
+    }
+
+
     public String getResponse() {
         return response;
     }

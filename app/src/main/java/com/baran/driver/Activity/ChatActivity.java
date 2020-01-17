@@ -17,7 +17,9 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -44,6 +46,7 @@ public class ChatActivity extends AppCompatActivity {
     List<ChatMessage> responseMessageList;
     User currentUser;
     int rideId;
+    Button btnSendChat;
     public static boolean inFront = false;
     public static RidesApi ridesApi;
     private Ringtone r;
@@ -60,6 +63,13 @@ public class ChatActivity extends AppCompatActivity {
         }
         userInput = findViewById(R.id.userInput);
         recyclerView = findViewById(R.id.conversation);
+        btnSendChat = findViewById(R.id.btn_send_chat);
+        btnSendChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
         responseMessageList = new ArrayList<>();
         messageAdapter = new ChatMessageAdapter(responseMessageList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
@@ -79,31 +89,35 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_SEND || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) {
-                    ChatMessage responseMessage = new ChatMessage(userInput.getText().toString(), currentUser.getId(), currentUser.getId());
-                    responseMessageList.add(responseMessage);
-                    messageAdapter.notifyDataSetChanged();
-
-                    Call<DriverServerResponse> d = ridesApi.insertChat(currentUser.getId(),userInput.getText().toString(),rideId);
-                    d.enqueue(new Callback<DriverServerResponse>() {
-                        @Override
-                        public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<DriverServerResponse> call, Throwable t) {
-
-                        }
-                    });
-
-                    userInput.setText("");
-                    goToLastRecyclerView();
+                    sendMessage();
                 }
                 return false;
             }
         });
 
 
+    }
+
+    private void sendMessage(){
+        ChatMessage responseMessage = new ChatMessage(userInput.getText().toString(), currentUser.getId(), currentUser.getId());
+        responseMessageList.add(responseMessage);
+        messageAdapter.notifyDataSetChanged();
+
+        Call<DriverServerResponse> d = ridesApi.insertChat(currentUser.getId(),userInput.getText().toString(),rideId);
+        d.enqueue(new Callback<DriverServerResponse>() {
+            @Override
+            public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+
+            }
+        });
+
+        userInput.setText("");
+        goToLastRecyclerView();
     }
 
 

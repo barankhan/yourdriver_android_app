@@ -48,6 +48,7 @@ import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
+import com.baran.driver.Model.UserRide;
 import com.baran.driver.R;
 
 import com.baran.driver.Activity.SearchActivity;
@@ -889,13 +890,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         switch (v.getId()){
             case R.id.btn_cancel_ride:
 
-                Call<Ride> rideCall = Passenger.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
+                Call<UserRide> rideCall = Passenger.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
                 Utils.showProgressBarSpinner(getContext());
-                rideCall.enqueue(new Callback<Ride>() {
+                rideCall.enqueue(new Callback<UserRide>() {
                     @Override
-                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                    public void onResponse(Call<UserRide> call, Response<UserRide> response) {
                         Utils.dismissProgressBarSpinner();
                         if(response.isSuccessful()){
+                            MainActivity.appPreference.setUserObject(response.body().getUser());
                             MainActivity.appPreference.setDriverObject(null);
                             MainActivity.appPreference.setRideObject(null);
                             MainActivity.appPreference.setIsDropoffMode(false);
@@ -907,7 +909,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     }
 
                     @Override
-                    public void onFailure(Call<Ride> call, Throwable t) {
+                    public void onFailure(Call<UserRide> call, Throwable t) {
 
                     }
                 });

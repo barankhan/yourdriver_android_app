@@ -86,6 +86,13 @@ public class FirebaseService extends FirebaseMessagingService {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
+            else if(remoteMessage.getData().get("key").equals("p_amount_received")){
+                MainActivity.appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
             else if(remoteMessage.getData().get("key").equals("p_ride_accepted")){
                 MainActivity.appPreference.setDriverObjectWithEncodedJson(remoteMessage.getData().get("driver"));
                 MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
@@ -106,6 +113,7 @@ public class FirebaseService extends FirebaseMessagingService {
                 MainActivity.appPreference.setIsDropoffMode(false);
                 MainActivity.appPreference.setIsPickupMode(true);
                 MainActivity.appPreference.setPassengerObject(null);
+                MainActivity.appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

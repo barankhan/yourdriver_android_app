@@ -4,7 +4,9 @@ import com.baran.driver.Model.ChatMessage;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.DriverTransaction;
+import com.baran.driver.Model.User;
 import com.baran.driver.Model.UserRide;
+import com.baran.driver.Model.UserTransaction;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ public interface RidesApi {
 
     @FormUrlEncoded
     @POST("cancel_ride.php")
-    Call <Ride> cancelRide(@Field("mobile") String mobile,@Field("ride_id") String ride_id);
+    Call <UserRide> cancelRide(@Field("mobile") String mobile,@Field("ride_id") String ride_id);
 
     @FormUrlEncoded
     @POST("push_notification_received.php")
@@ -50,7 +52,7 @@ public interface RidesApi {
 
     @FormUrlEncoded
     @POST("transaction_amount_received.php")
-    Call <DriverServerResponse> updateTransaction(@Field("mobile") String mobile,@Field("trans_id") int trans_id,@Field("amount_received") String amount);
+    Call <UserTransaction> updateTransaction(@Field("mobile") String mobile, @Field("trans_id") int trans_id, @Field("amount_received") String amount);
 
 
     @FormUrlEncoded
