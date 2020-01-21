@@ -42,7 +42,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TicketViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final TicketViewHolder holder, int position) {
         final SupportTicket ticket = tickets.get(position);
 
 
@@ -56,12 +56,14 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
         }else{
             holder.tvTicketTitle.setTypeface(null);
         }
+        holder.tvTicketId.setText(String.valueOf(ticket.getId()));
 
         holder.tvTicketCreatedAt.setText(String.valueOf(ticket.getCreatedAt()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                holder.tvTicketTitle.setTypeface(null);
                 Intent intent = new Intent(context, SupportActivity.class);
                 intent.putExtra("ticket_id", v.getTag(R.id.support_ticket_id).toString());
                 intent.putExtra("subject", v.getTag(R.id.support_ticket_subject).toString());
@@ -81,13 +83,14 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
 
     public class TicketViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvTicketStatus,tvTicketTitle,tvTicketCreatedAt;
+        TextView tvTicketStatus,tvTicketTitle,tvTicketCreatedAt,tvTicketId;
 
         public TicketViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTicketStatus = itemView.findViewById(R.id.tv_ticket_status);
             tvTicketTitle = itemView.findViewById(R.id.tv_ticket_title);
             tvTicketCreatedAt = itemView.findViewById(R.id.tv_ticket_created_at);
+            tvTicketId = itemView.findViewById(R.id.tv_ticket_id);
         }
     }
 }
