@@ -124,6 +124,10 @@
         </receiver>
 
         <activity android:name=".Activity.VoiceChatViewActivity" />
+
+        <activity android:name=".Activity.SupportActivity"></activity>
+
+
     </application>
 
 </manifest>

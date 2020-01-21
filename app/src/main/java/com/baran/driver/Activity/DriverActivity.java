@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.baran.driver.Constants.Constant;
 import com.baran.driver.Fragments.driver.recharge.RechargeFragment;
+import com.baran.driver.Fragments.driver.tickets.TicketsFragment;
 import com.baran.driver.Fragments.driver.transactions.TransactionsFragment;
 import com.baran.driver.Fragments.driver.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
@@ -13,7 +14,6 @@ import com.baran.driver.R;
 import com.baran.driver.Services.RetrofitClient;
 import com.baran.driver.Services.RidesApi;
 
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.core.view.GravityCompat;
@@ -31,7 +31,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
@@ -81,7 +80,7 @@ public class DriverActivity extends AppCompatActivity {
                 }
             }
         });
-        NavController navController = Navigation.findNavController(this, R.id.d_nav_host_fragment);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
@@ -109,10 +108,9 @@ public class DriverActivity extends AppCompatActivity {
                 break;
             case R.id.d_nav_logout:
                 fragmentClass = LogoutFragment.class;
-
-
-
-
+                break;
+            case R.id.d_nav_support:
+                fragmentClass = TicketsFragment.class;
                 break;
             case R.id.d_nav_recharge:
                 fragmentClass = RechargeFragment.class;
@@ -133,7 +131,7 @@ public class DriverActivity extends AppCompatActivity {
 
             // Insert the fragment by replacing any existing fragment
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.d_nav_host_fragment, fragment).addToBackStack("@").commit();
+            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack("@").commit();
 
         }
         menuItem.setChecked(true);
@@ -150,7 +148,7 @@ public class DriverActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.d_nav_host_fragment);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }

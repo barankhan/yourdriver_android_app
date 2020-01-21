@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import okhttp3.internal.Util;
 
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Extras.AppPreference;
@@ -49,7 +48,7 @@ public class LogoutFragment extends Fragment {
             Utils.showAlertBox(getActivity(),"You Can't Logout, Please go offline first!");
             FragmentManager fragmentManager = getFragmentManager();
             Fragment fragment = new HomeFragment();
-            fragmentManager.beginTransaction().replace(R.id.d_nav_host_fragment, fragment).addToBackStack("@").commit();
+            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, fragment).addToBackStack("@").commit();
         }else{
             appPreference.setLoginStatus(false);
             appPreference.setUserObject(null);

@@ -24,7 +24,8 @@ public class TransactionDetailsFragment extends Fragment {
 
     private TextView tvTransactionId,tvTransactionType,tvDriverStartupFare,tvCompanyServiceCharges,
             tvTimeElapsedMinutes,tvTimeElapsedRate,tvKmTravelled,tvKmTravelledRate,tvTotalFare,tvAmountReceived,tvDistanceAmount,tvTimeAmount,
-            tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating;
+            tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating,
+            tvCompanyInwardHead,tvInwardHeadAmount,tvCompanyOutwardHead,tvOutwardHeadAmount;
 
 
     @Override
@@ -61,7 +62,11 @@ public class TransactionDetailsFragment extends Fragment {
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
 
 
+        tvCompanyInwardHead = root.findViewById(R.id.tv_company_inward_head2);
+        tvCompanyOutwardHead = root.findViewById(R.id.tv_company_outward_head2);
 
+        tvInwardHeadAmount = root.findViewById(R.id.tv_inward_head_amount2);
+        tvOutwardHeadAmount = root.findViewById(R.id.tv_outward_head_amount2);
 
 
 
@@ -97,6 +102,26 @@ public class TransactionDetailsFragment extends Fragment {
                         tvDistanceAmount.setText(String.valueOf(Double.valueOf(df.format(ka))));
 
                         tvTotalFare.setText(String.valueOf(response.body().getDriverTransaction().getTotalFare()));
+
+                        if(response.body().getDriverTransaction().getCompanyInwardHead()!=null){
+                            tvCompanyInwardHead.setText(response.body().getDriverTransaction().getCompanyInwardHead());
+                            tvInwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getInwardHeadAmount()));
+
+                            tvCompanyInwardHead.setVisibility(View.VISIBLE);
+                            tvInwardHeadAmount.setVisibility(View.VISIBLE);
+                        }
+
+
+                        if(response.body().getDriverTransaction().getCompanyOutwardHead()!=null){
+                            tvCompanyOutwardHead.setText(response.body().getDriverTransaction().getCompanyOutwardHead());
+                            tvOutwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getOutwardHeadAmount()));
+
+                            tvCompanyOutwardHead.setVisibility(View.VISIBLE);
+                            tvOutwardHeadAmount.setVisibility(View.VISIBLE);
+                        }
+
+
+
                         tvAmountReceived.setText(String.valueOf(response.body().getDriverTransaction().getAmountReceived()));
 
                         tvTransactionCreatedAt.setText(response.body().getDriverTransaction().getCreatedAt());

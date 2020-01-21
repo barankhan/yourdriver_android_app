@@ -69,7 +69,7 @@ public class DriverTransactionAdapter extends RecyclerView.Adapter<DriverTransac
                 }else{
                     TransactionDetailsFragment transactionDetailsFragment = new TransactionDetailsFragment();
                     transactionDetailsFragment.setArguments(b);
-                    fragmentManager.beginTransaction().replace(R.id.d_nav_host_fragment, transactionDetailsFragment).addToBackStack("@@").commit();
+                    fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, transactionDetailsFragment).addToBackStack("@@").commit();
                 }
 
             }

@@ -9,6 +9,7 @@ import com.baran.driver.Fragments.DriverDataUpdateFragmentStep1;
 import com.baran.driver.Fragments.DriverDataUpdateFragmentStep2;
 import com.baran.driver.Fragments.ProfileFragment;
 import com.baran.driver.Fragments.ProfilePictureFragment;
+import com.baran.driver.Fragments.driver.tickets.TicketsFragment;
 import com.baran.driver.Fragments.passenger.transactions.TransactionsFragment;
 import com.baran.driver.Fragments.passenger.home.HomeFragment;
 import com.baran.driver.Fragments.passenger.logout.LogoutFragment;
@@ -177,6 +178,10 @@ public class Passenger extends AppCompatActivity {
                 break;
             case R.id.nav_profile:
                 fragmentClass = ProfileFragment.class;
+                break;
+
+            case R.id.nav_support:
+                fragmentClass = TicketsFragment.class;
                 break;
         }
 

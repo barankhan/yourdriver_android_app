@@ -162,6 +162,11 @@ public class FirebaseService extends FirebaseMessagingService {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
+            }else if(remoteMessage.getData().get("key").equals("ticket_updated")){
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message",remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("teasing")){
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message","hiere");

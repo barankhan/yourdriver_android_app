@@ -31,6 +31,11 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Recharge" />
 
+        <item
+            android:id="@+id/d_nav_support"
+            android:icon="@drawable/ic_support_25_dp"
+            android:title="Support" />
+
 
         <item
             android:id="@+id/d_nav_logout"
