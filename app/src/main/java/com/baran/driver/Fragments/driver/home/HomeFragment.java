@@ -507,18 +507,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
             }
         }
-
-
-
-
-        TextView driverBalance = headerView.findViewById(R.id.tv_driver_balance);
-        driverBalance.setText(String.valueOf(currentUser.getBalance()));
-
-
-
-
-
-
+        
     }
 
 
