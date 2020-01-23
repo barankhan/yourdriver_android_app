@@ -111,7 +111,9 @@ public class ProfilePictureFragment extends Fragment implements View.OnClickList
                 Picasso.get().load(selectedImageURI).noPlaceholder().centerCrop()
                         .fit().into(imProfilePicture);
                 Utils.showProgressBarSpinner(getContext());
+
                 File profilePicture = new File(Utils.getRealPathFromURI(getContext(), selectedImageURI));
+
                 RequestBody profilePictureRequestBody = RequestBody.create(MediaType.parse("image/*"), profilePicture);
                 RequestBody mobileBody = RequestBody.create(MediaType.parse("text/plain"), currentUser.getMobile());
                 MultipartBody.Part profilePictureToUpload = MultipartBody.Part.createFormData("picture", "profile_pic_" + profilePicture.getName(), profilePictureRequestBody);

@@ -965,12 +965,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                         // When cancelling the ride; ride & passenger object should be removed from shared preference.
                         Utils.dismissProgressBarSpinner();
                         if(response.isSuccessful()){
-                            if(response.body().getResponse().equals("ride_cancelled_successfully")){
+                            if(response.body().getResponse().equals("ride_cancelled_successfully") ) {
                                 initialState();
-                                Utils.showAlertBox(getActivity(),"Ride Cancelled Successfully");
+                                Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
                                 MainActivity.appPreference.setRideObject(null);
                                 MainActivity.appPreference.setPassengerObject(null);
                                 MainActivity.appPreference.setUserObject(response.body().getUser());
+
+                            }else if(response.body().getResponse().equals("ride_cancel_error") && response.body().getRide().getIsRideCancelled()==1){
+                                initialState();
+                                Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
+                                MainActivity.appPreference.setRideObject(null);
+                                MainActivity.appPreference.setPassengerObject(null);
                             }else{
                                 Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
                             }

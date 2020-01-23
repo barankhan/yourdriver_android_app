@@ -8,20 +8,25 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.baran.driver.Model.DriverType;
 import com.baran.driver.R;
+
+import java.util.List;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class DriverTypeSpinnerAdapter extends ArrayAdapter<String> {
+public class DriverTypeSpinnerAdapter extends ArrayAdapter<List<DriverType>> {
     String[] spinnerTitles;
     int[] spinnerImages;
     Context mContext;
-    public DriverTypeSpinnerAdapter(@NonNull Context context, @LayoutRes int resource,String[] titles, int[] images) {
+    List<DriverType> driverTypeList;
+    public DriverTypeSpinnerAdapter(@NonNull Context context, @LayoutRes int resource,List<DriverType> driverTypeList) {
         super(context, resource);
-        this.spinnerTitles = titles;
-        this.spinnerImages = images;
+//        this.spinnerTitles = titles;
+//        this.spinnerImages = images;
+        this.driverTypeList = driverTypeList;
         this.mContext = context;
     }
 
@@ -32,7 +37,7 @@ public class DriverTypeSpinnerAdapter extends ArrayAdapter<String> {
 
     @Override
     public int getCount() {
-        return spinnerTitles.length;
+        return driverTypeList.size();
     }
 
     @NonNull
@@ -43,14 +48,16 @@ public class DriverTypeSpinnerAdapter extends ArrayAdapter<String> {
             LayoutInflater mInflater = (LayoutInflater) mContext.
                     getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = mInflater.inflate(R.layout.driver_type_spiner_layout, parent, false);
-            mViewHolder.mFlag = (ImageView) convertView.findViewById(R.id.tvDriverTypeImg);
-            mViewHolder.mName = (TextView) convertView.findViewById(R.id.tvDriverTypeRow);
+            mViewHolder.mFlag =  convertView.findViewById(R.id.tvDriverTypeImg);
+            mViewHolder.mName =  convertView.findViewById(R.id.tvDriverTypeRow);
+            mViewHolder.mExpectedFare = convertView.findViewById(R.id.tv_expected_fare);
             convertView.setTag(mViewHolder);
         } else {
             mViewHolder = (ViewHolder) convertView.getTag();
         }
-        mViewHolder.mFlag.setImageResource(spinnerImages[position]);
-        mViewHolder.mName.setText(spinnerTitles[position]);
+        mViewHolder.mFlag.setImageResource(driverTypeList.get(position).getImageResourceId());
+        mViewHolder.mName.setText(driverTypeList.get(position).getTitle());
+        mViewHolder.mExpectedFare.setText(driverTypeList.get(position).getExpectedFare());
 
 
         return convertView;
@@ -59,6 +66,7 @@ public class DriverTypeSpinnerAdapter extends ArrayAdapter<String> {
     private static class ViewHolder {
         ImageView mFlag;
         TextView mName;
+        TextView mExpectedFare;
     }
 
 }

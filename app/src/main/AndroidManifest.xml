@@ -29,13 +29,16 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Activity.SplashActivity"
             android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.ChatActivity">
+        <activity android:name=".Activity.ChatActivity"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="com.barankhan.driver.chat" />
 
@@ -55,9 +58,15 @@
 
         <activity
             android:name=".Activity.NotifActivity"
-            android:theme="@style/AppDialogScreenTheme" />
-        <activity android:name=".Activity.DriverTransactionActivity" />
-        <activity android:name=".Activity.RideAlertActivity">
+            android:theme="@style/AppDialogScreenTheme"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Activity.DriverTransactionActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Activity.RideAlertActivity"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="com.barankhan.driver.ride_alert_activity" />
 
@@ -70,8 +79,12 @@
         <activity
             android:name=".Activity.DriverActivity"
             android:label="@string/title_activity_driver"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.DriverConfirmationActivity">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".Activity.DriverConfirmationActivity"
+            android:screenOrientation="portrait"
+            >
             <intent-filter>
                 <action android:name="com.barankhan.driver.driver_confirmation_activity" />
 
@@ -94,11 +107,15 @@
 
         <activity
             android:name=".Activity.SearchActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".Activity.Passenger"
             android:label="@string/title_activity_passenger"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -110,6 +127,7 @@
 
         <activity
             android:name=".Activity.MainActivity"
+            android:screenOrientation="portrait"
             >
 
         </activity>

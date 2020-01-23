@@ -46,6 +46,7 @@ import com.baran.driver.Extras.AppPreference;
 import com.baran.driver.Extras.SavedLocationData;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
+import com.baran.driver.Model.DriverType;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
 import com.baran.driver.Model.UserRide;
@@ -85,7 +86,9 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 
 import static com.baran.driver.Extras.Utils.calculateDerivedPosition;
@@ -228,12 +231,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 dropOffTextView.setClickable(false);
                 isDropOffMode = false;
                 dropOffLatLng = dropOffMarker.getPosition();
+
+
+//                String here = Utils.getDurationForRoute(pickUpLatLng.toString(),dropOffLatLng.toString());
+
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 builder.include(pickUpLatLng).include(dropOffLatLng);
                 //Animate to the bounds
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(builder.build(), 400, 400, 5);
                 mMap.moveCamera(cameraUpdate);
                 v.setVisibility(View.GONE);
+                btnSkipDropOff.setVisibility(View.GONE);
                 stack.push("CONFIRM_DROP_OFF");
                 btnCallDriver.setVisibility(View.VISIBLE);
             }
@@ -262,7 +270,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 btnSkipDropOff.setVisibility(View.GONE);
                 btnConfirmDropOff.setVisibility(View.GONE);
                 btnConfirmPickup.setVisibility(View.GONE);
-                mSpinner.setVisibility(View.GONE);
+                mSpinner.setClickable(false);
                 stack.push("DRIVER_CALLED");
                 String strPickupLatLng="";
                 String strDropOffLatLng="";
@@ -410,7 +418,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                                 btnConfirmDropOff.setVisibility(View.VISIBLE);
 
                                 btnConfirmPickup.setVisibility(View.GONE);
-                                mSpinner.setVisibility(View.GONE);
+//                                mSpinner.setVisibility(View.GONE);
                                 btnCallDriver.setVisibility(View.GONE);
 
                                 dropOffMarker.setVisible(false);
@@ -454,14 +462,37 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 , R.drawable.ic_motor_bike_100
                 };
 
-        DriverTypeSpinnerAdapter mCustomAdapter = new DriverTypeSpinnerAdapter(getContext(),R.layout.driver_type_spiner_layout,spinnerTitles, spinnerImages);
+
+        final List<DriverType> driverTypeList = new ArrayList<DriverType>();
+
+        DriverType auto = new DriverType();
+        auto.setTitle(spinnerTitles[0]);
+        auto.setImageResourceId(spinnerImages[0]);
+        auto.setExpectedFare("50-70");
+        driverTypeList.add(auto);
+
+
+        DriverType car = new DriverType();
+        car.setTitle(spinnerTitles[1]);
+        car.setImageResourceId(spinnerImages[1]);
+        car.setExpectedFare("N/A");
+        driverTypeList.add(car);
+
+        DriverType bike = new DriverType();
+        bike.setTitle(spinnerTitles[2]);
+        bike.setImageResourceId(spinnerImages[2]);
+        bike.setExpectedFare("N/A");
+        driverTypeList.add(bike);
+
+
+        DriverTypeSpinnerAdapter mCustomAdapter = new DriverTypeSpinnerAdapter(getContext(),R.layout.driver_type_spiner_layout,driverTypeList);
         mSpinner.setAdapter(mCustomAdapter);
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                vehicleType=spinnerTitles[i];
-                Toast.makeText(getContext(), spinnerTitles[i], Toast.LENGTH_SHORT).show();
+                vehicleType=driverTypeList.get(i).getTitle();
+                Toast.makeText(getContext(), vehicleType, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
@@ -546,7 +577,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         if(r != null){
             isPickupMode=false;
             isDropOffMode=false;
+            mSpinner.setVisibility(View.GONE);
             if(r.getDriverId()>0){
+
+
 
 
                 // I'm assuming passenger landed on the activity again. I have to close the spinner.
@@ -1009,6 +1043,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         hideDriverInfoBox();
         btnConfirmPickup.setVisibility(View.VISIBLE);
         mSpinner.setVisibility(View.VISIBLE);
+        mSpinner.setClickable(true);
+
         pickupTextView.setClickable(true);
         dropOffTextView.setClickable(true);
         pickupTextView.setVisibility(View.VISIBLE);
@@ -1051,7 +1087,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         pickUpMarker.setVisible(true);
         btnConfirmDropOff.setVisibility(View.VISIBLE);
         btnSkipDropOff.setVisibility(View.VISIBLE);
-        mSpinner.setVisibility(View.GONE);
+//        mSpinner.setVisibility(View.GONE);
         pickUpLatLng = pickUpMarker.getPosition();
 
     }

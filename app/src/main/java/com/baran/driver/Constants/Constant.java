@@ -11,6 +11,9 @@ public class Constant {
         public final static String BASE_URL_SUPPORT_TICKETS = "https://yourdriver.live/support_tickets/api/";
         public final static String IMAGE_BASE_URL = "";
         public final static String UPLOADS_URL="https://yourdriver.live/uploads/";
+        public final static String GOOGLE_DIRECTION_URL="https://maps.googleapis.com/maps/api/directions/json/";
+
+
     }
 
 

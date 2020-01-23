@@ -237,10 +237,21 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
                         .fit().into(v);
 
 
-                File cnicFront = new File(selectedImageURI.getPath());
 
-                v.setTag(R.id.media_path, selectedImageURI.getPath());
 
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                Cursor cursor = getContext().getContentResolver().query(selectedImageURI, filePathColumn, null, null, null);
+                assert cursor != null;
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String mediaPath = cursor.getString(columnIndex);
+                // Set the Image in ImageView for Previewing the Media
+                cursor.close();
+
+
+                v.setTag(R.id.media_path, mediaPath);
 
             }
         }
@@ -290,7 +301,10 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
             File cnicFront = new File(Utils.getRealPathFromURI(getContext(), cnic_front_uri));
             File cnicRear = new File(Utils.getRealPathFromURI(getContext(), cnic_rear_uri));
             File picture = new File(Utils.getRealPathFromURI(getContext(), picture_uri));
-
+//
+//            File cnicFront = new File(imDriverCNICFront.getTag(R.id.media_path).toString());
+//            File cnicRear = new File(imDriverCNICRear.getTag(R.id.media_path).toString());
+//            File picture = new File(imDriverPic.getTag(R.id.media_path).toString());
 
             // Parsing any Media type file
             RequestBody cnicFrontRequestBody = RequestBody.create(MediaType.parse("image/*"), cnicFront);
@@ -301,6 +315,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
             RequestBody nameBody = RequestBody.create(MediaType.parse("text/plain"), name);
             RequestBody fatherBody = RequestBody.create(MediaType.parse("text/plain"), father);
             RequestBody cnicBody = RequestBody.create(MediaType.parse("text/plain"), cnic);
+
             RequestBody mobileBody = RequestBody.create(MediaType.parse("text/plain"), current_user.getMobile());
 
 
@@ -309,12 +324,18 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
             MultipartBody.Part cnicRearToUpload = MultipartBody.Part.createFormData("cnic_rear", "cnic_rear_" + cnicRear.getName(), cnicRearRequestBody);
             MultipartBody.Part pictureToUpload = MultipartBody.Part.createFormData("picture", "pic_" + picture.getName(), pictureRequestBody);
 
-            MultipartBody.Part licenceToUpload = MultipartBody.Part.createFormData("licence", "licence" + cnicFront.getName(), cnicFrontRequestBody);
+            MultipartBody.Part licenceToUpload ;
             if (!imDriverLicence.getTag(R.id.image_uri).equals("@")) {
+
                 final Uri licence_uri = (Uri) imDriverLicence.getTag(R.id.image_uri);
                 File licence = new File(Utils.getRealPathFromURI(getContext(), licence_uri));
+
+//                File licence = new File(imDriverLicence.getTag(R.id.media_path).toString());
                 RequestBody licenceRequestBody = RequestBody.create(MediaType.parse("image/*"), licence);
+
                 licenceToUpload = MultipartBody.Part.createFormData("licence", "licence" + licence.getName(), licenceRequestBody);
+            }else{
+                licenceToUpload =  MultipartBody.Part.createFormData("licence", "licence" + cnicFront.getName(), cnicFrontRequestBody);
             }
 
 
@@ -352,6 +373,19 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
                 }
             });
 
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String[] PERMISSIONS = {
+                android.Manifest.permission.INTERNET,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+        };
+
+        if (!Utils.hasPermissions(getContext(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
         }
     }
 

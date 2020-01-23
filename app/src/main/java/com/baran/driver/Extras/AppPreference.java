@@ -162,7 +162,8 @@ public class AppPreference {
         String json = sharedPreferences.getString("UserObj", null);
         User user = gson.fromJson(json, User.class);
 
-        if(user.getId()==0){
+        if(user==null){
+            this.setLoginStatus(false);
             Intent intent = new Intent(a, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

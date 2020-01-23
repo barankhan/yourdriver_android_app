@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import okhttp3.MediaType;
@@ -199,9 +200,18 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
         }
         else {
             Utils.showProgressBarSpinner(getContext());
+
             final Uri vehicle_front_uri = (Uri) imVehicleFront.getTag(R.id.image_uri);
             final Uri vehicle_rear_uri = (Uri) imVehicleRear.getTag(R.id.image_uri);
             final Uri registration_uri = (Uri) imVehicleRegistration.getTag(R.id.image_uri);
+            File vehicleFront = new File(Utils.getRealPathFromURI(getContext(), vehicle_front_uri));
+            File vehicleRear = new File(Utils.getRealPathFromURI(getContext(), vehicle_rear_uri));
+            File registration = new File(Utils.getRealPathFromURI(getContext(), registration_uri));
+
+
+//            File vehicleFront = new File(imVehicleFront.getTag(R.id.media_path).toString());
+//            File vehicleRear = new File(imVehicleRear.getTag(R.id.media_path).toString());
+//            File registration = new File(imVehicleRegistration.getTag(R.id.media_path).toString());
 
 
 
@@ -212,9 +222,6 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
 
 
 
-            File vehicleFront = new File(Utils.getRealPathFromURI(getContext(), vehicle_front_uri));
-            File vehicleRear = new File(Utils.getRealPathFromURI(getContext(), vehicle_rear_uri));
-            File registration = new File(Utils.getRealPathFromURI(getContext(), registration_uri));
 
 
             // Parsing any Media type file
@@ -234,8 +241,14 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
 
             MultipartBody.Part routeToUpload = MultipartBody.Part.createFormData("route", "route_" + vehicleFront.getName(), vehicleFrontRequestBody);
             if (!imVehicleRoute.getTag(R.id.image_uri).equals("@")) {
-                final Uri licence_uri = (Uri) imVehicleRoute.getTag(R.id.image_uri);
-                File licence = new File(Utils.getRealPathFromURI(getContext(), licence_uri));
+
+//                final Uri licence_uri = (Uri) imVehicleRoute.getTag(R.id.image_uri);
+//                File licence = new File(Utils.getRealPathFromURI(getContext(), licence_uri));
+//
+                File licence = new File(imVehicleRoute.getTag(R.id.media_path).toString());
+
+
+
                 RequestBody licenceRequestBody = RequestBody.create(MediaType.parse("image/*"), licence);
                 routeToUpload = MultipartBody.Part.createFormData("route", "route_" + licence.getName(), licenceRequestBody);
             }
@@ -266,6 +279,20 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
                     Utils.showAlertBox(getActivity(),"Something went wrong Please try again later! :(");
                 }
             });
+        }
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String[] PERMISSIONS = {
+                android.Manifest.permission.INTERNET,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+        };
+
+        if (!Utils.hasPermissions(getContext(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, 1);
         }
     }
 }

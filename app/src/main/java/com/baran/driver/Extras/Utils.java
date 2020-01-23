@@ -21,8 +21,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.baran.driver.Activity.Passenger;
+import com.baran.driver.Constants.Constant;
 import com.baran.driver.Model.DBHelper;
+import com.baran.driver.Model.UserRide;
 import com.baran.driver.R;
+import com.baran.driver.Services.DriverGoogleAPI;
+import com.baran.driver.Services.RetrofitClient;
+import com.baran.driver.Services.RidesApi;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -36,6 +42,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.res.ResourcesCompat;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Utils {
 
@@ -273,6 +283,29 @@ public class Utils {
             }
         }
         return true;
+    }
+
+
+
+    public static String getDurationForRoute(String origin, String destination){
+
+        DriverGoogleAPI driverGoogleAPI = RetrofitClient.getApiClient(Constant.baseUrl.GOOGLE_DIRECTION_URL).create(DriverGoogleAPI.class);
+
+        Call <ResponseBody> call =  driverGoogleAPI.getDirectionInfo(origin,destination,"AIzaSyCMeNFGFvsheMOXo7gcJMMiLStrKyHGAFI");
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.e("key",response.raw().toString());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+
+
+        return  "hello";
     }
 
 

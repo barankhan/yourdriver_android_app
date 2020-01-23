@@ -24,15 +24,15 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:hint="Mobile Number"
-        android:inputType="textEmailAddress" />
+        android:inputType="number" />
 
     <EditText
-        android:layout_marginTop="20dp"
+        android:id="@+id/et_login_pass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:hint="Password"
-        android:inputType="textPassword"
-        android:id="@+id/et_login_pass"/>
+        android:inputType="number|textPassword" />
 
     <Button
         android:id="@+id/loginBtn"
