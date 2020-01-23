@@ -803,7 +803,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         startPoint.setLatitude(r.getPickupLat());
         startPoint.setLongitude(r.getPickupLng());
         double distance=startPoint.distanceTo(currentLocation);
-        if(distance<=50 && r.getIsRideStarted()==0){
+        if(distance<=50 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
         }else{
             btnDriverArrived.setVisibility(View.INVISIBLE);
@@ -812,7 +812,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
     private void showArrivedButtonsWithDistance(Ride r,Double distance){
-        if(distance<=50 && r.getIsRideStarted()==0){
+        if(distance<=50 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
         }else{
             btnDriverArrived.setVisibility(View.INVISIBLE);
@@ -821,7 +821,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
     private void showEndRideButton(Ride r){
-        if(r.getIsRideStarted()==1){
+        if(r.getIsRideStarted()==1 && r.getIsDriverArrived()==1){
             btnEndRide.setVisibility(View.VISIBLE);
             imCallPassenger.setVisibility(View.GONE);
             btnStartRide.setVisibility(View.GONE);

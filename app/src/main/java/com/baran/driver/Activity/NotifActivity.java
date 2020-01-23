@@ -22,7 +22,7 @@ import com.baran.driver.R;
 public class NotifActivity extends Activity {
     private Button btnOkay;
     private TextView tvAlertMessage;
-    private Ringtone r;
+    private static Ringtone r=null;
     private ImageView imCallStart,imCallEnd;
     private String agoraChannel;
     private int rideId;
@@ -55,7 +55,7 @@ public class NotifActivity extends Activity {
                 try {
                     Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
                     r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                    r.play();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -63,7 +63,7 @@ public class NotifActivity extends Activity {
                 try {
                     Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                     r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                    r.play();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -116,5 +116,14 @@ public class NotifActivity extends Activity {
 //do your stuff here
         super.onStop();
         r.stop();
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(r!=null){
+            r.play();
+        }
     }
 }

@@ -52,8 +52,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_alert);
-        mediaPlayer = MediaPlayer.create(this, R.raw.ride_alert);
-        mediaPlayer.start();
+
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
@@ -61,6 +60,8 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 
         );
+
+
 
         countDown = findViewById(R.id.tv_count_down);
         progressBar = findViewById(R.id.progressBar3);
@@ -154,6 +155,13 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        mediaPlayer = MediaPlayer.create(this, R.raw.ride_alert);
+        mediaPlayer.start();
+    }
 
     @Override
     public void onStop () {

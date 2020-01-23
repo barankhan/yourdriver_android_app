@@ -60,6 +60,8 @@ public class RechargeFragment extends Fragment {
                                 Utils.showAlertBox(getActivity(),"Your request is under process, Please verify transaction data");
                             }else if (response.body().getResponse().equals("already_used")){
                                 Utils.showAlertBox(getActivity(),"The transaction information is already used.");
+                            }else if (response.body().getResponse().equals("invalid_request")){
+                                Utils.showAlertBox(getActivity(),"Invalid Transaction Information!. Contact Support.");
                             }else{
                                 Utils.showAlertBox(getActivity(),"Error!");
                             }
