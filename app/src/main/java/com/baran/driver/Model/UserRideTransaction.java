@@ -2,6 +2,8 @@ package com.baran.driver.Model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class UserRideTransaction {
     @SerializedName("user")
     private User user;
@@ -18,6 +20,17 @@ public class UserRideTransaction {
     @SerializedName("message")
     private String message;
 
+    @SerializedName("transactionLiabilityList")
+    private List<TransactionLiability> transactionLiabilityList;
+
+
+    public List<TransactionLiability> getTransactionLiabilityList() {
+        return transactionLiabilityList;
+    }
+
+    public void setTransactionLiabilityList(List<TransactionLiability> transactionLiabilityList) {
+        this.transactionLiabilityList = transactionLiabilityList;
+    }
 
     public User getUser() {
         return user;

@@ -18,10 +18,13 @@ import android.widget.TextView;
 import com.baran.driver.Activity.DriverTransactionActivity;
 import com.baran.driver.Activity.MainActivity;
 import com.baran.driver.Extras.Utils;
+import com.baran.driver.Model.TransactionLiability;
 import com.baran.driver.Model.UserRideTransaction;
 import com.baran.driver.R;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class TransactionDetailsFragment extends Fragment {
@@ -32,6 +35,8 @@ public class TransactionDetailsFragment extends Fragment {
             tvCompanyInwardHead,tvInwardHeadAmount,tvCompanyOutwardHead,tvOutwardHeadAmount;
 
     private Button btnEnterCash;
+
+    private List<TransactionLiability> transactionLiabilityList = new ArrayList<TransactionLiability>();
 
 
     @Override
@@ -97,7 +102,7 @@ public class TransactionDetailsFragment extends Fragment {
                             btnEnterCash.setVisibility(View.VISIBLE);
                         }
 
-
+                        transactionLiabilityList = response.body().getTransactionLiabilityList();
 
                         tvTransactionId.setText(String.valueOf(response.body().getDriverTransaction().getId()));
                         tvTransactionType.setText(String.valueOf(response.body().getDriverTransaction().getTransactionType()));
