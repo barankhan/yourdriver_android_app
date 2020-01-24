@@ -228,7 +228,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Received Amount:"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_company_inward_head2" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutLiabilities" />
 
             <TextView
                 android:id="@+id/tv_amount_received"
@@ -238,7 +238,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_inward_head_amount2" />
+                app:layout_constraintTop_toBottomOf="@+id/linearLayoutLiabilities" />
 
             <TextView
                 android:id="@+id/textView36"
@@ -419,49 +419,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_ride_ended_at" />
 
-            <TextView
-                android:id="@+id/tv_inward_head_amount2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_outward_head_amount2" />
-
-            <TextView
-                android:id="@+id/tv_company_inward_head2"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/linearLayoutLiabilities"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_company_outward_head2" />
-
-            <TextView
-                android:id="@+id/tv_company_outward_head2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView32" />
-
-            <TextView
-                android:id="@+id/tv_outward_head_amount2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
-                android:visibility="gone"
+                android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_total_fare" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView32"></LinearLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

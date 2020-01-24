@@ -9,10 +9,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baran.driver.Activity.DriverTransactionActivity;
@@ -35,6 +38,7 @@ public class TransactionDetailsFragment extends Fragment {
             tvCompanyInwardHead,tvInwardHeadAmount,tvCompanyOutwardHead,tvOutwardHeadAmount;
 
     private Button btnEnterCash;
+    private LinearLayout linearLayoutLiabilities;
 
     private List<TransactionLiability> transactionLiabilityList = new ArrayList<TransactionLiability>();
 
@@ -43,6 +47,8 @@ public class TransactionDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root =  inflater.inflate(R.layout.fragment_transaction_details, container, false);
+
+        linearLayoutLiabilities = root.findViewById(R.id.linearLayoutLiabilities);
 
         btnEnterCash = root.findViewById(R.id.btn_enter_cash);
 
@@ -76,11 +82,11 @@ public class TransactionDetailsFragment extends Fragment {
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
 
 
-        tvCompanyInwardHead = root.findViewById(R.id.tv_company_inward_head);
-        tvCompanyOutwardHead = root.findViewById(R.id.tv_company_outward_head);
-
-        tvInwardHeadAmount = root.findViewById(R.id.tv_inward_head_amount);
-        tvOutwardHeadAmount = root.findViewById(R.id.tv_outward_head_amount);
+//        tvCompanyInwardHead = root.findViewById(R.id.tv_company_inward_head);
+//        tvCompanyOutwardHead = root.findViewById(R.id.tv_company_outward_head);
+//
+//        tvInwardHeadAmount = root.findViewById(R.id.tv_inward_head_amount);
+//        tvOutwardHeadAmount = root.findViewById(R.id.tv_outward_head_amount);
 
 
 
@@ -127,22 +133,53 @@ public class TransactionDetailsFragment extends Fragment {
 
                         tvTotalFare.setText(String.valueOf(response.body().getDriverTransaction().getTotalFare()));
 
-                        if(response.body().getDriverTransaction().getCompanyInwardHead()!=null){
-                            tvCompanyInwardHead.setText(response.body().getDriverTransaction().getCompanyInwardHead());
-                            tvInwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getInwardHeadAmount()));
+//                        if(response.body().getDriverTransaction().getCompanyInwardHead()!=null){
+//                            tvCompanyInwardHead.setText(response.body().getDriverTransaction().getCompanyInwardHead());
+//                            tvInwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getInwardHeadAmount()));
+//
+//                            tvCompanyInwardHead.setVisibility(View.VISIBLE);
+//                            tvInwardHeadAmount.setVisibility(View.VISIBLE);
+//                        }
+//
+//
+//                        if(response.body().getDriverTransaction().getCompanyOutwardHead()!=null){
+//                            tvCompanyOutwardHead.setText(response.body().getDriverTransaction().getCompanyOutwardHead());
+//                            tvOutwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getOutwardHeadAmount()));
+//
+//                            tvCompanyOutwardHead.setVisibility(View.VISIBLE);
+//                            tvOutwardHeadAmount.setVisibility(View.VISIBLE);
+//                        }
 
-                            tvCompanyInwardHead.setVisibility(View.VISIBLE);
-                            tvInwardHeadAmount.setVisibility(View.VISIBLE);
+
+
+
+                        for (int i = 0; i < transactionLiabilityList.size(); i++) {
+
+                            LinearLayout layout2 = new LinearLayout(getContext());
+                            layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            layout2.setOrientation(LinearLayout.HORIZONTAL);
+
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                            params.setMargins(0, 8, 0, 0);
+                            linearLayoutLiabilities.addView(layout2);
+                            TextView tvTitle =  new TextView(getContext());
+                            tvTitle.setText(transactionLiabilityList.get(i).getTitle());
+                            tvTitle.setLayoutParams(params);
+                            tvTitle.setGravity(Gravity.LEFT);
+
+
+
+                            TextView tvAmount =  new TextView(getContext());
+                            tvAmount.setText(String.valueOf(transactionLiabilityList.get(i).getAmount()));
+                            tvAmount.setLayoutParams(params);
+                            tvAmount.setGravity(Gravity.RIGHT);
+
+                            layout2.addView(tvTitle);
+                            layout2.addView(tvAmount);
+
                         }
 
 
-                        if(response.body().getDriverTransaction().getCompanyOutwardHead()!=null){
-                            tvCompanyOutwardHead.setText(response.body().getDriverTransaction().getCompanyOutwardHead());
-                            tvOutwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getOutwardHeadAmount()));
-
-                            tvCompanyOutwardHead.setVisibility(View.VISIBLE);
-                            tvOutwardHeadAmount.setVisibility(View.VISIBLE);
-                        }
 
 
 

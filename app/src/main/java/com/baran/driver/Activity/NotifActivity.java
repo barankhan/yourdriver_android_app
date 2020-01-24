@@ -26,6 +26,7 @@ public class NotifActivity extends Activity {
     private ImageView imCallStart,imCallEnd;
     private String agoraChannel;
     private int rideId;
+    private static boolean goToLogin=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,11 @@ public class NotifActivity extends Activity {
         if (getIntent().getExtras() != null) {
             if(getIntent().getExtras().containsKey("message")) {
                 tvAlertMessage.setText(getIntent().getExtras().getString("message"));
+            }
+            if(getIntent().getExtras().containsKey("goToLogin")) {
+               if(getIntent().getExtras().getString("goToLogin").equals("yes")){
+                   goToLogin=true;
+               }
             }
             if(getIntent().getExtras().containsKey("agora_channel")) {
                 agoraChannel = getIntent().getExtras().getString("agora_channel");
@@ -93,6 +99,12 @@ public class NotifActivity extends Activity {
             public void onClick(View v) {
                 r.stop();
                 finish();
+                if(goToLogin){
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
             }
         });
 

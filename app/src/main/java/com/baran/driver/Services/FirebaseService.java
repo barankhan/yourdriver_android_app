@@ -74,9 +74,14 @@ public class FirebaseService extends FirebaseMessagingService {
             if(remoteMessage.getData().get("key").equals("driver_successful")){
                 MainActivity.appPreference.setLoginStatus(false);
                 MainActivity.appPreference.setUserObject(null);
-                Intent startMain = new Intent(getBaseContext(), MainActivity.class);
-                startMain.setFlags(FLAG_ACTIVITY_NEW_TASK);
-                startActivity(startMain);
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message", remoteMessage.getData().get("message"));
+                intent.putExtra("goToLogin","yes");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+
+
             }else if(remoteMessage.getData().get("key").equals("ride_alert")){
                 Intent intent = new Intent(this, RideAlertActivity.class);
                 intent.putExtra("phone", remoteMessage.getData().get("msg"));

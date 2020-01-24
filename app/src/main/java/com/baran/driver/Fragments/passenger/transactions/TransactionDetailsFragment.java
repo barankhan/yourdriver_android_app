@@ -2,17 +2,22 @@ package com.baran.driver.Fragments.passenger.transactions;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Fragments.passenger.transactions.TransactionsFragment;
+import com.baran.driver.Model.TransactionLiability;
 import com.baran.driver.Model.UserRideTransaction;
 import com.baran.driver.R;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.fragment.app.Fragment;
 import retrofit2.Call;
@@ -26,12 +31,17 @@ public class TransactionDetailsFragment extends Fragment {
             tvTimeElapsedMinutes,tvTimeElapsedRate,tvKmTravelled,tvKmTravelledRate,tvTotalFare,tvAmountReceived,tvDistanceAmount,tvTimeAmount,
             tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating,
             tvCompanyInwardHead,tvInwardHeadAmount,tvCompanyOutwardHead,tvOutwardHeadAmount;
+    private LinearLayout linearLayoutLiabilities;
 
+    private List<TransactionLiability> transactionLiabilityList = new ArrayList<TransactionLiability>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root =  inflater.inflate(R.layout.fragment_passenger_transaction_details, container, false);
+
+
+        linearLayoutLiabilities = root.findViewById(R.id.linearLayoutLiabilities);
 
         tvTransactionId = root.findViewById(R.id.et_transaction_id);
         tvTransactionType = root.findViewById(R.id.tv_transaction_type);
@@ -62,11 +72,7 @@ public class TransactionDetailsFragment extends Fragment {
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
 
 
-        tvCompanyInwardHead = root.findViewById(R.id.tv_company_inward_head2);
-        tvCompanyOutwardHead = root.findViewById(R.id.tv_company_outward_head2);
 
-        tvInwardHeadAmount = root.findViewById(R.id.tv_inward_head_amount2);
-        tvOutwardHeadAmount = root.findViewById(R.id.tv_outward_head_amount2);
 
 
 
@@ -78,6 +84,9 @@ public class TransactionDetailsFragment extends Fragment {
                 public void onResponse(Call<UserRideTransaction> call, Response<UserRideTransaction> response) {
                     Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
+
+                        transactionLiabilityList = response.body().getTransactionLiabilityList();
+
                         tvTransactionId.setText(String.valueOf(response.body().getDriverTransaction().getId()));
                         tvTransactionType.setText(String.valueOf(response.body().getDriverTransaction().getTransactionType()));
 
@@ -103,22 +112,52 @@ public class TransactionDetailsFragment extends Fragment {
 
                         tvTotalFare.setText(String.valueOf(response.body().getDriverTransaction().getTotalFare()));
 
-                        if(response.body().getDriverTransaction().getCompanyInwardHead()!=null){
-                            tvCompanyInwardHead.setText(response.body().getDriverTransaction().getCompanyInwardHead());
-                            tvInwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getInwardHeadAmount()));
+//                        if(response.body().getDriverTransaction().getCompanyInwardHead()!=null){
+//                            tvCompanyInwardHead.setText(response.body().getDriverTransaction().getCompanyInwardHead());
+//                            tvInwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getInwardHeadAmount()));
+//
+//                            tvCompanyInwardHead.setVisibility(View.VISIBLE);
+//                            tvInwardHeadAmount.setVisibility(View.VISIBLE);
+//                        }
+//
+//
+//                        if(response.body().getDriverTransaction().getCompanyOutwardHead()!=null){
+//                            tvCompanyOutwardHead.setText(response.body().getDriverTransaction().getCompanyOutwardHead());
+//                            tvOutwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getOutwardHeadAmount()));
+//
+//                            tvCompanyOutwardHead.setVisibility(View.VISIBLE);
+//                            tvOutwardHeadAmount.setVisibility(View.VISIBLE);
+//                        }
 
-                            tvCompanyInwardHead.setVisibility(View.VISIBLE);
-                            tvInwardHeadAmount.setVisibility(View.VISIBLE);
+
+                        for (int i = 0; i < transactionLiabilityList.size(); i++) {
+
+                            LinearLayout layout2 = new LinearLayout(getContext());
+                            layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                            layout2.setOrientation(LinearLayout.HORIZONTAL);
+
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+                            params.setMargins(0, 8, 0, 0);
+                            linearLayoutLiabilities.addView(layout2);
+                            TextView tvTitle =  new TextView(getContext());
+                            tvTitle.setText(transactionLiabilityList.get(i).getTitle());
+                            tvTitle.setLayoutParams(params);
+                            tvTitle.setGravity(Gravity.LEFT);
+
+
+
+                            TextView tvAmount =  new TextView(getContext());
+                            tvAmount.setText(String.valueOf(transactionLiabilityList.get(i).getAmount()));
+                            tvAmount.setLayoutParams(params);
+                            tvAmount.setGravity(Gravity.RIGHT);
+
+                            layout2.addView(tvTitle);
+                            layout2.addView(tvAmount);
+
                         }
 
 
-                        if(response.body().getDriverTransaction().getCompanyOutwardHead()!=null){
-                            tvCompanyOutwardHead.setText(response.body().getDriverTransaction().getCompanyOutwardHead());
-                            tvOutwardHeadAmount.setText(String.valueOf(response.body().getDriverTransaction().getOutwardHeadAmount()));
 
-                            tvCompanyOutwardHead.setVisibility(View.VISIBLE);
-                            tvOutwardHeadAmount.setVisibility(View.VISIBLE);
-                        }
 
 
 
