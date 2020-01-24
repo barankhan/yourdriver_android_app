@@ -52,6 +52,22 @@ public class NotifActivity extends Activity {
                    goToLogin=true;
                }
             }
+            if(getIntent().getExtras().containsKey("setPickUpMode")) {
+                if(getIntent().getExtras().getString("setPickUpMode").equals("true")){
+                    MainActivity.appPreference.setIsPickupMode(true);
+                }else if(getIntent().getExtras().getString("setPickUpMode").equals("false")){
+                    MainActivity.appPreference.setIsPickupMode(false);
+                }
+            }
+            if(getIntent().getExtras().containsKey("setDropoffMode")) {
+                if(getIntent().getExtras().getString("setDropoffMode").equals("true")){
+                    MainActivity.appPreference.setIsDropoffMode(true);
+                }else if(getIntent().getExtras().getString("setDropoffMode").equals("false")){
+                    MainActivity.appPreference.setIsDropoffMode(false);
+                }
+            }
+
+
             if(getIntent().getExtras().containsKey("agora_channel")) {
                 agoraChannel = getIntent().getExtras().getString("agora_channel");
                 rideId = getIntent().getExtras().getInt("ride_id");

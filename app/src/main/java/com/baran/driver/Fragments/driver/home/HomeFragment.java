@@ -484,8 +484,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             }
 
             showArrivedButtons(r, currentLocation);
-
             showEndRideButton(r);
+            showStartRideButton(r);
 
 
 
@@ -819,6 +819,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             btnEndRide.setVisibility(View.VISIBLE);
         }
     }
+
+    private void showStartRideButton(Ride r){
+        if(r.getIsRideStarted()==0 && r.getIsDriverArrived()==1){
+            btnEndRide.setVisibility(View.GONE);
+            imCallPassenger.setVisibility(View.VISIBLE);
+            btnStartRide.setVisibility(View.VISIBLE);
+            btnCancelRide.setVisibility(View.VISIBLE);
+            btnDriverArrived.setVisibility(View.INVISIBLE);
+            btnEndRide.setVisibility(View.GONE);
+        }
+    }
+
+
 
 
     public double round(double value, int precision) {

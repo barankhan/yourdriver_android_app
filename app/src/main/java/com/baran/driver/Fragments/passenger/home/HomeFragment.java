@@ -548,8 +548,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public void onPause() {
         super.onPause();
-
+//        Log.e("In On Pause",String.valueOf(MainActivity.appPreference.getIsPickupMode()));
         MainActivity.appPreference.setIsPickupMode(isPickupMode);
+//        Log.e("In On Pause2",String.valueOf(MainActivity.appPreference.getIsPickupMode()));
         MainActivity.appPreference.setIsDropoffMode(isDropOffMode);
 
     }
@@ -572,6 +573,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         isPickupMode = MainActivity.appPreference.getIsPickupMode();
         isDropOffMode = MainActivity.appPreference.getIsDropoffMode();
+
+//        Log.e("In Reusme",String.valueOf(isPickupMode));
 
         Ride r = appPreference.getRideObject();
         User driver = appPreference.getDriverObject();
@@ -722,6 +725,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 DEFAULT_PICKUP_ZOOM = mMap.getCameraPosition().zoom;
                 LatLng latLng = mMap.getCameraPosition().target;
 
+//                Log.e("Moving Camera",String.valueOf(isPickupMode));
+
                 if (isPickupMode) {
                     if (!pickUpMarker.isVisible()) {
                         pickUpMarker.setVisible(true);
@@ -792,7 +797,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             pickUpMarker = mMap.addMarker(new MarkerOptions()
                     .position(mDefaultLocation)
                     .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
-            pickUpMarker.setVisible(false);
+            pickUpMarker.setVisible(true);
         }
 
         if(vehicleMaker==null){
@@ -1062,7 +1067,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
 
         if(vehicleMaker!=null)vehicleMaker.setVisible(false);
-        if(pickUpMarker!=null)pickUpMarker.setVisible(false);
+        if(pickUpMarker!=null)pickUpMarker.setVisible(true);
         if(dropOffMarker!=null)dropOffMarker.setVisible(false);
 
 
