@@ -464,7 +464,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
             if(r.getDropoffLat()!=null && dropOffMarker!=null){
                 dropOffMarker.setPosition(new LatLng(r.getDropoffLat(),r.getDropoffLng()));
-                dropOffMarker.setVisible(true);
+
             }
 
             Location currentLocation = new Location("right now");
@@ -634,7 +634,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
             if(r.getDropoffLat()!=null){
                 dropOffMarker.setPosition(new LatLng(r.getDropoffLat(),r.getDropoffLng()));
-                dropOffMarker.setVisible(true);
+//                dropOffMarker.setVisible(false);
             }
         }
 
@@ -794,6 +794,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         double distance=startPoint.distanceTo(currentLocation);
         if(distance<=50 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
+            if(r.getDropoffLat()!=null && dropOffMarker!=null){
+                dropOffMarker.setVisible(true);
+            }
+
+
         }else{
             btnDriverArrived.setVisibility(View.INVISIBLE);
         }
@@ -803,6 +808,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private void showArrivedButtonsWithDistance(Ride r,Double distance){
         if(distance<=50 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
+            if(r.getDropoffLat()!=null && dropOffMarker!=null){
+                dropOffMarker.setVisible(true);
+            }
         }else{
             btnDriverArrived.setVisibility(View.INVISIBLE);
         }

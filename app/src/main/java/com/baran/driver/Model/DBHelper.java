@@ -73,7 +73,9 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("lat", lat);
         contentValues.put("lng", lng);
         contentValues.put("title", title);
-        return db.insert(LOCATION_TABLE_NAME, null, contentValues);
+        long i =  db.insert(LOCATION_TABLE_NAME, null, contentValues);
+        db.close();
+        return  i;
     }
 
 
@@ -83,7 +85,9 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("lat", lat);
         contentValues.put("lng", lng);
         contentValues.put("title", title);
-        return db.insert(LOCATION_TABLE_NAME, null, contentValues);
+        long i = db.insert(LOCATION_TABLE_NAME, null, contentValues);
+        db.close();
+        return  i;
     }
 
 
@@ -94,7 +98,9 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(RIDE_PATHS_LAT, lat);
         contentValues.put(RIDE_PATHS_LNG, lng);
         contentValues.put(RIDE_PATHS_RIDE_ID, rideId);
-        return db.insert(RIDE_PATHS_TABLE_NAME, null, contentValues);
+        long i =  db.insert(RIDE_PATHS_TABLE_NAME, null, contentValues);
+        db.close();
+        return  i;
     }
 
 
@@ -113,8 +119,10 @@ public class DBHelper extends SQLiteOpenHelper {
             String secondary_text = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT));
             String place_id = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_ID));
             SavedLocationData s = new SavedLocationData(saved_id, title, lat, lng, primary_text, secondary_text, place_id);
+            db.close();
             return s;
         }
+        db.close();
         return null;
     }
 
@@ -122,6 +130,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public SavedLocationData getDataUsingLatLand(String whereClause) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from "+LOCATION_TABLE_NAME+" "+whereClause+"", null );
+
         if (res != null && res.moveToFirst()) {
 
             int saved_id = res.getInt(res.getColumnIndex(LOCATION_COLUMN_ID));
@@ -132,8 +141,10 @@ public class DBHelper extends SQLiteOpenHelper {
             String secondary_text = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_S_TEXT));
             String place_id = res.getString(res.getColumnIndex(LOCATION_COLUMN_GOOGLE_PLACE_ID));
             SavedLocationData s = new SavedLocationData(saved_id, title, lat, lng, primary_text, secondary_text, place_id);
+            db.close();
             return s;
         }
+        db.close();
         return null;
     }
 
@@ -141,6 +152,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
         int numRows = (int) DatabaseUtils.queryNumEntries(db, LOCATION_TABLE_NAME);
+        db.close();
         return numRows;
     }
 
@@ -148,9 +160,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public Integer deleteLocation(Integer id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(LOCATION_TABLE_NAME,
+        int response =  db.delete(LOCATION_TABLE_NAME,
                 "id = ? ",
                 new String[] { Integer.toString(id) });
+        db.close();
+        return  response;
     }
 
     public List<SavedLocationData> getAllAddress() {
@@ -173,6 +187,7 @@ public class DBHelper extends SQLiteOpenHelper {
             rows.add(s);
             res.moveToNext();
         }
+        db.close();
         return rows;
     }
 
@@ -194,7 +209,11 @@ public class DBHelper extends SQLiteOpenHelper {
             rows.add(r);
             res.moveToNext();
         }
+        db.close();
         return rows;
     }
+
+
+
 
 }

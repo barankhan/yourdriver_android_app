@@ -287,26 +287,26 @@ public class Utils {
 
 
 
-    public static String getDurationForRoute(String origin, String destination){
-
-        DriverGoogleAPI driverGoogleAPI = RetrofitClient.getApiClient(Constant.baseUrl.GOOGLE_DIRECTION_URL).create(DriverGoogleAPI.class);
-
-        Call <ResponseBody> call =  driverGoogleAPI.getDirectionInfo(origin,destination,"AIzaSyCMeNFGFvsheMOXo7gcJMMiLStrKyHGAFI");
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.e("key",response.raw().toString());
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-            }
-        });
-
-
-        return  "hello";
-    }
+//    public static String getDurationForRoute(String origin, String destination){
+//
+//        DriverGoogleAPI driverGoogleAPI = RetrofitClient.getApiClient(Constant.baseUrl.GOOGLE_DIRECTION_URL).create(DriverGoogleAPI.class);
+//
+//        Call <ResponseBody> call =  driverGoogleAPI.getDirectionInfo(origin,destination,"AIzaSyCMeNFGFvsheMOXo7gcJMMiLStrKyHGAFI");
+//        call.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                Log.e("key",response.raw().toString());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//
+//            }
+//        });
+//
+//
+//        return  "hello";
+//    }
 
 
 

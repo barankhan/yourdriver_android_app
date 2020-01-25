@@ -55,6 +55,9 @@ public class RetrofitClient {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(interceptor)
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
 //                .sslSocketFactory(sslSocketFactory, trustManager)
                 .hostnameVerifier(new HostnameVerifier() {
                     @Override

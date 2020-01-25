@@ -2,6 +2,7 @@ package com.baran.driver.Services;
 
 import com.baran.driver.Model.ChatMessage;
 import com.baran.driver.Model.DriverServerResponse;
+import com.baran.driver.Model.ExpectedFare;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.DriverTransaction;
 import com.baran.driver.Model.User;
@@ -74,6 +75,15 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("ride_rating.php")
     Call <DriverServerResponse> setRating(@Field("driver_id") int driverId, @Field("ride_id") int rideId,@Field("rating") float rating);
+
+
+
+
+    @FormUrlEncoded
+    @POST("calculate_expected_fare.php")
+    Call <ExpectedFare> calculateExpectedFare(@Field("mobile") String mobile, @Field("origin_lat") double origin_lat, @Field("origin_lng") double origin_lng
+    , @Field("destination_lat") double destination_lat, @Field("destination_lng") double destination_lng
+    );
 
 
 

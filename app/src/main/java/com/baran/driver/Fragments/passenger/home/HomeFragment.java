@@ -47,6 +47,7 @@ import com.baran.driver.Extras.SavedLocationData;
 import com.baran.driver.Extras.Utils;
 import com.baran.driver.Model.DriverServerResponse;
 import com.baran.driver.Model.DriverType;
+import com.baran.driver.Model.ExpectedFare;
 import com.baran.driver.Model.Ride;
 import com.baran.driver.Model.User;
 import com.baran.driver.Model.UserRide;
@@ -143,6 +144,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private RatingBar driverRating;
     private ConstraintLayout ratingLayout;
     String firebaseToken;
+    DriverTypeSpinnerAdapter driverTypeSpinnerAdapter;
+    final List<DriverType> driverTypeList = new ArrayList<DriverType>();
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -233,7 +236,52 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 dropOffLatLng = dropOffMarker.getPosition();
 
 
-//                String here = Utils.getDurationForRoute(pickUpLatLng.toString(),dropOffLatLng.toString());
+
+                Call<ExpectedFare> userCall = Passenger.ridesApi.calculateExpectedFare(currentUser.getMobile(),pickUpLatLng.latitude,pickUpLatLng.longitude,dropOffLatLng.latitude,dropOffLatLng.longitude);
+                Utils.showProgressBarSpinner(getContext());
+                userCall.enqueue(new Callback<ExpectedFare>() {
+                    @Override
+                    public void onResponse(Call<ExpectedFare> call, Response<ExpectedFare> response) {
+                        Utils.dismissProgressBarSpinner();
+                        if(response.body().getResponse().equals("success")){
+
+
+                            List<DriverType> driverL = response.body().getVehicleTypesList();
+
+                            driverTypeList.clear();
+
+
+
+                            DriverType auto = new DriverType();
+                            auto.setTitle(spinnerTitles[0]);
+                            auto.setImageResourceId(spinnerImages[0]);
+                            auto.setExpectedFare(driverL.get(0).getExpectedFare());
+                            driverTypeList.add(auto);
+
+
+                            DriverType car = new DriverType();
+                            car.setTitle(spinnerTitles[1]);
+                            car.setImageResourceId(spinnerImages[1]);
+                            car.setExpectedFare(driverL.get(1).getExpectedFare());
+                            driverTypeList.add(car);
+
+                            DriverType bike = new DriverType();
+                            bike.setTitle(spinnerTitles[2]);
+                            bike.setImageResourceId(spinnerImages[2]);
+                            bike.setExpectedFare(driverL.get(2).getExpectedFare());
+                            driverTypeList.add(bike);
+
+                            driverTypeSpinnerAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ExpectedFare> call, Throwable t) {
+                        Utils.dismissProgressBarSpinner();
+
+                    }
+                });
+
 
                 LatLngBounds.Builder builder = new LatLngBounds.Builder();
                 builder.include(pickUpLatLng).include(dropOffLatLng);
@@ -250,9 +298,12 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         btnSkipDropOff.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 dropOffTextView.setVisibility(View.GONE);
                 dropOffIcon.setVisibility(View.GONE);
                 separator.setVisibility(View.GONE);
+                dropOffSaveImage.setVisibility(View.GONE);
+
                 isPickupMode = false;
                 isDropOffMode = false;
                 v.setVisibility(View.GONE);
@@ -463,30 +514,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 };
 
 
-        final List<DriverType> driverTypeList = new ArrayList<DriverType>();
-
-        DriverType auto = new DriverType();
-        auto.setTitle(spinnerTitles[0]);
-        auto.setImageResourceId(spinnerImages[0]);
-        auto.setExpectedFare("50-70");
-        driverTypeList.add(auto);
 
 
-        DriverType car = new DriverType();
-        car.setTitle(spinnerTitles[1]);
-        car.setImageResourceId(spinnerImages[1]);
-        car.setExpectedFare("N/A");
-        driverTypeList.add(car);
-
-        DriverType bike = new DriverType();
-        bike.setTitle(spinnerTitles[2]);
-        bike.setImageResourceId(spinnerImages[2]);
-        bike.setExpectedFare("N/A");
-        driverTypeList.add(bike);
 
 
-        DriverTypeSpinnerAdapter mCustomAdapter = new DriverTypeSpinnerAdapter(getContext(),R.layout.driver_type_spiner_layout,driverTypeList);
-        mSpinner.setAdapter(mCustomAdapter);
+        driverTypeSpinnerAdapter = new DriverTypeSpinnerAdapter(getContext(),R.layout.driver_type_spiner_layout,driverTypeList);
+        mSpinner.setAdapter(driverTypeSpinnerAdapter);
+
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -742,9 +776,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     PointF p3 = calculateDerivedPosition(center, mult * 50, 180);
                     PointF p4 = calculateDerivedPosition(center, mult * 50, 270);
 
-
-
-
                     String strWhere =  " WHERE cast(lat as real) > " + String.valueOf(p3.x) + " AND cast(lat as real) < " + String.valueOf(p1.x) + " AND cast(lng as real)< " + String.valueOf(p2.y) + " AND cast(lng  as real) >" + String.valueOf(p4.y);
 
                     DBHelper d = new DBHelper(getContext());
@@ -754,7 +785,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         Log.e("got something",dox.getTitle());
                         Log.e("got something",String.valueOf(dox.getId()));
                     }
-
 
                 }
 
@@ -1000,9 +1030,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                             if(response.isSuccessful()){
                                 MainActivity.appPreference.setRideObject(null);
                                 MainActivity.appPreference.setDriverObject(null);
-                                MainActivity.appPreference.setIsDropoffMode(false);
-                                MainActivity.appPreference.setIsPickupMode(true);
                                 Intent intent = new Intent(getContext(), NotifActivity.class);
+                                intent.putExtra("setPickUpMode", "true");
+                                intent.putExtra("setDropoffMode", "false");
                                 intent.putExtra("message", "Thanks a lot! for your feedback");
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
@@ -1055,6 +1085,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         dropOffTextView.setClickable(true);
         pickupTextView.setVisibility(View.VISIBLE);
         dropOffTextView.setVisibility(View.GONE);
+        dropOffIcon.setVisibility(View.GONE);
+        separator.setVisibility(View.GONE);
+        dropOffSaveImage.setVisibility(View.GONE);
+
+
         btnCancelRide.setVisibility(View.GONE);
         btnCallDriver.setVisibility(View.GONE);
         btnSkipDropOff.setVisibility(View.GONE);
@@ -1080,7 +1115,29 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         if(isDropOffMode){
             dropoffState();
         }
+
         ratingLayout.setVisibility(View.GONE);
+
+        driverTypeList.clear();
+        DriverType auto = new DriverType();
+        auto.setTitle(spinnerTitles[0]);
+        auto.setImageResourceId(spinnerImages[0]);
+        driverTypeList.add(auto);
+
+
+        DriverType car = new DriverType();
+        car.setTitle(spinnerTitles[1]);
+        car.setImageResourceId(spinnerImages[1]);
+        driverTypeList.add(car);
+
+        DriverType bike = new DriverType();
+        bike.setTitle(spinnerTitles[2]);
+        bike.setImageResourceId(spinnerImages[2]);
+        driverTypeList.add(bike);
+
+        driverTypeSpinnerAdapter.notifyDataSetChanged();
+
+
     }
 
 
@@ -1090,6 +1147,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         dropOffTextView.setVisibility(View.VISIBLE);
         dropOffIcon.setVisibility(View.VISIBLE);
         separator.setVisibility(View.VISIBLE);
+        dropOffSaveImage.setVisibility(View.VISIBLE);
         pickUpMarker.setVisible(true);
         btnConfirmDropOff.setVisibility(View.VISIBLE);
         btnSkipDropOff.setVisibility(View.VISIBLE);

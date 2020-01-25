@@ -11,7 +11,7 @@ import retrofit2.http.POST;
 public interface DriverGoogleAPI {
 
     @FormUrlEncoded
-    @POST("accept_ride.php")
+    @POST("json/")
     Call<ResponseBody> getDirectionInfo(@Field("origin") String origin, @Field("destination") String destination, @Field("key")String key);
 
 

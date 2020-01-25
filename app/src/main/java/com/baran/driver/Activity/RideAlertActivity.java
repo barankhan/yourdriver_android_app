@@ -149,6 +149,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                 @Override
                 public void onFailure(Call<UserRide> call, Throwable t) {
                     Utils.dismissProgressBarSpinner();
+                    Log.e("Error iN accept",t.toString());
                     showAlertBox(RideAlertActivity.this, "Unable to connect to server");
                 }
             });
