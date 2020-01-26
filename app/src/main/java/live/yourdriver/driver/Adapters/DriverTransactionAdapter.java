@@ -62,8 +62,8 @@ public class DriverTransactionAdapter extends RecyclerView.Adapter<DriverTransac
                 FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
 
                 if(MainActivity.appPreference.getUserObjectWithoutUserValidation().getId()==transaction.getPassengerId()){
-                    TransactionDetailsFragment transactionDetailsFragment =
-                            new TransactionDetailsFragment();
+                    live.yourdriver.driver.Fragments.passenger.transactions.TransactionDetailsFragment transactionDetailsFragment =
+                            new live.yourdriver.driver.Fragments.passenger.transactions.TransactionDetailsFragment();
                     transactionDetailsFragment.setArguments(b);
                     fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, transactionDetailsFragment).addToBackStack("@@").commit();
                 }else{
