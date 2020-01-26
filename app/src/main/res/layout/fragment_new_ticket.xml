@@ -9,7 +9,7 @@
         android:clickable="true"
         android:focusable="true"
         android:background="#FFFFFF"
-        tools:context=".Fragments.driver.tickets.NewTicketFragment"
+        tools:context="live.yourdriver.driver.Fragments.driver.tickets.NewTicketFragment"
         >
 
         <LinearLayout

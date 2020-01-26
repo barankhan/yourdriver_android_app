@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.baran.driver">
+    package="live.yourdriver.driver">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -27,7 +27,7 @@
         android:roundIcon="@mipmap/ic_driver_icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.SplashActivity"
+        <activity android:name="live.yourdriver.driver.Activity.SplashActivity"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait"
             >
@@ -36,7 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.ChatActivity"
+        <activity android:name="live.yourdriver.driver.Activity.ChatActivity"
             android:screenOrientation="portrait"
             >
             <intent-filter>
@@ -47,24 +47,24 @@
         </activity>
 
         <receiver
-            android:name=".Services.PopupReceiver"
+            android:name="live.yourdriver.driver.Services.PopupReceiver"
             android:enabled="true"
             android:exported="true" />
-        <receiver android:name=".Services.NotificationAlertReceiver">
+        <receiver android:name="live.yourdriver.driver.Services.NotificationAlertReceiver">
             <intent-filter>
                 <action android:name="com.barankhan.driver.notif_generated" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name=".Activity.NotifActivity"
+            android:name="live.yourdriver.driver.Activity.NotifActivity"
             android:theme="@style/AppDialogScreenTheme"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".Activity.DriverTransactionActivity"
+        <activity android:name="live.yourdriver.driver.Activity.DriverTransactionActivity"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".Activity.RideAlertActivity"
+        <activity android:name="live.yourdriver.driver.Activity.RideAlertActivity"
             android:screenOrientation="portrait"
             >
             <intent-filter>
@@ -74,15 +74,15 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".Services.LocationBackgroundService" />
+        <service android:name="live.yourdriver.driver.Services.LocationBackgroundService" />
 
         <activity
-            android:name=".Activity.DriverActivity"
+            android:name="live.yourdriver.driver.Activity.DriverActivity"
             android:label="@string/title_activity_driver"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".Activity.DriverConfirmationActivity"
+        <activity android:name="live.yourdriver.driver.Activity.DriverConfirmationActivity"
             android:screenOrientation="portrait"
             >
             <intent-filter>
@@ -93,7 +93,7 @@
         </activity>
 
         <service
-            android:name=".Services.FirebaseService"
+            android:name="live.yourdriver.driver.Services.FirebaseService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -101,17 +101,17 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Services.ChatHeadService"
+            android:name="live.yourdriver.driver.Services.ChatHeadService"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name=".Activity.SearchActivity"
+            android:name="live.yourdriver.driver.Activity.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
             />
         <activity
-            android:name=".Activity.Passenger"
+            android:name="live.yourdriver.driver.Activity.Passenger"
             android:label="@string/title_activity_passenger"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"
@@ -126,7 +126,7 @@
             android:required="false" />
 
         <activity
-            android:name=".Activity.MainActivity"
+            android:name="live.yourdriver.driver.Activity.MainActivity"
             android:screenOrientation="portrait"
             >
 
@@ -135,15 +135,15 @@
 
 
 
-        <receiver android:name="Services.DriverAlertReceiver">
+        <receiver android:name="live.yourdriver.driver.Services.DriverAlertReceiver">
             <intent-filter>
                 <action android:name="com.barankhan.driver.ride_alerts" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Activity.VoiceChatViewActivity" />
+        <activity android:name="live.yourdriver.driver.Activity.VoiceChatViewActivity" />
 
-        <activity android:name=".Activity.SupportActivity"></activity>
+        <activity android:name="live.yourdriver.driver.Activity.SupportActivity"></activity>
 
 
     </application>

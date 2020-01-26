@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.baran.driver.Fragments.passenger.home.HomeFragment"
+        android:name="live.yourdriver.driver.Fragments.passenger.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/passenger_fragment_home" />
 

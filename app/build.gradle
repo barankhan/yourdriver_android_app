@@ -3,9 +3,17 @@ apply plugin: 'com.google.gms.google-services'
 android.defaultConfig.vectorDrawables.useSupportLibrary = true
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/home/baran/Dropbox/Driver/keystore/keys.jks')
+            storePassword 'ntmbh=WG3YS5>z&F{'
+            keyAlias = 'key0'
+            keyPassword 'ntmbh=WG3YS5>z&F{'
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
-        applicationId 'com.baran.driver'
+        applicationId 'live.yourdriver.app'
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
