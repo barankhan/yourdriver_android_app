@@ -78,4 +78,11 @@ public interface ServiceApi {
     @POST("update_profile_picture.php")
     Call <User> updateProfilePicture(@Part MultipartBody.Part picture,@Part("mobile") RequestBody mobile);
 
+
+
+    @FormUrlEncoded
+    @POST("resend_otp.php")
+    Call<User> resendOTP(@Field("mobile") String mobile);
+
+
 }

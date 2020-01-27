@@ -31,23 +31,11 @@ public class RetrofitClient {
 //        }
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
+        //        .addInterceptor(interceptor)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
 //                .sslSocketFactory(sslSocketFactory, trustManager)
-                .hostnameVerifier(new HostnameVerifier() {
-                    @Override
-                    public boolean verify(String hostname, SSLSession session) {
-                        if(hostname.equals("yourdriver.live")){
-                            return  true;
-                        }else{
-                            return false;
-                        }
-
-                    }
-                })
-
                 .build();
 
 
@@ -87,16 +75,7 @@ public class RetrofitClient {
         OkHttpClient client = new OkHttpClient.Builder()
 //                .addInterceptor(interceptor)
 //                .sslSocketFactory(sslSocketFactory, trustManager)
-                .hostnameVerifier(new HostnameVerifier() {
-                    @Override
-                    public boolean verify(String hostname, SSLSession session) {
-                        if(hostname.equals("yourdriver.live")){
-                            return  true;
-                        }else{
-                            return false;
-                        }
-                    }
-                })
+
                 .build();
         return client;
 
