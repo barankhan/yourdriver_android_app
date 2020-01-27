@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.baran.driver.live.baran.driver.Activity.SplashActivity">
+    tools:context="live.yourdriver.driver.Activity.SplashActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
