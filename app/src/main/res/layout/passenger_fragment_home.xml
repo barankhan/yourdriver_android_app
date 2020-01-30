@@ -176,7 +176,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="80dp"
             android:spinnerMode="dialog"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
 
             app:layout_constraintEnd_toEndOf="parent"
@@ -191,12 +191,11 @@
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
             android:textSize="14sp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_no"
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toBottomOf="@+id/tv_driver_name"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_driver_name" />
 
         <TextView
             android:id="@+id/tv_driver_name"
@@ -206,12 +205,11 @@
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
             android:textSize="18sp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/tv_driver_mobile_no"
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_vehicle_no"
@@ -221,12 +219,11 @@
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
             android:textSize="14sp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/btn_cancel_ride"
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toBottomOf="@+id/tv_driver_mobile_no"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_driver_mobile_no" />
 
         <ImageView
             android:id="@+id/im_driver_image"
@@ -252,10 +249,8 @@
             android:textSize="14sp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/im_call_button"
-            app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toBottomOf="@+id/tv_vehicle_no"
-            tools:visibility="gone" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/im_message_button"
@@ -277,6 +272,20 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_call_black_24dp"
             tools:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/pb_driver_wait"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="79dp"
+            android:layout_height="79dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

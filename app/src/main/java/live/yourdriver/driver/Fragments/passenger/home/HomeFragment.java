@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -144,6 +145,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     DriverTypeSpinnerAdapter driverTypeSpinnerAdapter;
     final List<DriverType> driverTypeList = new ArrayList<DriverType>();
 
+    private ProgressBar pbDriverWait;
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -157,11 +160,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         }
 
 
+
+
         MainActivity.appPreference.setIsPickupMode(true);
         MainActivity.appPreference.setIsDropoffMode(false);
         currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
 
         View root = inflater.inflate(R.layout.passenger_fragment_home, container, false);
+
+        pbDriverWait = root.findViewById(R.id.pb_driver_wait);
 
         separator = root.findViewById(R.id.tv_pickup_drop_off_separator);
 
@@ -340,16 +347,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     @Override
                     public void onResponse(Call<Ride> call, Response<Ride> response) {
                         if(response.isSuccessful()){
+                            Utils.dismissProgressBarSpinner();
                                 if(response.body().getResponse().equals("no_driver_found")){
-                                    Utils.dismissProgressBarSpinner();
                                     showAlertBox(getActivity(),response.body().getMessage());
                                     MainActivity.appPreference.setIsPickupMode(true);
                                     MainActivity.appPreference.setIsDropoffMode(false);
                                     initialState();
-
                                 }else if(response.body().getResponse().equals("alert_sent_to_driver")){
-                                    appPreference.setRideObject(response.body());
-                                    showAlertBox(getActivity(),"Finding Driver for you!");
+                                    MainActivity.appPreference.setRideObject(response.body());
+                                    Intent intent = new Intent(getContext(), NotifActivity.class);
+                                    intent.putExtra("message", "Finding Driver For you.");
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
                                 }
                         }else{
                             showAlertBox(getActivity(),"Unable to get the results from Server!");
@@ -635,12 +644,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         picasso.get().load(Constant.baseUrl.UPLOADS_URL+driver.getPicture()).noPlaceholder().fit().centerCrop()
                                 .into(imDriverImage);
                     }
-
+                    pbDriverWait.setVisibility(View.GONE);
                 }
+            }else{
+                pbDriverWait.setVisibility(View.VISIBLE);
+                imCallButton.setVisibility(View.GONE);
+                imMessageButton.setVisibility(View.GONE);
             }
             if(r.getIsRideStarted()==0){
                 btnCancelRide.setVisibility(View.VISIBLE);
-                imCallButton.setVisibility(View.VISIBLE);
+                if(driver!=null){
+                    imCallButton.setVisibility(View.VISIBLE);
+                }
+
             }else{
                 btnCancelRide.setVisibility(View.INVISIBLE);
                 imCallButton.setVisibility(View.GONE);
@@ -1109,6 +1125,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         btnConfirmPickup.setVisibility(View.VISIBLE);
         mSpinner.setVisibility(View.VISIBLE);
         mSpinner.setClickable(true);
+
+        pbDriverWait.setVisibility(View.GONE);
 
         pickupTextView.setClickable(true);
         dropOffTextView.setClickable(true);

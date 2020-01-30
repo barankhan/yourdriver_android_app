@@ -85,4 +85,9 @@ public interface ServiceApi {
     Call<User> resendOTP(@Field("mobile") String mobile);
 
 
+    @FormUrlEncoded
+    @POST("update_password.php")
+    Call<User> updatePassword(@Field("mobile") String mobile,@Field("old_password") String oldPassword,@Field("new_password") String newPassword);
+
+
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import live.yourdriver.driver.Constants.Constant;
 import live.yourdriver.driver.Extras.Utils;
+import live.yourdriver.driver.Fragments.ChangePasswordFragment;
 import live.yourdriver.driver.Fragments.DriverDataUpdateFragmentStep1;
 import live.yourdriver.driver.Fragments.DriverDataUpdateFragmentStep2;
 import live.yourdriver.driver.Fragments.ProfileFragment;
@@ -181,6 +182,9 @@ public class Passenger extends AppCompatActivity {
 
             case R.id.nav_support:
                 fragmentClass = TicketsFragment.class;
+                break;
+            case R.id.nav_password:
+                fragmentClass = ChangePasswordFragment.class;
                 break;
         }
 
