@@ -51,11 +51,11 @@
         android:id="@+id/img_drop_off_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_drop_off_location"
         app:layout_constraintTop_toBottomOf="@+id/tv_pickup_drop_off_separator"
-        app:srcCompat="@drawable/ic_saved_icon" />
+        app:srcCompat="@drawable/ic_unsaved_icon" />
 
     <ImageView
         android:id="@+id/img_pickup_location"
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="7dp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/tv_pickup_drop_off_separator"
         app:layout_constraintStart_toEndOf="@+id/tv_pickup_location"
         app:layout_constraintTop_toTopOf="parent"

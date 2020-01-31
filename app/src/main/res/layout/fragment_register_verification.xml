@@ -16,7 +16,7 @@
         android:layout_marginEnd="34dp"
 
 
-        android:text="Please Enter Verification Code Recived via SMS"
+        android:text="Please enter verification code received via SMS"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -171,6 +171,7 @@ public class ChatActivity extends AppCompatActivity {
         cm.enqueue(new Callback<List<ChatMessage>>() {
             @Override
             public void onResponse(Call<List<ChatMessage>> call, Response<List<ChatMessage>> response) {
+                responseMessageList.clear();
                 responseMessageList.addAll(response.body());
                 messageAdapter.notifyDataSetChanged();
                 goToLastRecyclerView();

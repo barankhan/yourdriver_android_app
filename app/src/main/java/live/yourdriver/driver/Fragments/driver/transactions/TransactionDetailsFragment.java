@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import live.yourdriver.driver.Activity.DriverTransactionActivity;
@@ -30,6 +31,8 @@ import java.util.List;
 
 
 public class TransactionDetailsFragment extends Fragment {
+
+    private RatingBar ratingBar;
 
     private TextView tvTransactionId,tvTransactionType,tvDriverStartupFare,tvCompanyServiceCharges,
             tvTimeElapsedMinutes,tvTimeElapsedRate,tvKmTravelled,tvKmTravelledRate,tvTotalFare,tvAmountReceived,tvDistanceAmount,tvTimeAmount,
@@ -48,7 +51,7 @@ public class TransactionDetailsFragment extends Fragment {
         View root =  inflater.inflate(R.layout.fragment_transaction_details, container, false);
 
         linearLayoutLiabilities = root.findViewById(R.id.linearLayoutLiabilities);
-
+        ratingBar = root.findViewById(R.id.ratingBar);
         btnEnterCash = root.findViewById(R.id.btn_enter_cash);
 
 
@@ -190,7 +193,8 @@ public class TransactionDetailsFragment extends Fragment {
                         tvDriverArrivedAt.setText(response.body().getRide().getDriverArrivedAt());
                         tvRideStartedAt.setText(response.body().getRide().getRideStartedAt());
                         tvRideEndedAt.setText(response.body().getRide().getRideEndedAt());
-                        tvRideRating.setText(String.valueOf(response.body().getRide().getRating()));
+                        ratingBar.setRating(response.body().getRide().getRating());
+//                        tvRideRating.setText(String.valueOf(response.body().getRide().getRating()));
 
 
                         tvPassengerName.setText(response.body().getUser().getName());

@@ -154,4 +154,7 @@
     <string name="title_activity_driver">DriverActivity</string>
 
 
+    <string name="version">1.3</string>
+
+
 </resources>

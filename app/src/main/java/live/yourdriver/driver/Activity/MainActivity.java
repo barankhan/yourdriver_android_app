@@ -79,23 +79,25 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
         if(u==null){
             MainActivity.appPreference.setLoginStatus(false);
             loginFragment();
+        }else{
+            appPreference.setDisplayName(u.getName());
+            appPreference.setDisplayEmail(u.getEmail());
+            appPreference.setCreDate(u.getCreatedAt());
+            if(u.getIsVerified()==1 && u.getId()>0 && u.getIsDriver()==0){
+                Intent intent = new Intent(this, Passenger.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(u.getIsVerified()==1 && u.getId()>0 && u.getIsDriver()==1){
+                Intent intent = new Intent(this, DriverActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(u.getId()>0 && u.getIsVerified()==0){
+                registrationVerificationFragment();
+            }
         }
-        appPreference.setDisplayName(u.getName());
-        appPreference.setDisplayEmail(u.getEmail());
-        appPreference.setCreDate(u.getCreatedAt());
-        if(u.getIsVerified()==1 && u.getId()>0 && u.getIsDriver()==0){
-            Intent intent = new Intent(this, Passenger.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }else if(u.getIsVerified()==1 && u.getId()>0 && u.getIsDriver()==1){
-            Intent intent = new Intent(this, DriverActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }else if(u.getId()>0 && u.getIsVerified()==0){
-            registrationVerificationFragment();
-        }
+
     }
     @Override
     public void logout() {

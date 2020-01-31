@@ -138,11 +138,11 @@ public class SupportActivity extends AppCompatActivity {
     }
 
     private void loadMessages(){
-        responseMessageList.clear();
         Call<List<SupportTicketMessage>> cm = supportTicketAPI.getSupportTicketMessages(currentUser.getId(),ticketId);
         cm.enqueue(new Callback<List<SupportTicketMessage>>() {
             @Override
             public void onResponse(Call<List<SupportTicketMessage>> call, Response<List<SupportTicketMessage>> response) {
+                responseMessageList.clear();
                 responseMessageList.addAll(response.body());
                 messageAdapter.notifyDataSetChanged();
                 goToLastRecyclerView();

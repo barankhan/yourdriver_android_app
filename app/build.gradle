@@ -16,14 +16,20 @@ android {
         applicationId 'live.yourdriver.app'
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 3
-        versionName '1.3'
+        versionCode 4
+        versionName '1.4'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "Boolean", "IS_DEBUG_MODE", 'false'
+            resValue "string", "app_version","${defaultConfig.versionName}"
+        }
+        debug {
+            buildConfigField "Boolean", "IS_DEBUG_MODE", 'true'
+            resValue "string", "app_version","${defaultConfig.versionName}"
         }
     }
 }

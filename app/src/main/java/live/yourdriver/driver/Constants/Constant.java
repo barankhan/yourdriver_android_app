@@ -1,8 +1,11 @@
 package live.yourdriver.driver.Constants;
 
+import live.yourdriver.driver.BuildConfig;
+
 public class Constant {
 
     /** Constants values are here */
+
 //    public static class baseUrl{
 //        public final static String BASE_URL_USERS_API = "https://test.yourdriver.live/users/api/";
 //        public final static String BASE_URL_RIDES_API = "https://test.yourdriver.live/rides/api/";
@@ -22,7 +25,6 @@ public class Constant {
         public final static String IMAGE_BASE_URL = "";
         public final static String UPLOADS_URL="https://yourdriver.live/uploads/";
         public final static String GOOGLE_DIRECTION_URL="https://maps.googleapis.com/maps/api/directions/";
-
 
     }
 

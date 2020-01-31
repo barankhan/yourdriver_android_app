@@ -3,6 +3,7 @@ package live.yourdriver.driver.Fragments.passenger.home;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -36,6 +39,7 @@ import live.yourdriver.driver.Model.DBHelper;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.Ride;
 import live.yourdriver.driver.Model.User;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -90,6 +94,7 @@ import java.util.Deque;
 import java.util.List;
 
 
+import static android.content.Context.LOCATION_SERVICE;
 import static live.yourdriver.driver.Extras.Utils.calculateDerivedPosition;
 import static live.yourdriver.driver.Extras.Utils.removeSavedLocationDialogue;
 import static live.yourdriver.driver.Extras.Utils.showAlertBox;
@@ -109,7 +114,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     boolean isSourceSet = false, tripStarted = false, isPickupMode = true, isDropOffMode = false;
     private static float DEFAULT_PICKUP_ZOOM = 17;
     private static final int DEFAULT_DROP_OFF_ZOOM = 12;
-    private boolean mLocationPermissionGranted;
+    private boolean mLocationPermissionGranted  = false;
     private Location mLastKnownLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private final LatLng mDefaultLocation = new LatLng(30.2223, 71.4703);
@@ -146,6 +151,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     final List<DriverType> driverTypeList = new ArrayList<DriverType>();
 
     private ProgressBar pbDriverWait;
+
+    private static  String pickupAddress = "Please Select Pickup Location";
+    private static  String dropoffAddress = "Please Select Dropoff Location";
 
 
 
@@ -341,7 +349,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     strDropOffLatLng =dropOffLatLng.latitude+","+dropOffLatLng.longitude;
                 }
 
-                Call<Ride> userCall = Passenger.ridesApi.findDriver(currentUser.getMobile(),vehicleType, strPickupLatLng,strDropOffLatLng,firebaseToken);
+                Call<Ride> userCall = Passenger.ridesApi.findDriver(currentUser.getMobile(),vehicleType, strPickupLatLng,strDropOffLatLng,firebaseToken,pickupAddress,dropoffAddress);
                 Utils.showProgressBarSpinner(getContext());
                 userCall.enqueue(new Callback<Ride>() {
                     @Override
@@ -435,6 +443,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         pickupTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("Clicked Pick Text View","here");
                 Intent intent = new Intent(getContext(), SearchActivity.class);
                 startActivityForResult(intent, PICKUP_AUTOCOMPLETE_REQUEST_CODE);// Activity is started with requestCode 2
             }
@@ -541,6 +550,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             }
         });
 
+        getLocationPermission();
+
+        locationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
+
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+//            Toast.makeText(getContext(), "GPS is Enabled in your device", Toast.LENGTH_SHORT).show();
+        }else if(ContextCompat.checkSelfPermission(getContext().getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED){
+            showGPSDisabledAlertToUser();
+        }
+
         return root;
     }
 
@@ -596,11 +617,42 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
     }
 
+    private void showGPSDisabledAlertToUser(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Goto Settings Page To Enable GPS",
+                        new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int id){
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id){
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
 
 
     @Override
     public void onResume() {
         super.onResume();
+
+        updateLocationUI();
+
+        pickupTextView.setText(pickupAddress);
+        dropOffTextView.setText(dropoffAddress);
+
+
+
+
+
 
         currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
@@ -672,6 +724,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         }else if(!MainActivity.appPreference.getIsDropoffMode() && MainActivity.appPreference.getIsPickupMode() ){
             initialState();
+            getDeviceLocation();
         }
 
 
@@ -755,15 +808,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-  getLocationPermission();
-
-
-
+//        getLocationPermission();
         updateLocationUI();
 
 
 
+
+
         getDeviceLocation();
+
 
 
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
@@ -812,12 +865,46 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
                     DBHelper d = new DBHelper(getContext());
                     SavedLocationData dox = d.getDataUsingLatLand(strWhere);
+
+                    SavedLocationData tempData  = d.getAddressUsingLatLand(strWhere);
+                    // phly jao agar user ny khud save kiya howa hy wahan sy uth ky lay aao title.
                     if(dox!=null){
 //                        Log.e("got something",dox.getTitle());
 //                        Log.e("got something",String.valueOf(dox.getId()));
                         pickupTextView.setText(dox.getTitle());
+                        pickUpSaveImage.setImageResource(R.drawable.ic_saved_icon);
+                        pickUpSaveImage.setTag(R.id.is_saved, true);
+                        // TODO: Added logic to display saved content
+                        pickUpSaveImage.setTag(R.id.location_db_id, dox.getId());
+                        pickUpSaveImage.setTag(R.id.title, dox.getTitle());
+                        pickUpSaveImage.setVisibility(View.VISIBLE);
+
+                    }else if(tempData!=null){
+                        // nahi tu temprairly walay kahtay sy title utha ky lay aao.
+
+                        pickupTextView.setText(tempData.getTitle());
+
+                        pickUpSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                        pickUpSaveImage.setTag(R.id.is_saved, false);
+                        pickUpSaveImage.setVisibility(View.VISIBLE);
+
+
                     }else{
-                        pickupTextView.setText(Utils.getAddressUsingLatLong(getContext(),pickUpLatLng.latitude,pickUpLatLng.longitude));
+                        // Nahi tu google ko call behjo or local bhi save kar do... speed bhi achi bhany ki application ki or time bhi.
+                        String title = Utils.getAddressUsingLatLong(getContext(),pickUpLatLng.latitude,pickUpLatLng.longitude);
+
+                        if(title.length()>0){
+                            DBHelper dbHelper;
+                            dbHelper = new DBHelper(getContext());
+                            dbHelper.insertAddress(pickUpLatLng.latitude,pickUpLatLng.longitude,title);
+
+                        }
+                        pickupTextView.setText(title);
+                        pickUpSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                        pickUpSaveImage.setTag(R.id.is_saved, false);
+                        pickUpSaveImage.setVisibility(View.VISIBLE);
+
+
                     }
 
 
@@ -836,16 +923,50 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
                     DBHelper d = new DBHelper(getContext());
                     SavedLocationData dox = d.getDataUsingLatLand(strWhere);
+
+
+                    SavedLocationData tempData  = d.getAddressUsingLatLand(strWhere);
+
                     if(dox!=null){
                         dropOffTextView.setText(dox.getTitle());
+
+                        dropOffSaveImage.setImageResource(R.drawable.ic_saved_icon);
+                        dropOffSaveImage.setTag(R.id.is_saved, true);
+                        dropOffSaveImage.setTag(R.id.location_db_id, dox.getId());
+                        dropOffSaveImage.setTag(R.id.title, dox.getTitle());
+                        dropOffSaveImage.setVisibility(View.VISIBLE);
+
+
+                    }else if(tempData!=null){
+                        // nahi tu temprairly walay kahtay sy title utha ky lay aao.
+
+                        dropOffTextView.setText(tempData.getTitle());
+
+                        dropOffSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                        dropOffSaveImage.setTag(R.id.is_saved, false);
+                        dropOffSaveImage.setVisibility(View.VISIBLE);
+
                     }else{
-                        dropOffTextView.setText(Utils.getAddressUsingLatLong(getContext(),dropOffLatLng.latitude,dropOffLatLng.longitude));
+                        // Nahi tu google ko call behjo or local bhi save kar do... speed bhi achi bhany ki application ki or time bhi.
+                        String title = Utils.getAddressUsingLatLong(getContext(),dropOffLatLng.latitude,dropOffLatLng.longitude);
+
+                        if(title.length()>0){
+                            DBHelper dbHelper;
+                            dbHelper = new DBHelper(getContext());
+                            dbHelper.insertAddress(dropOffLatLng.latitude,dropOffLatLng.longitude,title);
+
+                        }
+                        dropOffTextView.setText(title);
+                        dropOffSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                        dropOffSaveImage.setTag(R.id.is_saved, false);
+                        dropOffSaveImage.setVisibility(View.VISIBLE);
                     }
 
 
                 }
 
-
+                pickupAddress = pickupTextView.getText().toString();
+                dropoffAddress = dropOffTextView.getText().toString();
 
 
                 LatLng latLng = mMap.getCameraPosition().target;
@@ -953,7 +1074,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
         } else {
-            ActivityCompat.requestPermissions(getActivity(),
+            requestPermissions(
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
@@ -991,7 +1112,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
-                getLocationPermission();
+//                getLocationPermission();
             }
         } catch (SecurityException e) {
 //            Log.e("Exception: %s", e.getMessage());
@@ -1194,7 +1315,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         dropOffTextView.setVisibility(View.VISIBLE);
         dropOffIcon.setVisibility(View.VISIBLE);
         separator.setVisibility(View.VISIBLE);
-        dropOffSaveImage.setVisibility(View.VISIBLE);
+        dropOffSaveImage.setVisibility(View.INVISIBLE);
         pickUpMarker.setVisible(true);
         btnConfirmDropOff.setVisibility(View.VISIBLE);
         btnSkipDropOff.setVisibility(View.VISIBLE);

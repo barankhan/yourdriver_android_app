@@ -134,15 +134,17 @@
 
 
 
-        <receiver android:name="live.yourdriver.driver.Services.DriverAlertReceiver">
+        <receiver android:name="live.yourdriver.driver.Services.DriverAlertReceiver" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="com.barankhan.driver.ride_alerts" />
             </intent-filter>
         </receiver>
 
-        <activity android:name="live.yourdriver.driver.Activity.VoiceChatViewActivity" />
+        <activity android:name="live.yourdriver.driver.Activity.VoiceChatViewActivity" android:screenOrientation="portrait"/>
 
-        <activity android:name="live.yourdriver.driver.Activity.SupportActivity"></activity>
+        <activity android:name="live.yourdriver.driver.Activity.SupportActivity" android:screenOrientation="portrait"></activity>
+
+
 
 
     </application>

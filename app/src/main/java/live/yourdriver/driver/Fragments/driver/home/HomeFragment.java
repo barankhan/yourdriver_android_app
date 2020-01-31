@@ -823,6 +823,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             btnCancelRide.setVisibility(View.GONE);
             btnDriverArrived.setVisibility(View.GONE);
             btnEndRide.setVisibility(View.VISIBLE);
+            if(dropOffMarker!=null) dropOffMarker.setVisible(true);
         }
     }
 
@@ -1015,7 +1016,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                             DBHelper dbHelper;
                             dbHelper = new DBHelper(getContext());
                             dbHelper.insertRidePath(Double.valueOf(MainActivity.appPreference.getLat()),Double.valueOf(MainActivity.appPreference.getLng()),response.body().getId());
-                            dbHelper.close();
+
                             Utils.dismissProgressBarSpinner();
                         }
                         Utils.dismissProgressBarSpinner();

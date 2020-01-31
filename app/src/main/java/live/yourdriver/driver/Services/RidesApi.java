@@ -19,7 +19,7 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("register_ride.php")
     Call <Ride> findDriver(@Field("mobile") String mobile, @Field("vehicle_type") String vehicle_type,
-                           @Field("pickup_lat_lng") String pickup_lat_lng, @Field("dropoff_lat_lng") String dropoff_lat_lng, @Field("firebaseToken") String firebaseToken);
+                           @Field("pickup_lat_lng") String pickup_lat_lng, @Field("dropoff_lat_lng") String dropoff_lat_lng, @Field("firebaseToken") String firebaseToken, @Field("pickup_address") String pickupAddress, @Field("dropoff_address") String dropoffAddress);
     @FormUrlEncoded
     @POST("accept_ride.php")
     Call <UserRide> acceptRide(@Field("mobile") String mobile, @Field("ride_id") String ride_id, @Field("driver_lat")String lat, @Field("driver_lng")String lng);

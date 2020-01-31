@@ -31,7 +31,7 @@ public class RetrofitClient {
 //        }
 
         OkHttpClient client = new OkHttpClient.Builder()
-        //        .addInterceptor(interceptor)
+//                .addInterceptor(interceptor)
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)

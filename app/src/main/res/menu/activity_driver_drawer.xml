@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
@@ -45,6 +46,12 @@
             android:id="@+id/d_nav_logout"
             android:icon="@drawable/ic_menu_send"
             android:title="@string/menu_logout" />
+    </group>
+    <group
+        android:id="@+id/nav_footer">
+        <item
+            android:id="@+id/nav_log_version"
+            app:actionLayout="@layout/navigation_footer" />
     </group>
 
 <!--    <item android:title="Communicate">-->

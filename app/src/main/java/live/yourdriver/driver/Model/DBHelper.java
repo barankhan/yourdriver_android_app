@@ -19,6 +19,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String LOCATION_TABLE_NAME = "location";
     public static final String RIDE_PATHS_TABLE_NAME = "ride_paths";
 
+
+    public static final String ADDRESS_TABLE_NAME = "addresses";
+
+
     public static final String RIDE_PATHS_COLUMN_ID = "id";
     public static final String RIDE_PATHS_LAT = "lat";
     public static final String RIDE_PATHS_LNG = "lng";
@@ -32,10 +36,17 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String LOCATION_COLUMN_LONG = "lng";
     public static final String LOCATION_COLUMN_TITLE = "title";
 
+
+
+    public static final String ADDRESS_COLUMN_ID = "id";
+    public static final String ADDRESS_COLUMN_LAT = "lat";
+    public static final String ADDRESS_COLUMN_LONG = "lng";
+    public static final String ADDRESS_COLUMN_TITLE = "title";
+
     private HashMap hp;
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME , null, 1);
+        super(context, DATABASE_NAME , null, 2);
     }
 
     @Override
@@ -53,6 +64,12 @@ public class DBHelper extends SQLiteOpenHelper {
                         "("+RIDE_PATHS_COLUMN_ID+" integer primary key, "+RIDE_PATHS_LAT+" real,"+RIDE_PATHS_LNG+" real,"+RIDE_PATHS_RIDE_ID+" integer )"
         );
 
+
+        db.execSQL(
+                "create table "+ADDRESS_TABLE_NAME+" " +
+                        "("+ADDRESS_COLUMN_ID+" integer primary key, "+ADDRESS_COLUMN_LAT+" real,"+ADDRESS_COLUMN_LONG+" real,"+ADDRESS_COLUMN_TITLE+" text )"
+        );
+
     }
 
     @Override
@@ -60,6 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL("DROP TABLE IF EXISTS "+LOCATION_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+RIDE_PATHS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ADDRESS_TABLE_NAME);
         onCreate(db);
     }
 
@@ -98,6 +116,32 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(RIDE_PATHS_LNG, lng);
         contentValues.put(RIDE_PATHS_RIDE_ID, rideId);
         long i =  db.insert(RIDE_PATHS_TABLE_NAME, null, contentValues);
+        db.close();
+        return  i;
+    }
+
+
+    public long insertAddress (Double lat,Double lng,String title) {
+
+        SQLiteDatabase readableDatabase = this.getReadableDatabase();
+        Cursor res =  readableDatabase.rawQuery( "select count(*) as ct from "+ADDRESS_TABLE_NAME, null );
+        if (res != null) {
+            res.moveToFirst();
+            int ct = res.getInt(res.getColumnIndex("ct"));
+            if(ct>1000){
+                SQLiteDatabase writableDatabase = this.getWritableDatabase();
+                writableDatabase.execSQL("delete from  "+ADDRESS_TABLE_NAME);
+                writableDatabase.close();
+            }
+            readableDatabase.close();
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ADDRESS_COLUMN_LAT, lat);
+        contentValues.put(ADDRESS_COLUMN_LONG, lng);
+        contentValues.put(ADDRESS_COLUMN_TITLE, title);
+        long i =  db.insert(ADDRESS_TABLE_NAME, null, contentValues);
         db.close();
         return  i;
     }
@@ -146,6 +190,31 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return null;
     }
+
+    // This address is tempraroly saved.
+    public SavedLocationData getAddressUsingLatLand(String whereClause) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from "+ADDRESS_TABLE_NAME+" "+whereClause+"", null );
+
+        if (res != null && res.moveToFirst()) {
+
+            int saved_id = res.getInt(res.getColumnIndex(ADDRESS_COLUMN_ID));
+            String title = res.getString(res.getColumnIndex(ADDRESS_COLUMN_TITLE));
+            String lat = res.getString(res.getColumnIndex(ADDRESS_COLUMN_LAT));
+            String lng = res.getString(res.getColumnIndex(ADDRESS_COLUMN_LONG));
+            String primary_text = "";
+            String secondary_text = "";
+            String place_id = "";
+            SavedLocationData s = new SavedLocationData(saved_id, title, lat, lng, primary_text, secondary_text, place_id);
+            db.close();
+            return s;
+        }
+        db.close();
+        return null;
+    }
+
+
+
 
 
     public int numberOfRows(){

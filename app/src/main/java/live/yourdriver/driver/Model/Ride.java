@@ -82,6 +82,29 @@ public class Ride {
     private  int rating;
 
 
+    @SerializedName("pickupAddress")
+    private  String pickupAddress;
+
+    @SerializedName("dropoffAddress")
+    private  String dropoffAddress;
+
+
+    public String getPickupAddress() {
+        return pickupAddress;
+    }
+
+    public void setPickupAddress(String pickupAddress) {
+        this.pickupAddress = pickupAddress;
+    }
+
+    public String getDropoffAddress() {
+        return dropoffAddress;
+    }
+
+    public void setDropoffAddress(String dropoffAddress) {
+        this.dropoffAddress = dropoffAddress;
+    }
+
     public int getRating() {
         return rating;
     }

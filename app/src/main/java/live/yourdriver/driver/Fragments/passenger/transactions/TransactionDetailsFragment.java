@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import live.yourdriver.driver.Extras.Utils;
@@ -25,10 +26,14 @@ import retrofit2.Response;
 
 public class TransactionDetailsFragment extends Fragment {
 
+    private RatingBar ratingBar;
     private TextView tvTransactionId,tvTransactionType,tvDriverStartupFare,tvCompanyServiceCharges,
             tvTimeElapsedMinutes,tvTimeElapsedRate,tvKmTravelled,tvKmTravelledRate,tvTotalFare,tvAmountReceived,tvDistanceAmount,tvTimeAmount,
             tvRideRegisteredAt,tvDriverArrivedAt,tvRideStartedAt,tvRideEndedAt,tvPassengerName,tvTransactionCreatedAt,tvRideRating,
-            tvCompanyInwardHead,tvInwardHeadAmount,tvCompanyOutwardHead,tvOutwardHeadAmount;
+            tvVehicleType,tvVehicleNo,tvVehicleMade,tvPickupAddress,tvDropoffAddress,tvPickupAddressLabel,tvDropoffAddressLabel
+
+
+            ;
     private LinearLayout linearLayoutLiabilities;
 
     private List<TransactionLiability> transactionLiabilityList = new ArrayList<TransactionLiability>();
@@ -38,6 +43,7 @@ public class TransactionDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root =  inflater.inflate(R.layout.fragment_passenger_transaction_details, container, false);
 
+        ratingBar = root.findViewById(R.id.ratingBar);
 
         linearLayoutLiabilities = root.findViewById(R.id.linearLayoutLiabilities);
 
@@ -66,9 +72,16 @@ public class TransactionDetailsFragment extends Fragment {
         tvRideEndedAt = root.findViewById(R.id.tv_ride_ended_at);
         tvRideRating = root.findViewById(R.id.tv_ride_rating);
 
+        tvPickupAddress = root.findViewById(R.id.tv_pickup_address);
+        tvPickupAddressLabel = root.findViewById(R.id.tv_pickup_address_label);
+
+        tvDropoffAddress = root.findViewById(R.id.tv_dropoff_address);
+        tvDropoffAddressLabel = root.findViewById(R.id.tv_dropoff_address_label);
 
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
-
+        tvVehicleType = root.findViewById(R.id.tv_vehicle_type);
+        tvVehicleNo = root.findViewById(R.id.tv_vehicle_no);
+        tvVehicleMade = root.findViewById(R.id.tv_vehicle_made);
 
 
 
@@ -167,9 +180,27 @@ public class TransactionDetailsFragment extends Fragment {
                         tvDriverArrivedAt.setText(response.body().getRide().getDriverArrivedAt());
                         tvRideStartedAt.setText(response.body().getRide().getRideStartedAt());
                         tvRideEndedAt.setText(response.body().getRide().getRideEndedAt());
-                        tvRideRating.setText(String.valueOf(response.body().getRide().getRating()));
+                        ratingBar.setRating(response.body().getRide().getRating());
+//                        tvRideRating.setText(String.valueOf(response.body().getRide().getRating()));
+
+                        if(response.body().getRide().getPickupAddress()!=null){
+                            tvPickupAddressLabel.setVisibility(View.VISIBLE);
+                            tvPickupAddress.setText(response.body().getRide().getPickupAddress());
+                            tvPickupAddress.setVisibility(View.VISIBLE);
+                        }
+
+                        if(response.body().getRide().getDropoffAddress()!=null){
+                            tvDropoffAddressLabel.setVisibility(View.VISIBLE);
+                            tvDropoffAddress.setText(response.body().getRide().getDropoffAddress());
+                            tvDropoffAddress.setVisibility(View.VISIBLE);
+                        }
+
 
                         tvPassengerName.setText(response.body().getUser().getName());
+                        tvVehicleType.setText(response.body().getRide().getVehicleType());
+                        tvVehicleNo.setText(response.body().getUser().getRegAlphabet()+"-"+
+                                response.body().getUser().getRegYear()+"-"+response.body().getUser().getRegNo());
+                        tvVehicleMade.setText(response.body().getUser().getVehicleMade()+"-"+response.body().getUser().getVehicleColor());
                     }
                 }
 
