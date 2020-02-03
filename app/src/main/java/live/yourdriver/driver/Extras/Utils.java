@@ -156,7 +156,7 @@ public class Utils {
                         public void onClick(DialogInterface dialog,int which) {
                             // Write your code here to execute after dialog
                             DBHelper d = new DBHelper(c);
-                            d.insertShortLocation(String.valueOf(ltln.latitude),String.valueOf(ltln.longitude),title.getText().toString());
+                            d.insertShortLocation(String.valueOf(ltln.latitude),String.valueOf(ltln.longitude),title.getText().toString(),1);
                             iv.setImageResource(R.drawable.ic_saved_icon);
                             v.setTag(R.id.is_saved,true);
 
@@ -222,6 +222,19 @@ public class Utils {
         AlertDialog.Builder builder = new AlertDialog.Builder(a);
         AlertDialog d =builder.setTitle(message)
                 .setPositiveButton(R.string.ok, null).create();
+        d.show();
+    }
+
+    public static void showAlertBoxThenFinish(final Activity a, String message){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(a);
+        AlertDialog d =builder.setTitle(message)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        a.finish();
+                    }
+                }).create();
         d.show();
     }
 

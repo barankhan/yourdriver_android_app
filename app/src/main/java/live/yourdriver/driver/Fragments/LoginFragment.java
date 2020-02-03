@@ -100,8 +100,8 @@ public class LoginFragment extends Fragment {
     } //ending onCreateView
 
     private void loginUser() {
-        String mobile_number = mobileInput.getText().toString();
-        String Password = passwordInput.getText().toString();
+        String mobile_number = mobileInput.getText().toString().trim();
+        String Password = passwordInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(mobile_number)){
             MainActivity.appPreference.showToast("Your email is required.");

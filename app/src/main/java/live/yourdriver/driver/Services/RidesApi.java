@@ -26,7 +26,7 @@ public interface RidesApi {
 
     @FormUrlEncoded
     @POST("reject_ride.php")
-    Call <Ride> rejectRide(@Field("mobile") String mobile,@Field("ride_id") String ride_id);
+    Call <DriverServerResponse> rejectRide(@Field("driver_id") int driver_id,@Field("ride_id") String ride_id);
 
 
     @FormUrlEncoded

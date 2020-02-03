@@ -46,6 +46,7 @@
     <item name="location_db_id" type="id" />
     <item name="title" type="id" />
     <item name="list_view_position" type="id" />
+    <item name="is_temp" type="id" />
 
     <string-array name="driver_types">
         <item>Auto</item>

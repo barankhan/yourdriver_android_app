@@ -1,6 +1,8 @@
 package live.yourdriver.driver.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import live.yourdriver.driver.Model.DriverServerResponse;
+import live.yourdriver.driver.Model.Ride;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import static live.yourdriver.driver.Extras.Utils.showAlertBox;
+import static live.yourdriver.driver.Extras.Utils.showAlertBoxThenFinish;
 
 public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     public static RidesApi ridesApi;
@@ -71,7 +74,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
         btnRejectRide = findViewById(R.id.btn_reject_ride);
 
         btnAcceptRide.setOnClickListener(this);
-
+        btnRejectRide.setOnClickListener(this);
 
         timer =  new CountDownTimer(15000, 1000) {
             @Override
@@ -86,6 +89,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
             public void onFinish() {
                 //the progressBar will be invisible after 60 000 miliseconds ( 1 minute)
                 progressBar.setProgress(0);
+                finish();
             }
 
         }.start();
@@ -122,6 +126,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
 
         if(v.getId()==R.id.btn_accept_ride) {
             timer.cancel();
+            mediaPlayer.stop();
             Utils.showProgressBarSpinner(this);
             Call<UserRide> userCall = this.ridesApi.acceptRide(currentUser.getMobile(), getIntent().getExtras().getString("ride_id"),MainActivity.appPreference.getLat(),MainActivity.appPreference.getLng());
             userCall.enqueue(new Callback<UserRide>() {
@@ -134,7 +139,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                             MainActivity.appPreference.setPassengerObject(response.body().getUser());
                             finish();
                         } else {
-                            showAlertBox(RideAlertActivity.this, "Sorry! Someone else got it.");
+                            showAlertBoxThenFinish(RideAlertActivity.this, "Sorry! Someone else got it.");
                         }
 
                     } else {
@@ -147,6 +152,24 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                     Utils.dismissProgressBarSpinner();
 //                    Log.e("Error iN accept",t.toString());
                     showAlertBox(RideAlertActivity.this, "Unable to connect to server");
+                }
+            });
+        }else if(v.getId()==R.id.btn_reject_ride){
+            timer.cancel();
+            mediaPlayer.stop();
+            Utils.showProgressBarSpinner(this);
+            Call<DriverServerResponse> userCall = this.ridesApi.rejectRide(currentUser.getId(), getIntent().getExtras().getString("ride_id"));
+            userCall.enqueue(new Callback<DriverServerResponse>() {
+                @Override
+                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                        Utils.dismissProgressBarSpinner();
+                        finish();
+                }
+
+                @Override
+                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                    Utils.dismissProgressBarSpinner();
+                    finish();
                 }
             });
         }

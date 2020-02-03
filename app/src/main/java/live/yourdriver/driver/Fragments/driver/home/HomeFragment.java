@@ -85,6 +85,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -336,11 +337,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     private void onlineOffLineButtonClicked(){
         String status= btnOnOffLine.getTag().toString();
+        Utils.showProgressBarSpinner(getContext());
         if(status.equals("Offline")){
             Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
+
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+                    Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
                         MainActivity.appPreference.setUserObject(response.body());
                         currentUser = response.body();
@@ -368,6 +372,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
+                    Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
                         MainActivity.appPreference.setUserObject(response.body());
                         currentUser = response.body();

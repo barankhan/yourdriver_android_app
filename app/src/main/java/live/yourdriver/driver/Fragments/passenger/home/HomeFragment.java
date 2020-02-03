@@ -154,7 +154,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
     private static  String pickupAddress = "Please Select Pickup Location";
     private static  String dropoffAddress = "Please Select Dropoff Location";
-
+    private static boolean pickupLocationSelected = false;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -724,7 +724,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
         }else if(!MainActivity.appPreference.getIsDropoffMode() && MainActivity.appPreference.getIsPickupMode() ){
             initialState();
-            getDeviceLocation();
+            if(!pickupLocationSelected){
+                getDeviceLocation();
+            }
+
         }
 
 
@@ -747,7 +750,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     pickUpLatLng = place.getLatLng();
                     pickUpSaveImage.setTag(R.id.is_saved, false);
                 } else {
-                    pickUpSaveImage.setImageResource(R.drawable.ic_saved_icon);
+
+                    boolean is_temp = data.getBooleanExtra("is_temp", true);
+                    if(is_temp){
+                        pickUpSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                    }else{
+                        pickUpSaveImage.setImageResource(R.drawable.ic_saved_icon);
+                    }
+
                     // TODO: Added logic to display saved content
                     SavedLocationData sl = (SavedLocationData) data.getParcelableExtra("location");
                     placeName = sl.getTitle();
@@ -763,6 +773,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 pickUpMarker.setVisible(true);
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(pickUpLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                pickupLocationSelected = true;
 
             } else {
                 // The user canceled the operation.
@@ -893,17 +904,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         // Nahi tu google ko call behjo or local bhi save kar do... speed bhi achi bhany ki application ki or time bhi.
                         String title = Utils.getAddressUsingLatLong(getContext(),pickUpLatLng.latitude,pickUpLatLng.longitude);
 
-                        if(title.length()>0){
-                            DBHelper dbHelper;
-                            dbHelper = new DBHelper(getContext());
-                            dbHelper.insertAddress(pickUpLatLng.latitude,pickUpLatLng.longitude,title);
+                        if(title !=null) {
+                            if (title.length() > 0) {
+                                DBHelper dbHelper;
+                                dbHelper = new DBHelper(getContext());
+                                dbHelper.insertAddress(pickUpLatLng.latitude, pickUpLatLng.longitude, title);
 
+                            }
+
+                            pickupTextView.setText(title);
+                            pickUpSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                            pickUpSaveImage.setTag(R.id.is_saved, false);
+                            pickUpSaveImage.setVisibility(View.VISIBLE);
                         }
-                        pickupTextView.setText(title);
-                        pickUpSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
-                        pickUpSaveImage.setTag(R.id.is_saved, false);
-                        pickUpSaveImage.setVisibility(View.VISIBLE);
-
 
                     }
 
@@ -949,17 +962,20 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                     }else{
                         // Nahi tu google ko call behjo or local bhi save kar do... speed bhi achi bhany ki application ki or time bhi.
                         String title = Utils.getAddressUsingLatLong(getContext(),dropOffLatLng.latitude,dropOffLatLng.longitude);
+                        if(title!=null) {
 
-                        if(title.length()>0){
-                            DBHelper dbHelper;
-                            dbHelper = new DBHelper(getContext());
-                            dbHelper.insertAddress(dropOffLatLng.latitude,dropOffLatLng.longitude,title);
 
+                            if (title.length() > 0) {
+                                DBHelper dbHelper;
+                                dbHelper = new DBHelper(getContext());
+                                dbHelper.insertAddress(dropOffLatLng.latitude, dropOffLatLng.longitude, title);
+
+                            }
+                            dropOffTextView.setText(title);
+                            dropOffSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
+                            dropOffSaveImage.setTag(R.id.is_saved, false);
+                            dropOffSaveImage.setVisibility(View.VISIBLE);
                         }
-                        dropOffTextView.setText(title);
-                        dropOffSaveImage.setImageResource(R.drawable.ic_unsaved_icon);
-                        dropOffSaveImage.setTag(R.id.is_saved, false);
-                        dropOffSaveImage.setVisibility(View.VISIBLE);
                     }
 
 
@@ -969,7 +985,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 dropoffAddress = dropOffTextView.getText().toString();
 
 
-                LatLng latLng = mMap.getCameraPosition().target;
+
 //                if(isPickupMode) {
 ////                    pickupAutoCompleteFragment.setText(Utils.getAddressUsingLatLong(getContext(), latLng.latitude, latLng.longitude));
 //                }

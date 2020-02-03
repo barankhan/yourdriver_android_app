@@ -43,10 +43,19 @@ public class SavedLocationDataAdapter extends ArrayAdapter<SavedLocationData> {
         // Lookup view for data population
 
         ImageView im = convertView.findViewById(R.id.img_handle_search_activity);
-        im.setImageResource(R.drawable.ic_saved_icon);
+        if(location.getIsTemp()==1){
+            im.setImageResource(R.drawable.ic_unsaved_icon);
+        }else{
+            im.setImageResource(R.drawable.ic_saved_icon);
+        }
+
+
+
+
         im.setTag(R.id.is_saved,true);
         im.setTag(R.id.location_db_id,location.getId());
         im.setTag(R.id.title,location.getTitle());
+        im.setTag(R.id.is_temp,location.getIsTemp());
         im.setTag(R.id.list_view_position,position);
 
         im.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +68,7 @@ public class SavedLocationDataAdapter extends ArrayAdapter<SavedLocationData> {
 
 
         final TextView tvName = (TextView) convertView.findViewById(R.id.txtsampleinsertion);
-        tvName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+
 
         // Populate the data into the template view using the data object
         tvName.setText(location.getTitle());

@@ -256,9 +256,9 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
 
     private void driverRegisterStep1(){
 
-        final String name = etDriverName.getText().toString();
-        final String father = etDriverFather.getText().toString();
-        final String cnic = etDriverCNIC.getText().toString();
+        final String name = etDriverName.getText().toString().trim();
+        final String father = etDriverFather.getText().toString().trim();
+        final String cnic = etDriverCNIC.getText().toString().trim();
 
 
 

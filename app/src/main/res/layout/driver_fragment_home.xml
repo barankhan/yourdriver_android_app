@@ -150,8 +150,8 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="67dp"
+        android:layout_width="410dp"
+        android:layout_height="86dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayoutBts"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -159,8 +159,8 @@
 
         <Button
             android:id="@+id/btn_on_off_line"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="112dp"
+            android:layout_height="55dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
@@ -168,6 +168,8 @@
             android:tag="Offline"
             android:text="Offline"
             android:textColor="#FCFCFC"
+            android:textSize="24sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -181,6 +183,8 @@
             android:background="@drawable/button_style"
             android:text="Navigation"
             android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

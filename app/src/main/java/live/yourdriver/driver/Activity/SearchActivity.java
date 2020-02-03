@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import live.yourdriver.driver.Extras.LocationDataAdapter;
@@ -46,6 +48,7 @@ public class SearchActivity extends AppCompatActivity  {
     LinearLayout linearLayout;
     DBHelper mydb;
     PlacesClient placesClient;
+    ProgressBar pbSearch;
 
     public static boolean generateNewToken=false;
 
@@ -58,6 +61,7 @@ public class SearchActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_search);
         mydb = new DBHelper(this);
         List<SavedLocationData> array_list = mydb.getAllAddress();
+        pbSearch = findViewById(R.id.pb_search);
 
         ArrayList<SavedLocationData> arrayOfUsers = new ArrayList<SavedLocationData>();
         ArrayList<SavedLocationData> arrayOfSuggestions = new ArrayList<SavedLocationData>();
@@ -113,6 +117,7 @@ public class SearchActivity extends AppCompatActivity  {
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
                     if(s.length()>2){
+                        pbSearch.setVisibility(View.VISIBLE);
                         if(generateNewToken){
                             token = AutocompleteSessionToken.newInstance();
                             generateNewToken = false;
@@ -130,6 +135,7 @@ public class SearchActivity extends AppCompatActivity  {
                             public void onSuccess(FindAutocompletePredictionsResponse response) {
                                 locationAdapter.clear();
                                 for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                                    pbSearch.setVisibility(View.INVISIBLE);
                                     String pText=prediction.getPrimaryText(null).toString();
                                     String sText=prediction.getSecondaryText(null).toString();
                                     String placeId=prediction.getPlaceId();
@@ -140,6 +146,7 @@ public class SearchActivity extends AppCompatActivity  {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception exception) {
+                                pbSearch.setVisibility(View.INVISIBLE);
                                 if (exception instanceof ApiException) {
                                     ApiException apiException = (ApiException) exception;
 //                                    Log.e("Places", "Place not found: " + apiException.getStatusCode());

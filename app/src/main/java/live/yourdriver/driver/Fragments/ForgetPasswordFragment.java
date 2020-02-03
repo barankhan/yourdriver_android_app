@@ -73,7 +73,7 @@ public class ForgetPasswordFragment extends Fragment {
 
     private void getPassword(){
 
-        String Mobi = token.getText().toString();
+        String Mobi = token.getText().toString().trim();
 
         if (Mobi.length() != 11) {
             MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");

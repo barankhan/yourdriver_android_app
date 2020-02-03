@@ -46,7 +46,6 @@ public class FirebaseService extends FirebaseMessagingService {
 //        Log.e(TAG, "From: " + remoteMessage.getFrom());
 //        Log.e(TAG,remoteMessage.getMessageId());
 
-        User u = MainActivity.appPreference.getUserObjectWithoutUserValidation();
         Call<DriverServerResponse> rideCall = ridesApi.pushNotificationReceived(remoteMessage.getMessageId());
         rideCall.enqueue(new Callback<DriverServerResponse>() {
             @Override

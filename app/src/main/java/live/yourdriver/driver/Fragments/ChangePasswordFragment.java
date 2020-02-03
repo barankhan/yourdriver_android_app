@@ -57,9 +57,9 @@ public class ChangePasswordFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                oldPassword= etOldPassword.getText().toString();
-                newPassword = etNewPassword.getText().toString();
-                confirmPassword = etConfirmPassword.getText().toString();
+                oldPassword= etOldPassword.getText().toString().trim();
+                newPassword = etNewPassword.getText().toString().trim();
+                confirmPassword = etConfirmPassword.getText().toString().trim();
 
                 if (TextUtils.isEmpty(oldPassword)){
                     MainActivity.appPreference.showToast("Old Password is required");

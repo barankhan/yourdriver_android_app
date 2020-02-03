@@ -6,10 +6,10 @@ import android.os.Parcelable;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 
 public class SavedLocationData implements Parcelable {
-    private  int id;
+    private  int id,is_temp;
     private  String title,lat,lng,primary_text,secondary_text,place_id;
     private AutocompleteSessionToken token;
-    public SavedLocationData(int id,String title,String lat,String lng,String primary_text,String secondary_text,String place_id){
+    public SavedLocationData(int id,String title,String lat,String lng,String primary_text,String secondary_text,String place_id,int is_temp){
         this.id=id;
         this.title=title;
         this.lat=lat;
@@ -17,6 +17,7 @@ public class SavedLocationData implements Parcelable {
         this.primary_text=primary_text;
         this.secondary_text=secondary_text;
         this.place_id=place_id;
+        this.is_temp=is_temp;
     }
 
 
@@ -28,6 +29,14 @@ public class SavedLocationData implements Parcelable {
         this.token = token;
     }
 
+
+    public int getIsTemp() {
+        return is_temp;
+    }
+
+    public void setIsTemp(int is_temp) {
+        this.is_temp = is_temp;
+    }
 
     public AutocompleteSessionToken getToken() {
         return token;
@@ -73,6 +82,7 @@ public class SavedLocationData implements Parcelable {
         dest.writeString(this.primary_text);
         dest.writeString(this.secondary_text);
         dest.writeString(this.place_id);
+        dest.writeInt(this.is_temp);
     }
 
     protected SavedLocationData(Parcel in) {
@@ -83,6 +93,8 @@ public class SavedLocationData implements Parcelable {
         this.primary_text = in.readString();
         this.secondary_text = in.readString();
         this.place_id = in.readString();
+        this.is_temp = in.readInt();
+
     }
 
     public static final Creator<SavedLocationData> CREATOR = new Creator<SavedLocationData>() {

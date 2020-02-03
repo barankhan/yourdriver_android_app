@@ -81,10 +81,10 @@ public class RegistrationFragment extends Fragment {
 
     public void registerUser() {
 
-        final String name = nameInput.getText().toString();
-        final String email = emailInput.getText().toString();
-        final String phone = phoneInput.getText().toString();
-        final String password = passwordInput.getText().toString();
+        final String name = nameInput.getText().toString().trim();
+        final String email = emailInput.getText().toString().trim();
+        final String phone = phoneInput.getText().toString().trim();
+        final String password = passwordInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)){
             MainActivity.appPreference.showToast("Your name is required.");

@@ -78,7 +78,7 @@ public class LocationDataAdapter extends ArrayAdapter<SavedLocationData> {
         });
 
         TextView tvName = (TextView) convertView.findViewById(R.id.txtsampleinsertion);
-        tvName.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+
         tvName.setTag(R.id.secondary_text,location.getSecondaryText());
         tvName.setTag(R.id.primary_text,location.getPrimaryText());
         tvName.setTag(R.id.place_id,location.getPlaceId());
@@ -121,10 +121,19 @@ public class LocationDataAdapter extends ArrayAdapter<SavedLocationData> {
         this.placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
             @Override
             public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+
+
+
+
                 Place place = fetchPlaceResponse.getPlace();
+
+                d = new DBHelper(getContext());
+                Long id = d.insertShortLocation(String.valueOf(place.getLatLng().latitude),String.valueOf(place.getLatLng().longitude),place.getName(),1);
+                SavedLocationData data = d.getData(id);
                 Intent intent=new Intent();
-                intent.putExtra("place",place);
-                intent.putExtra("is_saved",false);
+                intent.putExtra("location",data);
+                intent.putExtra("is_saved",true);
+                intent.putExtra("is_temp",true);
                 activity.setResult(Activity.RESULT_OK,intent);
                 activity.finish();//finishing activity
 
@@ -155,7 +164,7 @@ public class LocationDataAdapter extends ArrayAdapter<SavedLocationData> {
             public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                 Place place = fetchPlaceResponse.getPlace();
                 d = new DBHelper(getContext());
-                Long id = d.insertLocation(placeId,primaryText,secondaryText,String.valueOf(place.getLatLng().latitude),String.valueOf(place.getLatLng().longitude),title);
+                Long id = d.insertLocation(placeId,primaryText,secondaryText,String.valueOf(place.getLatLng().latitude),String.valueOf(place.getLatLng().longitude),title,0);
                 SavedLocationData data = d.getData(id);
                 sa.insert(data,0);
                 sa.notifyDataSetChanged();

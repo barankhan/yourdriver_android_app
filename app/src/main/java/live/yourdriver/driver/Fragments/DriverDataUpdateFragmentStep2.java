@@ -177,9 +177,9 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
 
 
     private void driverRegisterStep2(){
-        final String regAlphabet = etRegAlphabets.getText().toString();
-        final String regYear = etRegYear.getText().toString();
-        final String regNumber = etRegNo.getText().toString();
+        final String regAlphabet = etRegAlphabets.getText().toString().trim();
+        final String regYear = etRegYear.getText().toString().trim();
+        final String regNumber = etRegNo.getText().toString().trim();
 
 
 
@@ -190,11 +190,11 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
         }else if(imVehicleRegistration.getTag(R.id.image_uri).equals("@")){
             MainActivity.appPreference.showToast("Please select your Registration Book Image");
         }else if (TextUtils.isEmpty(regAlphabet)){
-            MainActivity.appPreference.showToast("Vehicle Registration Numbr is required");
+            MainActivity.appPreference.showToast("Vehicle Registration Number is required");
         }else if (TextUtils.isEmpty(regYear)){
-            MainActivity.appPreference.showToast("Vehicle Registration Numbr is required");
+            MainActivity.appPreference.showToast("Vehicle Registration Number is required");
         } else if (TextUtils.isEmpty(regNumber)) {
-            MainActivity.appPreference.showToast("Vehicle Registration Numbr is required");
+            MainActivity.appPreference.showToast("Vehicle Registration Number is required");
         }
         else {
             Utils.showProgressBarSpinner(getContext());
@@ -261,9 +261,14 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
                     if(response.body().getResponse().equals("step2_completed")){
                         MainActivity.appPreference.setUserObject(response.body());
                         Utils.showAlertBox(getActivity(),"Thanks! your account will be activated shortly!");
-                        FragmentManager fragmentManager = getFragmentManager();
-                        HomeFragment home = new HomeFragment();
-                        fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, home).commit();
+                        try {
+                            FragmentManager fragmentManager = getFragmentManager();
+                            HomeFragment home = new HomeFragment();
+                            fragmentManager.beginTransaction().replace(R.id.nav_host_fragment, home).commit();
+                        }catch (Exception e){
+
+                        }
+
                     }else if(response.body().getResponse().equals("error_uploading")){
                         Utils.showAlertBox(getActivity(),"Sorry We are not able to upload your data.");
                     }else if(response.body().getResponse().equals("required_fields_missing")){
