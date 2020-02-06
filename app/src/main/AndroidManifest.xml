@@ -58,7 +58,7 @@
         <activity
             android:name="live.yourdriver.driver.Activity.NotifActivity"
             android:theme="@style/AppDialogScreenTheme"
-            android:screenOrientation="portrait"
+
             />
         <activity android:name="live.yourdriver.driver.Activity.DriverTransactionActivity"
             android:screenOrientation="portrait"
