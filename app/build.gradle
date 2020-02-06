@@ -22,7 +22,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "Boolean", "IS_DEBUG_MODE", 'false'
             resValue "string", "app_version","${defaultConfig.versionName}"
