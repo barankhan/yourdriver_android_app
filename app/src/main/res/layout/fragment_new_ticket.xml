@@ -24,7 +24,7 @@
                 android:layout_marginTop="20dp"
                 android:text="Report Issue."
                 android:textColor="@color/colorPrimary"
-                android:textSize="24sp" />
+                android:textSize="24dp" />
 
             <TextView
                 android:id="@+id/textView5"
@@ -70,7 +70,7 @@
                 android:background="@color/colorPrimary"
                 android:text="Submit"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp" />
+                android:textSize="24dp" />
 
 
         </LinearLayout>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
 import android.location.Location;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
@@ -59,10 +61,22 @@ import live.yourdriver.driver.R;;
 
 import live.yourdriver.driver.Activity.SearchActivity;
 import live.yourdriver.driver.Adapters.DriverTypeSpinnerAdapter;
+
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -108,7 +122,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     private boolean onRequestPermissionsResult;
-    GoogleApiClient mGoogleApiClient;
+    GoogleApiClient googleApiClient;
     LocationRequest mLocationRequest;
     Location mLastLocation;
     boolean isSourceSet = false, tripStarted = false, isPickupMode = true, isDropOffMode = false;
@@ -130,6 +144,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public Deque<String> stack;
     private int PICKUP_AUTOCOMPLETE_REQUEST_CODE = 1;
     private int DROP_OFF_AUTOCOMPLETE_REQUEST_CODE = 2;
+    private int GPS_ENABLE_CODE=3;
     private TextView pickupTextView, dropOffTextView,tvDriverName,tvVehicleNo,tvDriverMobileNo;
     private ImageView pickUpSaveImage, dropOffSaveImage,dropOffIcon;
     private View separator;
@@ -443,7 +458,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         pickupTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("Clicked Pick Text View","here");
+//                Log.e("Clicked Pick Text View","here");
                 Intent intent = new Intent(getContext(), SearchActivity.class);
                 startActivityForResult(intent, PICKUP_AUTOCOMPLETE_REQUEST_CODE);// Activity is started with requestCode 2
             }
@@ -618,25 +633,107 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     }
 
     private void showGPSDisabledAlertToUser(){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Goto Settings Page To Enable GPS",
-                        new DialogInterface.OnClickListener(){
-                            public void onClick(DialogInterface dialog, int id){
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton("Cancel",
-                new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int id){
-                        dialog.cancel();
+
+
+//        if (googleApiClient == null) {
+//            googleApiClient = new GoogleApiClient.Builder(getContext())
+//                    .addApi(LocationServices.API).addConnectionCallbacks(HomeFragment.this)
+//                    .addOnConnectionFailedListener(HomeFragment.this).build();
+//            googleApiClient.connect();
+//            LocationRequest locationRequest = LocationRequest.create();
+//            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//            locationRequest.setInterval(30 * 1000);
+//            locationRequest.setFastestInterval(5 * 1000);
+//            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+//                    .addLocationRequest(locationRequest);
+//
+//            // **************************
+//            builder.setAlwaysShow(true); // this is the key ingredient
+//            // **************************
+//
+//            PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi
+//                    .checkLocationSettings(googleApiClient, builder.build());
+//            result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+//                @Override
+//                public void onResult(LocationSettingsResult result) {
+//                    Log.e("On Result Success","Called");
+//                    final Status status = result.getStatus();
+//                    final LocationSettingsStates state = result
+//                            .getLocationSettingsStates();
+//                    switch (status.getStatusCode()) {
+//                        case LocationSettingsStatusCodes.SUCCESS:
+//                            // All location settings are satisfied. The client can
+//                            // initialize location
+//                            // requests here.
+//                            break;
+//                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+//                            // Location settings are not satisfied. But could be
+//                            // fixed by showing the user
+//                            // a dialog.
+//                            try {
+//                                // Show the dialog by calling
+//                                // startResolutionForResult(),
+//                                // and check the result in onActivityResult().
+//                                status.startResolutionForResult(getActivity(), GPS_ENABLE_CODE);
+//                            } catch (IntentSender.SendIntentException e) {
+//                                // Ignore the error.
+//                            }
+//                            break;
+//                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+//                            // Location settings are not satisfied. However, we have
+//                            // no way to fix the
+//                            // settings so we won't show the dialog.
+//                            break;
+//                    }
+//                }
+//            });
+//        }
+
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(getContext());
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+            }
+        });
+
+        task.addOnFailureListener(getActivity(), new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(), "addOnFailureListener", Toast.LENGTH_SHORT).show();
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+
+
+                        startIntentSenderForResult(resolvable.getResolution().getIntentSender(), GPS_ENABLE_CODE, null, 0, 0, 0, null);
+
+//                        resolvable.startResolutionForResult(getActivity(),
+//                                GPS_ENABLE_CODE);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
                     }
-                });
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
+                }
+            }
+        });
+
     }
 
 
@@ -735,6 +832,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     }
 
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICKUP_AUTOCOMPLETE_REQUEST_CODE) {
@@ -806,10 +905,24 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 dropOffMarker.setVisible(true);
                 CameraPosition cameraPosition = new CameraPosition.Builder().target(dropOffLatLng).zoom(DEFAULT_PICKUP_ZOOM).build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            } else {
-                // The user canceled the operation.
-//                Log.e(TAG, "RESULT FUCKED UP");
             }
+        }else if(requestCode == GPS_ENABLE_CODE){
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if(!pickupLocationSelected){
+                    getDeviceLocation();
+                }
+            }
+            // The user canceled the operation.
+//                Log.e(TAG, "RESULT FUCKED UP");
+        }else {
+            // The user canceled the operation.
+//                Log.e(TAG, "RESULT FUCKED UP");
         }
 
 //        Log.e("I got it", "YOu babay bc");
@@ -1355,6 +1468,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         dropOffTextView.setText("Please Select Drop Off Location");
         pickupTextView.setClickable(true);
     }
+
 
 
 

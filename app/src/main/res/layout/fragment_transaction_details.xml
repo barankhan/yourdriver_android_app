@@ -30,7 +30,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Transaction Details"
                 android:textColor="@color/colorPrimary"
-                android:textSize="24sp"
+                android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -43,7 +43,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="45dp"
                 android:text="ID:"
-                android:textSize="14sp"
+                android:textSize="14dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -272,7 +272,7 @@
                 android:layout_marginRight="8dp"
                 android:text="Ride Details"
                 android:textColor="@color/colorPrimary"
-                android:textSize="24sp"
+                android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView49" />
@@ -288,7 +288,7 @@
                 android:layout_marginRight="8dp"
                 android:text="Passenger Details"
                 android:textColor="@color/colorPrimary"
-                android:textSize="24sp"
+                android:textSize="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView10" />

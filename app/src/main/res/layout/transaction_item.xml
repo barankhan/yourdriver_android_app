@@ -18,7 +18,7 @@
         android:maxLines="1"
         android:layout_weight="1"
         android:textColor="@color/colorPrimary"
-        android:textSize="14sp" />
+        android:textSize="14dp" />
 
     <TextView
         android:id="@+id/trans_date"
@@ -28,7 +28,7 @@
         android:gravity="center"
         android:layout_weight="1"
         android:textColor="@color/colorPrimary"
-        android:textSize="14sp" />
+        android:textSize="14dp" />
 
     <TextView
         android:id="@+id/trans_amount"
@@ -38,7 +38,7 @@
         android:gravity="right"
         android:layout_weight="1"
         android:textColor="@color/colorPrimary"
-        android:textSize="14sp"
+        android:textSize="14dp"
         android:textStyle="bold" />
     </LinearLayout>
 

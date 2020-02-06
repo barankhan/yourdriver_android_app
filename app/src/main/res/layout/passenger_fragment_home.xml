@@ -54,7 +54,7 @@
             android:layout_marginTop="6dp"
             android:text="Please rate your last trip:"
             android:textColor="#000000"
-            android:textSize="18sp"
+            android:textSize="18dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,7 +78,7 @@
             android:background="@drawable/button_style"
             android:text="Feedback"
             android:textColor="#FFFFFF"
-            android:textSize="24sp"
+            android:textSize="24dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -190,12 +190,13 @@
             android:gravity="center"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/tv_vehicle_no"
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toBottomOf="@+id/tv_driver_name" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_driver_name"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_driver_name"
@@ -204,12 +205,13 @@
             android:gravity="center"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
+            android:textSize="18dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/tv_driver_mobile_no"
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tv_vehicle_no"
@@ -218,12 +220,13 @@
             android:gravity="center"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/btn_cancel_ride"
             app:layout_constraintEnd_toStartOf="@+id/im_call_button"
             app:layout_constraintStart_toEndOf="@+id/im_driver_image"
-            app:layout_constraintTop_toBottomOf="@+id/tv_driver_mobile_no" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_driver_mobile_no"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/im_driver_image"
@@ -236,7 +239,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_driver_icon_background"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <Button
             android:id="@+id/btn_cancel_ride"
@@ -246,7 +249,7 @@
             android:background="@drawable/button_style_red"
             android:text="Cancel Ride"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -258,9 +261,8 @@
             android:layout_height="36dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_cancel_ride"
             app:srcCompat="@drawable/ic_message_blue_24dp"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/im_call_button"
@@ -268,10 +270,9 @@
             android:layout_height="53dp"
             app:layout_constraintBottom_toTopOf="@+id/btn_cancel_ride"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tv_driver_mobile_no"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_call_black_24dp"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/pb_driver_wait"

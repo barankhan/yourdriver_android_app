@@ -16,7 +16,7 @@
         android:paddingRight="10dp"
         android:paddingBottom="5dp"
         android:text="Please Enter Location Name to save"
-        android:textSize="15sp"
+        android:textSize="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

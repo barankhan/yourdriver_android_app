@@ -30,7 +30,7 @@
         android:background="@drawable/button_style"
         android:text="Update Picture"
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/im_profile_pic" />

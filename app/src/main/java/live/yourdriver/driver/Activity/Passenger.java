@@ -66,7 +66,7 @@ public class Passenger extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
-        currentUser = MainActivity.appPreference.getUserObject(this,this);
+        currentUser = MainActivity.appPreference.getUserObjectWithoutUserValidation();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         try
@@ -149,11 +149,14 @@ public class Passenger extends AppCompatActivity {
             }
         });
 
-        if(currentUser.getPicture()!=""){
-            picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
-                    .into(imPassengerIcon);
+        if(currentUser!=null){
+            if(currentUser.getPicture()!=""){
+                picasso.get().load(Constant.baseUrl.UPLOADS_URL+currentUser.getPicture()).noPlaceholder().fit().centerCrop()
+                        .into(imPassengerIcon);
 
+            }
         }
+
 
 
     }

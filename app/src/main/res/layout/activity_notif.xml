@@ -28,7 +28,7 @@
         android:paddingBottom="5dp"
         android:text="Your Driver is waiting at your door step"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/imageView4"
@@ -44,7 +44,7 @@
         android:background="#FFCA28"
         android:text="@string/ok"
         android:textColor="@color/colorPrimary"
-        android:textSize="18sp"
+        android:textSize="18dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

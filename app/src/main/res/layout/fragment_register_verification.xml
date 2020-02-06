@@ -17,7 +17,7 @@
 
 
         android:text="Please enter verification code received via SMS"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -45,7 +45,7 @@
         android:clickable="true"
         android:text="Resend Verifciation SMS"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_verification_Token" />
@@ -58,7 +58,7 @@
         android:background="@color/colorPrimary"
         android:text="Verify"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.566"
         app:layout_constraintStart_toStartOf="parent"

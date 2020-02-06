@@ -16,7 +16,7 @@
         android:gravity="center_horizontal"
         android:text="Login"
         android:textColor="@color/colorPrimary"
-        android:textSize="18sp" />
+        android:textSize="18dp" />
 
     <EditText
         android:id="@+id/et_login_mobile"
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:text="L o g i n"
         android:textColor="#fff"
-        android:textSize="16sp"
+        android:textSize="16dp"
         android:background="@color/colorPrimary"
         />
 

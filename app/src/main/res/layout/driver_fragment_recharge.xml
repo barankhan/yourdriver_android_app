@@ -17,7 +17,7 @@
         android:layout_marginTop="16dp"
         android:text="Recharge Your Account"
         android:textColor="@color/colorPrimary"
-        android:textSize="24sp"
+        android:textSize="24dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -110,7 +110,7 @@
         android:background="@drawable/button_style"
         android:text="Recahrge"
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
+        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_amount" />
