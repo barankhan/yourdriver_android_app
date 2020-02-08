@@ -1,6 +1,10 @@
 package live.yourdriver.driver.Activity;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import live.yourdriver.driver.R;;
 
 import androidx.annotation.NonNull;
@@ -21,7 +26,7 @@ import io.agora.rtc.Constants;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 
-public class VoiceChatViewActivity extends AppCompatActivity {
+public class VoiceChatViewActivity extends AppCompatActivity{
 
     private static final String LOG_TAG = VoiceChatViewActivity.class.getSimpleName();
 
@@ -29,6 +34,7 @@ public class VoiceChatViewActivity extends AppCompatActivity {
 
     private String agoraChannel;
     private int rideId=0;
+    public static boolean inFront = false;
 
     private RtcEngine mRtcEngine; // Tutorial Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Tutorial Step 1
@@ -38,7 +44,12 @@ public class VoiceChatViewActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    onRemoteUserLeft(uid, reason);
+                    try{
+                        onRemoteUserLeft(uid, reason);
+                    }catch(Exception e){
+
+                    }
+
                 }
             });
         }
@@ -176,12 +187,22 @@ public class VoiceChatViewActivity extends AppCompatActivity {
             accessToken = null; // default, no token
         }
 
-        mRtcEngine.joinChannel(accessToken, agoraChannel, "Extra Optional Data", rideId); // if you do not specify the uid, we will generate the uid for you
+        try {
+            mRtcEngine.joinChannel(accessToken, agoraChannel, "Extra Optional Data", rideId); // if you do not specify the uid, we will generate the uid for you
+        }catch (Exception e){
+
+        }
+
     }
 
     // Tutorial Step 3
     private void leaveChannel() {
-        mRtcEngine.leaveChannel();
+        try{
+            mRtcEngine.leaveChannel();
+        }catch (Exception e){
+
+        }
+
     }
 
     // Tutorial Step 4
@@ -189,4 +210,30 @@ public class VoiceChatViewActivity extends AppCompatActivity {
         finish();
     }
 
+
+    private BroadcastReceiver mCallRejected = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(context, "Call rejected", Toast.LENGTH_LONG).show();
+            finish();
+        }
+    };
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        inFront = false;
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mCallRejected);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        inFront = true;
+        LocalBroadcastManager.getInstance(this).registerReceiver((mCallRejected),
+                new IntentFilter("NewCallRejectedReceived")
+        );
+    }
 }

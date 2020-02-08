@@ -12,11 +12,11 @@
         android:layout_width="343dp"
         android:layout_height="49dp"
         android:layout_marginStart="34dp"
-        android:layout_marginTop="105dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="34dp"
 
 
-        android:text="Please enter verification code received via SMS"
+        android:text="Please enter verification code received via SMS on:"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,14 +26,14 @@
         android:id="@+id/et_verification_Token"
         android:layout_width="343dp"
         android:layout_height="56dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Verification Code"
         android:inputType="number"
         android:maxLength="5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_mobile_number" />
 
     <Button
         android:id="@+id/btn_resend_sms"
@@ -73,4 +73,15 @@
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_verification_Token" />
+
+    <TextView
+        android:id="@+id/tv_mobile_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="39dp"
+        android:layout_marginLeft="39dp"
+        android:layout_marginTop="8dp"
+        android:text="03XXXXXXXXX"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

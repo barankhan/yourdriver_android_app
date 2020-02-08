@@ -127,7 +127,7 @@
             android:layout_marginStart="72dp"
             android:layout_marginLeft="72dp"
             android:gravity="center"
-            android:text="NIC FRONT"
+            android:text="NIC Front"
             app:layout_constraintEnd_toStartOf="@+id/tv_driver_cnic_rare"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/im_driver_cnic_front" />
@@ -140,7 +140,7 @@
             android:layout_marginRight="72dp"
             android:layout_marginBottom="46dp"
             android:gravity="center"
-            android:text="NIC Rare"
+            android:text="NIC Rear"
             app:layout_constraintBottom_toTopOf="@+id/btn_save_driver_data_step1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_driver_cnic_front"

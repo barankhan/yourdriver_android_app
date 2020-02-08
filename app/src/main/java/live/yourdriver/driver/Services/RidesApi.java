@@ -85,5 +85,10 @@ public interface RidesApi {
     );
 
 
+    @FormUrlEncoded
+    @POST("reject_ride_agora_call.php")
+    Call <DriverServerResponse> rejectAgoraCall(@Field("mobile") String mobile,@Field("agora_channel") String agora_channel,@Field("ride_id") int rideId);
+
+
 
 }

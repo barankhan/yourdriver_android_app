@@ -6,6 +6,7 @@ import live.yourdriver.driver.Activity.ChatActivity;
 import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Activity.NotifActivity;
 import live.yourdriver.driver.Activity.RideAlertActivity;
+import live.yourdriver.driver.Activity.VoiceChatViewActivity;
 import live.yourdriver.driver.Constants.Constant;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.User;
@@ -169,6 +170,16 @@ public class FirebaseService extends FirebaseMessagingService {
                 intent.putExtra("message",remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("call_rejected")){
+                if(VoiceChatViewActivity.inFront){
+                    Intent intent = new Intent("NewCallRejectedReceived");
+                    broadcaster.sendBroadcast(intent);
+                }else{
+                    Intent intent = new Intent(this, NotifActivity.class);
+                    intent.putExtra("message","Call Rejected");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
             }
 //            Log.e(TAG, "ChatMessage data payload: " + remoteMessage.getData());
         }

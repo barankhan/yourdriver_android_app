@@ -65,6 +65,8 @@ public class NewTicketFragment extends Fragment {
                     public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
                         Utils.dismissProgressBarSpinner();
                         if(response.isSuccessful()){
+                            etTitle.setText("");
+                            etMessage.setText("");
                             Utils.showAlertBox(getActivity(),"Your Issue is reported successfully, Out Agent will get back soon!.");
                         }
                     }

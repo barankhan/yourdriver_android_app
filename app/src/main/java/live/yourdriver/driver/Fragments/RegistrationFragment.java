@@ -98,8 +98,10 @@ public class RegistrationFragment extends Fragment {
             MainActivity.appPreference.showToast("Password required");
         } else if (password.length() < 6){
             MainActivity.appPreference.showToast("Create a password at least 6 characters long.");
-        }else if (phone.length() != 11){
+        } else if (phone.length() != 11){
             MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
+        } else if(!phone.substring(0,2).equals("03")){
+            MainActivity.appPreference.showToast("Please Enter valid mobile number e.g. 03XXXXXXXXX");
         }
         else {
             Utils.showProgressBarSpinner(getContext());

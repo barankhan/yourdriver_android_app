@@ -175,6 +175,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
+
+        pickupAddress = "Please Select Pickup Location";
+        dropoffAddress = "Please Select Dropoff Location";
+
         appPreference = MainActivity.appPreference;
         stack = new ArrayDeque<String>();
 
@@ -255,6 +259,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 isPickupMode = false;
                 isDropOffMode = true;
                 stack.push("CONFIRM_PICK_UP");
+                pickUpLatLng = mMap.getCameraPosition().target;
+                pickUpMarker.setPosition(pickUpLatLng);
                 dropoffState();
             }
         });
@@ -713,7 +719,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         task.addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "addOnFailureListener", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getActivity(), "addOnFailureListener", Toast.LENGTH_SHORT).show();
                 if (e instanceof ResolvableApiException) {
                     // Location settings are not satisfied, but this can be fixed
                     // by showing the user a dialog.

@@ -77,6 +77,9 @@ public class ChangePasswordFragment extends Fragment {
                             Utils.dismissProgressBarSpinner();
                             if(response.body().getResponse().equals("success")){
                                 Utils.showAlertBox(getActivity(),"Your Password Updated Successfully.");
+                                etOldPassword.setText("");
+                                etNewPassword.setText("");
+                                etConfirmPassword.setText("");
                             }else if(response.body().getResponse().equals("mismatch")){
                                 Utils.showAlertBox(getActivity(),"Your Old Password doesn't match");
                             }else{

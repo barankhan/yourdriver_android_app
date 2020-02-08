@@ -28,7 +28,7 @@ public class RegistrationVerificationFragment extends Fragment {
     Button verificationButton,btnResendSms;
     EditText token;
     User u;
-    TextView tvVerificationTimer;
+    TextView tvVerificationTimer,tvMobileNumber;
     private MyInterface registrationFromActivityListener;
 
     public RegistrationVerificationFragment() {
@@ -46,7 +46,10 @@ public class RegistrationVerificationFragment extends Fragment {
 
         verificationButton = view.findViewById(R.id.verificationButton);
         tvVerificationTimer = view.findViewById(R.id.tv_verification_timer);
+        tvMobileNumber = view.findViewById(R.id.tv_mobile_number);
         btnResendSms = view.findViewById(R.id.btn_resend_sms);
+
+        tvMobileNumber.setText(u.getMobile());
 
         runCountDown();
 
@@ -161,8 +164,8 @@ public class RegistrationVerificationFragment extends Fragment {
 
     private void runCountDown(){
         btnResendSms.setVisibility(View.GONE);
-        final int[] time = {90};
-        new CountDownTimer(90000, 1000) {
+        final int[] time = {60};
+        new CountDownTimer(60000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 tvVerificationTimer.setText("0:"+checkDigit(time[0]));
@@ -171,6 +174,7 @@ public class RegistrationVerificationFragment extends Fragment {
 
             public void onFinish() {
                 btnResendSms.setVisibility(View.VISIBLE);
+                tvVerificationTimer.setText("00:00");
             }
 
         }.start();

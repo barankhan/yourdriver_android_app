@@ -39,10 +39,9 @@
         android:id="@+id/phoneInput"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Phone"
+        android:hint="Mobile Number"
         android:inputType="number"
-        android:maxLength="11"
-         />
+        android:maxLength="11" />
 
     <EditText
         android:id="@+id/et_login_pass"

@@ -14,7 +14,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import live.yourdriver.driver.R;;
+import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.Utils;
+import live.yourdriver.driver.Model.DriverServerResponse;
+import live.yourdriver.driver.Model.User;
+import live.yourdriver.driver.R;
+import live.yourdriver.driver.Services.RetrofitClient;
+import live.yourdriver.driver.Services.RidesApi;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;;
 
 
 public class NotifActivity extends Activity {
@@ -25,6 +34,7 @@ public class NotifActivity extends Activity {
     private String agoraChannel;
     private int rideId;
     private static boolean goToLogin=false;
+    public static RidesApi ridesApi;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +46,7 @@ public class NotifActivity extends Activity {
         tvAlertMessage = findViewById(R.id.tv_pop_notification_msg);
         imCallStart = findViewById(R.id.im_attend_call);
         imCallEnd = findViewById(R.id.im_end_call);
-
+        ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
 
         int width = dm.widthPixels;
         int height = dm.heightPixels;
@@ -68,7 +78,7 @@ public class NotifActivity extends Activity {
 
             if(getIntent().getExtras().containsKey("agora_channel")) {
                 agoraChannel = getIntent().getExtras().getString("agora_channel");
-                rideId = getIntent().getExtras().getInt("ride_id");
+                rideId = Integer.valueOf(getIntent().getExtras().getString("ride_id"));
                 btnOkay.setVisibility(View.INVISIBLE);
                 imCallStart.setVisibility(View.VISIBLE);
                 imCallEnd.setVisibility(View.VISIBLE);
@@ -132,6 +142,33 @@ public class NotifActivity extends Activity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
+            }
+        });
+
+        imCallEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User u = MainActivity.appPreference.getUserObjectWithoutUserValidation();
+                if(u!=null){
+                    Call<DriverServerResponse> rejectCall = ridesApi.rejectAgoraCall(u.getMobile(),agoraChannel,rideId);
+                    Utils.showProgressBarSpinner(NotifActivity.this);
+                    rejectCall.enqueue(new Callback<DriverServerResponse>() {
+                        @Override
+                        public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                            Utils.dismissProgressBarSpinner();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                            Utils.dismissProgressBarSpinner();
+                            finish();
+                        }
+                    });
+                }else{
+                    finish();
+                }
+
             }
         });
     }

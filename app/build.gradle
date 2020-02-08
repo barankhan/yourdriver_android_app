@@ -16,8 +16,8 @@ android {
         applicationId 'live.yourdriver.app'
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 6
-        versionName '1.51'
+        versionCode 7
+        versionName '1.00'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
