@@ -137,14 +137,15 @@ public class LocationBackgroundService extends Service {
             NotificationChannel channel = new NotificationChannel("channel_01", "My Channel", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
-            Notification.Builder builder = new Notification.Builder(getApplicationContext(), "channel_01").setAutoCancel(true).setSmallIcon(R.drawable.ic_driver_notification_icon).setContentText("Your are Online!");
+            Notification.Builder builder = new Notification.Builder(getApplicationContext(), "channel_01").setAutoCancel(false).setSmallIcon(R.drawable.ic_driver_notification_icon).setContentText("Your are Online!");
             notification = builder.build();
         } else {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(getBaseContext())
                     .setContentTitle(getString(R.string.app_name))
+                    .setContentText("You are online!")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true);
+                    .setAutoCancel(false);
 
              notification = builder.build();
         }

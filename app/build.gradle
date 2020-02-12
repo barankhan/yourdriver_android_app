@@ -16,14 +16,13 @@ android {
         applicationId 'live.yourdriver.app'
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 7
-        versionName '1.00'
+        versionCode 9
+        versionName '1.0.02'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "Boolean", "IS_DEBUG_MODE", 'false'
             resValue "string", "app_version","${defaultConfig.versionName}"
@@ -66,6 +65,7 @@ dependencies {
 
 
     implementation 'com.squareup.picasso:picasso:2.71828'
+
 
     implementation 'io.agora.rtc:voice-sdk:2.9.2'
 }

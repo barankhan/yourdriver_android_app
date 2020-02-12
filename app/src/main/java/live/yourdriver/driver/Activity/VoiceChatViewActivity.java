@@ -7,15 +7,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.media.ToneGenerator;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Locale;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import live.yourdriver.driver.BuildConfig;
 import live.yourdriver.driver.R;;
 
 import androidx.annotation.NonNull;
@@ -35,7 +44,7 @@ public class VoiceChatViewActivity extends AppCompatActivity{
     private String agoraChannel;
     private int rideId=0;
     public static boolean inFront = false;
-
+    private TextView tvCallTip;
     private RtcEngine mRtcEngine; // Tutorial Step 1
     private final IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() { // Tutorial Step 1
 
@@ -54,12 +63,15 @@ public class VoiceChatViewActivity extends AppCompatActivity{
             });
         }
 
+        @Override
+        public void onUserJoined(int uid, int elapsed) {
+            super.onUserJoined(uid, elapsed);
+            tvCallTip.setText("You are connected Now.");
+
+        }
 
 
-
-
-
-//        @Override
+        //        @Override
 //        public void onUserMuteAudio(final int uid, final boolean muted) { // Tutorial Step 6
 //            runOnUiThread(new Runnable() {
 //                @Override
@@ -75,6 +87,7 @@ public class VoiceChatViewActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_chat_view);
 
+        tvCallTip = findViewById(R.id.tv_call_tip);
 
         if (getIntent().getExtras() != null) {
             if(getIntent().getExtras().containsKey("agora_channel")) {
@@ -174,7 +187,7 @@ public class VoiceChatViewActivity extends AppCompatActivity{
             mRtcEngine.setChannelProfile(Constants.CHANNEL_PROFILE_COMMUNICATION);
             mRtcEngine.setEnableSpeakerphone(false);
         } catch (Exception e) {
-//            Log.e(LOG_TAG, Log.getStackTraceString(e));
+            Log.e(LOG_TAG, Log.getStackTraceString(e));
 
             throw new RuntimeException("NEED TO check rtc sdk init fatal error\n" + Log.getStackTraceString(e));
         }
@@ -188,9 +201,9 @@ public class VoiceChatViewActivity extends AppCompatActivity{
         }
 
         try {
-            mRtcEngine.joinChannel(accessToken, agoraChannel, "Extra Optional Data", rideId); // if you do not specify the uid, we will generate the uid for you
+            mRtcEngine.joinChannel(accessToken, agoraChannel, String.valueOf(rideId), 0); // if you do not specify the uid, we will generate the uid for you
         }catch (Exception e){
-
+            Log.e("Uable to join channel",e.toString());
         }
 
     }
