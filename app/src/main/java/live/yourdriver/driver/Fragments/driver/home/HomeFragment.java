@@ -337,64 +337,95 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     private void onlineOffLineButtonClicked(){
         String status= btnOnOffLine.getTag().toString();
-        Utils.showProgressBarSpinner(getContext());
+
         if(status.equals("Offline")){
-            Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            AlertDialog d =builder.setTitle("You want to be Online")
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Utils.showProgressBarSpinner(getContext());
+                            Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
 
-            userCall.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    Utils.dismissProgressBarSpinner();
-                    if(response.isSuccessful()){
-                        MainActivity.appPreference.setUserObject(response.body());
-                        currentUser = response.body();
-                        if(currentUser.getIsDriverOnline()==1){
-                            btnOnOffLine.setTag(response.body().getMessage());
-                            btnOnOffLine.setText(response.body().getMessage());
-                            btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.online));
-                            gpsService.startTracking();
+                            userCall.enqueue(new Callback<User>() {
+                                @Override
+                                public void onResponse(Call<User> call, Response<User> response) {
+                                    Utils.dismissProgressBarSpinner();
+                                    if(response.isSuccessful()){
+                                        MainActivity.appPreference.setUserObject(response.body());
+                                        currentUser = response.body();
+                                        if(currentUser.getIsDriverOnline()==1){
+                                            btnOnOffLine.setTag(response.body().getMessage());
+                                            btnOnOffLine.setText(response.body().getMessage());
+                                            btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.online));
+                                            gpsService.startTracking();
 
-                        }else{
-                            Utils.showAlertBox(getActivity(),currentUser.getMessage());
+                                        }else{
+                                            Utils.showAlertBox(getActivity(),currentUser.getMessage());
+                                        }
+                                    }else{
+                                        Utils.showAlertBox(getActivity(),"Sorry! Please try again later!");
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<User> call, Throwable t) {
+                                    Utils.showAlertBox(getActivity(),"Something went wrong! Please try again later.");
+                                }
+                            });
                         }
-                    }else{
-                        Utils.showAlertBox(getActivity(),"Sorry! Please try again later!");
-                    }
-                }
+                    }).setNegativeButton(R.string.no,null).create();
+            d.show();
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Utils.showAlertBox(getActivity(),"Something went wrong! Please try again later.");
-                }
-            });
+
+
+
         }else{
-            Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
-            userCall.enqueue(new Callback<User>() {
+
+
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            AlertDialog d =builder.setTitle("You want to go Offline").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    Utils.dismissProgressBarSpinner();
-                    if(response.isSuccessful()){
-                        MainActivity.appPreference.setUserObject(response.body());
-                        currentUser = response.body();
-                        if(response.body().getResponse().equals("success")){
-                            btnOnOffLine.setTag(response.body().getMessage());
-                            btnOnOffLine.setText(response.body().getMessage());
-                            gpsService.stopTracking();
-                            btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.offline));
-                        }else{
-                            Utils.showAlertBox(getActivity(),response.body().getMessage());
+                public void onClick(DialogInterface dialog, int which) {
+                    Utils.showProgressBarSpinner(getContext());
+                    Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
+                    userCall.enqueue(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            Utils.dismissProgressBarSpinner();
+                            if(response.isSuccessful()){
+                                MainActivity.appPreference.setUserObject(response.body());
+                                currentUser = response.body();
+                                if(response.body().getResponse().equals("success")){
+                                    btnOnOffLine.setTag(response.body().getMessage());
+                                    btnOnOffLine.setText(response.body().getMessage());
+                                    gpsService.stopTracking();
+                                    btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.offline));
+                                }else{
+                                    Utils.showAlertBox(getActivity(),response.body().getMessage());
+                                }
+
+                            }else{
+                                Utils.showAlertBox(getActivity(),"Sorry! Please try again later!");
+                            }
                         }
 
-                    }else{
-                        Utils.showAlertBox(getActivity(),"Sorry! Please try again later!");
-                    }
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+                            Utils.showAlertBox(getActivity(),"Something went wrong! Please try again later.");
+                        }
+                    });
                 }
+            }).setNegativeButton(R.string.cancel,null).create();
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Utils.showAlertBox(getActivity(),"Something went wrong! Please try again later.");
-                }
-            });
+            d.show();
+
+
+
+
+
         }
 
     }
@@ -938,153 +969,200 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onClick(View v) {
-        User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        final User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
         final Ride r = MainActivity.appPreference.getRideObject();
         User p = MainActivity.appPreference.getPassengerObject();
         switch (v.getId()){
             case R.id.btn_driver_arrived:
 
-                Call<Ride> userCall = DriverActivity.ridesApi.driverArrived(u.getMobile(),r.getId());
-                Utils.showProgressBarSpinner(getContext());
-                userCall.enqueue(new Callback<Ride>() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog d =builder.setTitle("Are you arrived?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onResponse(Call<Ride> call, Response<Ride> response) {
-                        Utils.dismissProgressBarSpinner();
-                        if(response.isSuccessful()){
-                            if(response.body().getResponse().equals("driver_arrived")){
-                                MainActivity.appPreference.setRideObject(response.body());
-                                btnDriverArrived.setVisibility(View.INVISIBLE);
-                                btnStartRide.setVisibility(View.VISIBLE);
-                                navigationButtonVisibility(response.body());
-                            }else{
-                                Utils.showAlertBox(getActivity(),"Ride has been cancelled by the User!.");
-                                initialState();
+                    public void onClick(DialogInterface dialog, int which) {
+                        Call<Ride> userCall = DriverActivity.ridesApi.driverArrived(u.getMobile(),r.getId());
+                        Utils.showProgressBarSpinner(getContext());
+                        userCall.enqueue(new Callback<Ride>() {
+                            @Override
+                            public void onResponse(Call<Ride> call, Response<Ride> response) {
+                                Utils.dismissProgressBarSpinner();
+                                if(response.isSuccessful()){
+                                    if(response.body().getResponse().equals("driver_arrived")){
+                                        MainActivity.appPreference.setRideObject(response.body());
+                                        btnDriverArrived.setVisibility(View.INVISIBLE);
+                                        btnStartRide.setVisibility(View.VISIBLE);
+                                        navigationButtonVisibility(response.body());
+                                    }else{
+                                        Utils.showAlertBox(getActivity(),"Ride has been cancelled by the User!.");
+                                        initialState();
+                                    }
+
+                                }
                             }
 
-                        }
+                            @Override
+                            public void onFailure(Call<Ride> call, Throwable t) {
+                                Utils.dismissProgressBarSpinner();
+                            }
+                        });
                     }
+                }).setNegativeButton(R.string.no,null).create();
 
-                    @Override
-                    public void onFailure(Call<Ride> call, Throwable t) {
-                        Utils.dismissProgressBarSpinner();
-                    }
-                });
+                d.show();
+
+
                 break;
             case R.id.btn_driver_ride_cancel:
-                Call<UserRide> rideCall = DriverActivity.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
-                Utils.showProgressBarSpinner(getContext());
-                rideCall.enqueue(new Callback<UserRide>() {
-                    @Override
-                    public void onResponse(Call<UserRide> call, Response<UserRide> response) {
-                        // When cancelling the ride; ride & passenger object should be removed from shared preference.
-                        Utils.dismissProgressBarSpinner();
-                        if(response.isSuccessful()){
-                            if(response.body().getResponse().equals("ride_cancelled_successfully") ) {
-                                initialState();
-                                Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
-                                MainActivity.appPreference.setRideObject(null);
-                                MainActivity.appPreference.setPassengerObject(null);
-                                MainActivity.appPreference.setUserObject(response.body().getUser());
 
-                            }else if(response.body().getResponse().equals("ride_cancel_error") && response.body().getRide().getIsRideCancelled()==1){
-                                initialState();
-                                Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
-                                MainActivity.appPreference.setRideObject(null);
-                                MainActivity.appPreference.setPassengerObject(null);
-                            }else{
-                                Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
+
+
+                AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                AlertDialog d1 =builder1.setTitle("Do you want to cancel the ride?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Call<UserRide> rideCall = DriverActivity.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
+                        Utils.showProgressBarSpinner(getContext());
+                        rideCall.enqueue(new Callback<UserRide>() {
+                            @Override
+                            public void onResponse(Call<UserRide> call, Response<UserRide> response) {
+                                // When cancelling the ride; ride & passenger object should be removed from shared preference.
+                                Utils.dismissProgressBarSpinner();
+                                if(response.isSuccessful()){
+                                    if(response.body().getResponse().equals("ride_cancelled_successfully") ) {
+                                        initialState();
+                                        Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
+                                        MainActivity.appPreference.setRideObject(null);
+                                        MainActivity.appPreference.setPassengerObject(null);
+                                        MainActivity.appPreference.setUserObject(response.body().getUser());
+
+                                    }else if(response.body().getResponse().equals("ride_cancel_error") && response.body().getRide().getIsRideCancelled()==1){
+                                        initialState();
+                                        Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
+                                        MainActivity.appPreference.setRideObject(null);
+                                        MainActivity.appPreference.setPassengerObject(null);
+                                    }else{
+                                        Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
+                                    }
+                                }else{
+                                    Utils.showAlertBox(getActivity(),"Something went wrong. Please try again!");
+                                }
                             }
-                        }else{
-                            Utils.showAlertBox(getActivity(),"Something went wrong. Please try again!");
-                        }
-                    }
 
-                    @Override
-                    public void onFailure(Call<UserRide> call, Throwable t) {
-                        Utils.dismissProgressBarSpinner();
-                        Utils.showAlertBox(getActivity(),"Unable to communicate with server.");
+                            @Override
+                            public void onFailure(Call<UserRide> call, Throwable t) {
+                                Utils.dismissProgressBarSpinner();
+                                Utils.showAlertBox(getActivity(),"Unable to communicate with server.");
+                            }
+                        });
                     }
-                });
+                }).setNegativeButton(R.string.no,null).create();
+                d1.show();
                 break;
 
             case R.id.btn_start_ride:
-                Call<Ride> startRideCall = DriverActivity.ridesApi.startRide(u.getMobile(),r.getId());
-                Utils.showProgressBarSpinner(getContext());
-                startRideCall.enqueue(new Callback<Ride>() {
+
+
+                AlertDialog.Builder builders = new AlertDialog.Builder(getContext());
+                AlertDialog ds =builders.setTitle("Do you want to start the ride?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onResponse(Call<Ride> call, Response<Ride> response) {
-                        if(response.isSuccessful()){
-                            MainActivity.appPreference.setRideObject(response.body());
+                    public void onClick(DialogInterface dialog, int which) {
+                        Call<Ride> startRideCall = DriverActivity.ridesApi.startRide(u.getMobile(),r.getId());
+                        Utils.showProgressBarSpinner(getContext());
+                        startRideCall.enqueue(new Callback<Ride>() {
+                            @Override
+                            public void onResponse(Call<Ride> call, Response<Ride> response) {
+                                if(response.isSuccessful()){
+                                    MainActivity.appPreference.setRideObject(response.body());
 
-                            showEndRideButton(response.body());
-                            navigationButtonVisibility(response.body());
-                            DBHelper dbHelper;
-                            dbHelper = new DBHelper(getContext());
-                            dbHelper.insertRidePath(Double.valueOf(MainActivity.appPreference.getLat()),Double.valueOf(MainActivity.appPreference.getLng()),response.body().getId());
+                                    showEndRideButton(response.body());
+                                    navigationButtonVisibility(response.body());
+                                    DBHelper dbHelper;
+                                    dbHelper = new DBHelper(getContext());
+                                    dbHelper.insertRidePath(Double.valueOf(MainActivity.appPreference.getLat()),Double.valueOf(MainActivity.appPreference.getLng()),response.body().getId());
 
-                            Utils.dismissProgressBarSpinner();
-                        }
-                        Utils.dismissProgressBarSpinner();
+                                    Utils.dismissProgressBarSpinner();
+                                }
+                                Utils.dismissProgressBarSpinner();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Ride> call, Throwable t) {
+                                Utils.dismissProgressBarSpinner();
+                            }
+                        });
                     }
+                }).setNegativeButton(R.string.no,null).create();
 
-                    @Override
-                    public void onFailure(Call<Ride> call, Throwable t) {
-                        Utils.dismissProgressBarSpinner();
-                    }
-                });
+                ds.show();
+
+
+
+
+
                 break;
             case R.id.btn_end_ride:
-                Utils.showProgressBarSpinner(getContext());
-                // Loop through all the saved paths and update them.
-                DBHelper dbHelper = new DBHelper(getContext());;
-                List<RidePath> ridePathList = dbHelper.getRidePath(r.getId());
-                dbHelper.close();
 
-                Location startPoint=new Location("first_mark");
-                Location endPoint=new Location("second_mark");
-
-
-
-                double distance=0;
-                for (int i=1;i<ridePathList.size();i++) {
-                    RidePath p1 = ridePathList.get(i-1);
-                    RidePath p2 = ridePathList.get(i);
-                    startPoint.setLatitude(p1.getLat());
-                    startPoint.setLongitude(p1.getLng());
-                    endPoint.setLatitude(p2.getLat());
-                    endPoint.setLongitude(p2.getLng());
-                    distance += startPoint.distanceTo(endPoint);
-                }
-
-                Call<DriverTransaction> endRideCall = DriverActivity.ridesApi.endRide(u.getMobile(),r.getId(),distance);
-
-                endRideCall.enqueue(new Callback<DriverTransaction>() {
+                AlertDialog.Builder builderc = new AlertDialog.Builder(getContext());
+                AlertDialog dc =builderc.setTitle("Do you want to end the ride?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onResponse(Call<DriverTransaction> call, Response<DriverTransaction> response) {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Utils.showProgressBarSpinner(getContext());
+                        // Loop through all the saved paths and update them.
+                        DBHelper dbHelper = new DBHelper(getContext());;
+                        List<RidePath> ridePathList = dbHelper.getRidePath(r.getId());
+                        dbHelper.close();
 
-                        if(response.isSuccessful()){
-                            MainActivity.appPreference.setDriverTransactionObject(response.body());
-                            MainActivity.appPreference.setRideObject(null);
-                            MainActivity.appPreference.setPassengerObject(null);
+                        Location startPoint=new Location("first_mark");
+                        Location endPoint=new Location("second_mark");
 
-                            initialState();
-                            Intent intent = new Intent(getContext(), DriverTransactionActivity.class);
-                            startActivity(intent);
-                            Utils.dismissProgressBarSpinner();
-//                            Log.e("i got in full success",response.body().getResponse());
-                        }else{
-//                            Log.e("i got in half success",response.errorBody().toString());
-                            Utils.dismissProgressBarSpinner();
+
+
+                        double distance=0;
+                        for (int i=1;i<ridePathList.size();i++) {
+                            RidePath p1 = ridePathList.get(i-1);
+                            RidePath p2 = ridePathList.get(i);
+                            startPoint.setLatitude(p1.getLat());
+                            startPoint.setLongitude(p1.getLng());
+                            endPoint.setLatitude(p2.getLat());
+                            endPoint.setLongitude(p2.getLng());
+                            distance += startPoint.distanceTo(endPoint);
                         }
 
-                    }
+                        Call<DriverTransaction> endRideCall = DriverActivity.ridesApi.endRide(u.getMobile(),r.getId(),distance);
 
-                    @Override
-                    public void onFailure(Call<DriverTransaction> call, Throwable t) {
-                        Utils.dismissProgressBarSpinner();
+                        endRideCall.enqueue(new Callback<DriverTransaction>() {
+                            @Override
+                            public void onResponse(Call<DriverTransaction> call, Response<DriverTransaction> response) {
+
+                                if(response.isSuccessful()){
+                                    MainActivity.appPreference.setDriverTransactionObject(response.body());
+                                    MainActivity.appPreference.setRideObject(null);
+                                    MainActivity.appPreference.setPassengerObject(null);
+
+                                    initialState();
+                                    Intent intent = new Intent(getContext(), DriverTransactionActivity.class);
+                                    startActivity(intent);
+                                    Utils.dismissProgressBarSpinner();
+//                            Log.e("i got in full success",response.body().getResponse());
+                                }else{
+//                            Log.e("i got in half success",response.errorBody().toString());
+                                    Utils.dismissProgressBarSpinner();
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<DriverTransaction> call, Throwable t) {
+                                Utils.dismissProgressBarSpinner();
 //                        Log.e("i got in failure",t.toString());
+                            }
+                        });
                     }
-                });
+                }).setNegativeButton(R.string.no,null).create();
+
+                dc.show();
+
+
+
                 break;
             case R.id.btn_navigation:
 

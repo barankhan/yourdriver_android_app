@@ -1,5 +1,6 @@
 package live.yourdriver.driver.Activity;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.Ride;
@@ -8,6 +9,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.content.DialogInterface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -47,6 +49,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
     User currentUser;
     CountDownTimer timer;
     private static MediaPlayer mediaPlayer;
+    boolean rejectAlert = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +92,8 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
             public void onFinish() {
                 //the progressBar will be invisible after 60 000 miliseconds ( 1 minute)
                 progressBar.setProgress(0);
-                finish();
+                if(!rejectAlert)
+                    finish();
             }
 
         }.start();
@@ -155,23 +159,36 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
                 }
             });
         }else if(v.getId()==R.id.btn_reject_ride){
-            timer.cancel();
-            mediaPlayer.stop();
-            Utils.showProgressBarSpinner(this);
-            Call<DriverServerResponse> userCall = this.ridesApi.rejectRide(currentUser.getId(), getIntent().getExtras().getString("ride_id"));
-            userCall.enqueue(new Callback<DriverServerResponse>() {
-                @Override
-                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-                        Utils.dismissProgressBarSpinner();
-                        finish();
-                }
 
+
+            rejectAlert=true;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog d =builder.setTitle("Do you want to reject the ride?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 @Override
-                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
-                    Utils.dismissProgressBarSpinner();
-                    finish();
+                public void onClick(DialogInterface dialog, int which) {
+                    timer.cancel();
+                    mediaPlayer.stop();
+                    Utils.showProgressBarSpinner(RideAlertActivity.this);
+                    Call<DriverServerResponse> userCall = ridesApi.rejectRide(currentUser.getId(), getIntent().getExtras().getString("ride_id"));
+                    userCall.enqueue(new Callback<DriverServerResponse>() {
+                        @Override
+                        public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                            Utils.dismissProgressBarSpinner();
+                            finish();
+                        }
+
+                        @Override
+                        public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                            Utils.dismissProgressBarSpinner();
+                            finish();
+                        }
+                    });
                 }
-            });
+            }).setNegativeButton(R.string.no,null).create();
+
+            d.show();
+
         }
     }
 

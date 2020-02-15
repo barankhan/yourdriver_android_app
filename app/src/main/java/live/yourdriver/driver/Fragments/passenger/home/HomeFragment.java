@@ -781,7 +781,17 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             if(r.getDriverId()>0){
 
 
+                pickupTextView.setText(r.getPickupAddress());
+                dropOffTextView.setText(r.getDropoffAddress());
+                pickupTextView.setClickable(false);
+                dropOffTextView.setClickable(false);
 
+                if(r.getDropoffAddress()==null){
+                    dropOffTextView.setVisibility(View.GONE);
+                    dropOffIcon.setVisibility(View.GONE);
+                    separator.setVisibility(View.GONE);
+                    dropOffSaveImage.setVisibility(View.GONE);
+                }
 
                 // I'm assuming passenger landed on the activity again. I have to close the spinner.
                 Utils.dismissProgressBarSpinner();
@@ -1260,30 +1270,38 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         User d = appPreference.getDriverObject();
         switch (v.getId()){
             case R.id.btn_cancel_ride:
-
-                Call<UserRide> rideCall = Passenger.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
-                Utils.showProgressBarSpinner(getContext());
-                rideCall.enqueue(new Callback<UserRide>() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog di =builder.setTitle("Do you want to cancel the ride?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onResponse(Call<UserRide> call, Response<UserRide> response) {
-                        Utils.dismissProgressBarSpinner();
-                        if(response.isSuccessful()){
-                            MainActivity.appPreference.setUserObject(response.body().getUser());
-                            MainActivity.appPreference.setDriverObject(null);
-                            MainActivity.appPreference.setRideObject(null);
-                            MainActivity.appPreference.setIsDropoffMode(false);
-                            MainActivity.appPreference.setIsPickupMode(true);
-                            initialState();
-                        }else{
+                    public void onClick(DialogInterface dialog, int which) {
+                        Call<UserRide> rideCall = Passenger.ridesApi.cancelRide(currentUser.getMobile(),String.valueOf(r.getId()));
+                        Utils.showProgressBarSpinner(getContext());
+                        rideCall.enqueue(new Callback<UserRide>() {
+                            @Override
+                            public void onResponse(Call<UserRide> call, Response<UserRide> response) {
+                                Utils.dismissProgressBarSpinner();
+                                if(response.isSuccessful()){
+                                    MainActivity.appPreference.setUserObject(response.body().getUser());
+                                    MainActivity.appPreference.setDriverObject(null);
+                                    MainActivity.appPreference.setRideObject(null);
+                                    MainActivity.appPreference.setIsDropoffMode(false);
+                                    MainActivity.appPreference.setIsPickupMode(true);
+                                    initialState();
+                                }else{
 
-                        }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<UserRide> call, Throwable t) {
+
+                            }
+                        });
                     }
+                }).setNegativeButton(R.string.no,null).create();
 
-                    @Override
-                    public void onFailure(Call<UserRide> call, Throwable t) {
+                di.show();
 
-                    }
-                });
                 break;
             case R.id.im_call_button:
                 if(r!=null){

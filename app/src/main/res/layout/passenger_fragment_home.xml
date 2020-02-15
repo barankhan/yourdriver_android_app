@@ -252,8 +252,8 @@
             android:textSize="14dp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toStartOf="@+id/im_message_button"
+            app:layout_constraintStart_toEndOf="@+id/im_driver_image" />
 
         <ImageView
             android:id="@+id/im_message_button"
