@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.R;;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
@@ -16,18 +17,20 @@ public class DriverConfirmationActivity extends AppCompatActivity {
 
     TextView congratsLabel;
     Button btnLogin;
+    public static AppPreference appPreference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_confirmation);
         congratsLabel = findViewById(R.id.txt_driver_confirmation_message);
         btnLogin = findViewById(R.id.btnLogin);
+        appPreference = new AppPreference(this);
         if (getIntent().getExtras() != null) {
             if(getIntent().getExtras().containsKey("do")){
                 String value = getIntent().getExtras().getString("do");
 //                Log.e("value",value);
                 if(value.equals("logout")){
-                    MainActivity.appPreference.setLoginStatus(false);
+                    appPreference.setLoginStatus(false);
                     btnLogin.setVisibility(View.VISIBLE);
                 }
             }

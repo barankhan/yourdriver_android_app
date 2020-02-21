@@ -2,6 +2,7 @@ package live.yourdriver.driver.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import live.yourdriver.driver.Model.UserTransaction;
@@ -35,12 +36,16 @@ public class DriverTransactionActivity extends AppCompatActivity {
     EditText etTransAmount;
     Button btnSave;
     public static RidesApi ridesApi;
+    public static AppPreference appPreference;
     Context c;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_transaction);
         c = this;
+
+
+        appPreference = new AppPreference(this);
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
 
         tvChange = findViewById(R.id.tv_passenger_change);
@@ -51,7 +56,7 @@ public class DriverTransactionActivity extends AppCompatActivity {
 
         btnSave = findViewById(R.id.btn_save_trans_amount);
 
-        driverTransaction = MainActivity.appPreference.getDriverTransactionObject();
+        driverTransaction = appPreference.getDriverTransactionObject();
 
         if(driverTransaction==null){
             Utils.showAlertBox(this,"There is some problem in the transaction!");
@@ -68,7 +73,7 @@ public class DriverTransactionActivity extends AppCompatActivity {
                 }else{
 
                     Utils.showProgressBarSpinner(c);
-                    User u = MainActivity.appPreference.getUserObject(c,DriverTransactionActivity.this);
+                    User u = appPreference.getUserObject(c,DriverTransactionActivity.this);
                     Call<UserTransaction> userCall = ridesApi.updateTransaction(u.getMobile(),driverTransaction.getId(),etTransAmount.getText().toString());
                     userCall.enqueue(new Callback<UserTransaction>() {
                         @Override
@@ -76,8 +81,8 @@ public class DriverTransactionActivity extends AppCompatActivity {
                             Utils.dismissProgressBarSpinner();
                             if(response.isSuccessful()){
                                 if(response.body().getResponse().equals("amount_update_success")){
-                                    MainActivity.appPreference.setUserObject(response.body().getUser());
-                                    MainActivity.appPreference.setDriverTransactionObject(null);
+                                    appPreference.setUserObject(response.body().getUser());
+                                    appPreference.setDriverTransactionObject(null);
                                     finish();
                                 }else {
                                     Utils.showAlertBox(DriverTransactionActivity.this,response.body().getMessage());

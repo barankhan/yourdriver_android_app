@@ -3,13 +3,12 @@ package live.yourdriver.driver.Services;
 import android.content.Intent;
 
 import live.yourdriver.driver.Activity.ChatActivity;
-import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Activity.NotifActivity;
 import live.yourdriver.driver.Activity.RideAlertActivity;
 import live.yourdriver.driver.Activity.VoiceChatViewActivity;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.DriverServerResponse;
-import live.yourdriver.driver.Model.User;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -22,6 +21,7 @@ import retrofit2.Response;
 public class FirebaseService extends FirebaseMessagingService {
     private LocalBroadcastManager broadcaster;
     public RidesApi ridesApi;
+    public AppPreference appPreference;
 
 
     String TAG = this.getClass().toString();
@@ -31,6 +31,8 @@ public class FirebaseService extends FirebaseMessagingService {
         super.onCreate();
         broadcaster = LocalBroadcastManager.getInstance(this);
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
+        appPreference = new AppPreference(this);
+
     }
 
     public FirebaseService() {
@@ -64,8 +66,8 @@ public class FirebaseService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             if(remoteMessage.getData().get("key").equals("driver_successful")){
-                MainActivity.appPreference.setLoginStatus(false);
-                MainActivity.appPreference.setUserObject(null);
+                appPreference.setLoginStatus(false);
+                appPreference.setUserObject(null);
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.putExtra("goToLogin","yes");
@@ -84,32 +86,32 @@ public class FirebaseService extends FirebaseMessagingService {
                 startActivity(intent);
             }
             else if(remoteMessage.getData().get("key").equals("p_amount_received")){
-                MainActivity.appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
+                appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }
             else if(remoteMessage.getData().get("key").equals("p_ride_accepted")){
-                MainActivity.appPreference.setDriverObjectWithEncodedJson(remoteMessage.getData().get("driver"));
-                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                appPreference.setDriverObjectWithEncodedJson(remoteMessage.getData().get("driver"));
+                appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("d_ride_cancelled")){
-                MainActivity.appPreference.setRideObject(null);
-                MainActivity.appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
+                appPreference.setRideObject(null);
+                appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("p_ride_cancelled")){
-                MainActivity.appPreference.setDriverObject(null);
-                MainActivity.appPreference.setRideObject(null);
+                appPreference.setDriverObject(null);
+                appPreference.setRideObject(null);
 
-                MainActivity.appPreference.setPassengerObject(null);
-                MainActivity.appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
+                appPreference.setPassengerObject(null);
+                appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.putExtra("setPickUpMode", "true");
@@ -117,19 +119,19 @@ public class FirebaseService extends FirebaseMessagingService {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("p_driver_arrived")){
-                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("p_ride_started")){
-                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
             }else if(remoteMessage.getData().get("key").equals("p_ride_ended")){
-                MainActivity.appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
+                appPreference.setRideObjectWithEncodedJson(remoteMessage.getData().get("ride"));
 
                 Intent intent = new Intent(this, NotifActivity.class);
                 intent.putExtra("message", remoteMessage.getData().get("message"));
@@ -180,7 +182,23 @@ public class FirebaseService extends FirebaseMessagingService {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
+            }else if(remoteMessage.getData().get("key").equals("offline_driver")){
+                appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message",remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else if(remoteMessage.getData().get("key").equals("reset_to_default")){
+                appPreference.setDriverObject(null);
+                appPreference.setRideObject(null);
+                appPreference.setPassengerObject(null);
+                appPreference.setUserObjectWithEncodedJson(remoteMessage.getData().get("user"));
+                Intent intent = new Intent(this, NotifActivity.class);
+                intent.putExtra("message",remoteMessage.getData().get("message"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
+
 //            Log.e(TAG, "ChatMessage data payload: " + remoteMessage.getData());
         }
 

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
@@ -49,12 +50,15 @@ public class ChatActivity extends AppCompatActivity {
     public static boolean inFront = false;
     public static RidesApi ridesApi;
     private Ringtone r;
+    public static AppPreference appPreference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        appPreference = new AppPreference(this);
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
-        currentUser = MainActivity.appPreference.getUserObject(this,this);
+        currentUser = appPreference.getUserObject(this,this);
         Set<String> keys = getIntent().getExtras().keySet();
 
         if(getIntent().getExtras().containsKey("ride_id")){
@@ -98,25 +102,27 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void sendMessage(){
-        ChatMessage responseMessage = new ChatMessage(userInput.getText().toString(), currentUser.getId(), currentUser.getId());
-        responseMessageList.add(responseMessage);
-        messageAdapter.notifyDataSetChanged();
+        if(userInput.getText().toString().length()>0){
+            ChatMessage responseMessage = new ChatMessage(userInput.getText().toString(), currentUser.getId(), currentUser.getId());
+            responseMessageList.add(responseMessage);
+            messageAdapter.notifyDataSetChanged();
 
-        Call<DriverServerResponse> d = ridesApi.insertChat(currentUser.getId(),userInput.getText().toString(),rideId);
-        d.enqueue(new Callback<DriverServerResponse>() {
-            @Override
-            public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+            Call<DriverServerResponse> d = ridesApi.insertChat(currentUser.getId(),userInput.getText().toString(),rideId);
+            d.enqueue(new Callback<DriverServerResponse>() {
+                @Override
+                public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
 
-            }
+                }
 
-            @Override
-            public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                @Override
+                public void onFailure(Call<DriverServerResponse> call, Throwable t) {
 
-            }
-        });
+                }
+            });
 
-        userInput.setText("");
-        goToLastRecyclerView();
+            userInput.setText("");
+            goToLastRecyclerView();
+        }
     }
 
 

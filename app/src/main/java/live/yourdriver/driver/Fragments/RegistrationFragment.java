@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
@@ -37,6 +38,7 @@ import com.google.firebase.iid.InstanceIdResult;
 public class RegistrationFragment extends Fragment {
 
     private MyInterface registrationFromActivityListener;
+    public static AppPreference appPreference;
 
 
     private EditText nameInput, emailInput, phoneInput, passwordInput;
@@ -53,6 +55,7 @@ public class RegistrationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        appPreference = new AppPreference(getContext());
         View view =  inflater.inflate(R.layout.fragment_registration, container, false);
         nameInput = view.findViewById(R.id.nameInput);
         emailInput = view.findViewById(R.id.et_login_mobile);
@@ -87,21 +90,21 @@ public class RegistrationFragment extends Fragment {
         final String password = passwordInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)){
-            MainActivity.appPreference.showToast("Your name is required.");
+            appPreference.showToast("Your name is required.");
         }else if (TextUtils.isEmpty(phone)){
-            MainActivity.appPreference.showToast("Your Mobile Number is required.");
+            appPreference.showToast("Your Mobile Number is required.");
         } else if (TextUtils.isEmpty(email)){
-            MainActivity.appPreference.showToast("Your email is required.");
+            appPreference.showToast("Your email is required.");
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            MainActivity.appPreference.showToast("Invalid email");
+            appPreference.showToast("Invalid email");
         } else if (TextUtils.isEmpty(password)){
-            MainActivity.appPreference.showToast("Password required");
+            appPreference.showToast("Password required");
         } else if (password.length() < 6){
-            MainActivity.appPreference.showToast("Create a password at least 6 characters long.");
+            appPreference.showToast("Create a password at least 6 characters long.");
         } else if (phone.length() != 11){
-            MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
+            appPreference.showToast("Please Enter Correct Mobile Number");
         } else if(!phone.substring(0,2).equals("03")){
-            MainActivity.appPreference.showToast("Please Enter valid mobile number e.g. 03XXXXXXXXX");
+            appPreference.showToast("Please Enter valid mobile number e.g. 03XXXXXXXXX");
         }
         else {
             Utils.showProgressBarSpinner(getContext());
@@ -114,7 +117,7 @@ public class RegistrationFragment extends Fragment {
                     if(response.isSuccessful()){
 //                        Log.e("Token Called","Called");
                         if(response.body().getResponse().equals("inserted")){
-                            MainActivity.appPreference.setUserObject(response.body());
+                            appPreference.setUserObject(response.body());
                             clearForm();
                             registrationFromActivityListener.registrationVerificationFragment();
                         }else if(response.body().getResponse().equals("exists")){
@@ -131,7 +134,7 @@ public class RegistrationFragment extends Fragment {
 
 
                         } else if(response.body().getResponse().equals("error")){
-                            MainActivity.appPreference.showToast("Oops! something went wrong.");
+                            appPreference.showToast("Oops! something went wrong.");
                         }
                     }else{
 
@@ -162,11 +165,11 @@ public class RegistrationFragment extends Fragment {
 //                        emailInput.setText("");
 //                        phoneInput.setText("");
 //                        passwordInput.setText("");
-//                        MainActivity.appPreference.showToast("Registered Successfully");
+//                        appPreference.showToast("Registered Successfully");
 //                    } else if (response.body().getResponse().equals("exists")){
-//                        MainActivity.appPreference.showToast("This email already exists");
+//                        appPreference.showToast("This email already exists");
 //                    } else if (response.body().getResponse().equals("error")){
-//                        MainActivity.appPreference.showToast("Oops! something went wrong.");
+//                        appPreference.showToast("Oops! something went wrong.");
 //                    }
 //                }
 //

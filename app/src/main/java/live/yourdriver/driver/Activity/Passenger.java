@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Fragments.ChangePasswordFragment;
 import live.yourdriver.driver.Fragments.DriverDataUpdateFragmentStep1;
@@ -54,6 +55,7 @@ public class Passenger extends AppCompatActivity {
     public static View headerView;
     private ImageView imPassengerImage,imPassengerIcon;
     private User currentUser;
+    public static AppPreference appPreference;
 
 
     private FragmentManager fragmentManager;
@@ -64,9 +66,10 @@ public class Passenger extends AppCompatActivity {
         setContentView(R.layout.activity_passenger);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        appPreference = new AppPreference(this);
 
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
-        currentUser = MainActivity.appPreference.getUserObjectWithoutUserValidation();
+        currentUser = appPreference.getUserObjectWithoutUserValidation();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         try
@@ -89,7 +92,7 @@ public class Passenger extends AppCompatActivity {
             @Override
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_SETTLING && !drawer.isDrawerOpen(GravityCompat.START)) {
-                    User currentUser  = MainActivity.appPreference.getUserObjectWithoutUserValidation();
+                    User currentUser  = appPreference.getUserObjectWithoutUserValidation();
                     TextView tvUserName = headerView.findViewById(R.id.nav_user_name);
                     TextView tvUserEmail = headerView.findViewById(R.id.nav_user_email);
                     TextView tvBalance = headerView.findViewById(R.id.nav_user_balance);
@@ -211,7 +214,7 @@ public class Passenger extends AppCompatActivity {
     }
 
     private Class getBecomePartnerFragment(){
-        User currentUser = MainActivity.appPreference.getUserObject(this,this);
+        User currentUser = appPreference.getUserObject(this,this);
         if(currentUser.getDriverSteps()==0){
             return DriverDataUpdateFragmentStep1.class;
         }else if(currentUser.getDriverSteps()==1){

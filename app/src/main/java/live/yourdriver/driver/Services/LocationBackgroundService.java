@@ -25,8 +25,8 @@ public class LocationBackgroundService extends Service {
     private LocationManager mLocationManager;
     private NotificationManager notificationManager;
     private LocationServiceCallback myCallback;
-    private final int LOCATION_INTERVAL = 500;
-    private final int LOCATION_DISTANCE = 10;
+    private final int LOCATION_INTERVAL = 5000;
+    private final int LOCATION_DISTANCE = 30;
     private static int srId=0;
 
     @Override

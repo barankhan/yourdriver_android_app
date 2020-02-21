@@ -3,7 +3,7 @@ package live.yourdriver.driver.Fragments.driver.tickets;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
@@ -30,6 +30,8 @@ public class NewTicketFragment extends Fragment {
     private Button btnSubmit;
     private User currentUser;
     public static SupportTicketAPI supportTicketAPI;
+    public static AppPreference appPreference;
+
 
 
     public NewTicketFragment() {
@@ -44,13 +46,15 @@ public class NewTicketFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         supportTicketAPI = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_SUPPORT_TICKETS).create(SupportTicketAPI.class);
+        appPreference = new AppPreference(getContext());
+
         View root =  inflater.inflate(R.layout.fragment_new_ticket, container, false);
 
         etTitle = root.findViewById(R.id.et_title);
         etMessage = root.findViewById(R.id.et_message);
         btnSubmit = root.findViewById(R.id.btn_submit_ticket);
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,29 +62,31 @@ public class NewTicketFragment extends Fragment {
                 String title,message;
                 title = etTitle.getText().toString();
                 message = etMessage.getText().toString();
-                Utils.showProgressBarSpinner(getContext());
-                Call<DriverServerResponse> call = supportTicketAPI.createSupportTicket(currentUser.getId(),message,title);
-                call.enqueue(new Callback<DriverServerResponse>() {
-                    @Override
-                    public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
-                        Utils.dismissProgressBarSpinner();
-                        if(response.isSuccessful()){
-                            etTitle.setText("");
-                            etMessage.setText("");
-                            Utils.showAlertBox(getActivity(),"Your Issue is reported successfully, Out Agent will get back soon!.");
+
+                if(title.trim().length()==0){
+                    appPreference.showToast("Please enter subject.");
+                }else if(message.trim().length()==0){
+                    appPreference.showToast("Please enter message.");
+                }else{
+                    Utils.showProgressBarSpinner(getContext());
+                    Call<DriverServerResponse> call = supportTicketAPI.createSupportTicket(currentUser.getId(),message,title);
+                    call.enqueue(new Callback<DriverServerResponse>() {
+                        @Override
+                        public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
+                            Utils.dismissProgressBarSpinner();
+                            if(response.isSuccessful()){
+                                etTitle.setText("");
+                                etMessage.setText("");
+                                Utils.showAlertBox(getActivity(),"Your Issue is reported successfully, Out Agent will get back soon!.");
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<DriverServerResponse> call, Throwable t) {
-                        Utils.dismissProgressBarSpinner();
-                    }
-                });
-
-
-
-
-
+                        @Override
+                        public void onFailure(Call<DriverServerResponse> call, Throwable t) {
+                            Utils.dismissProgressBarSpinner();
+                        }
+                    });
+                }
 
             }
         });

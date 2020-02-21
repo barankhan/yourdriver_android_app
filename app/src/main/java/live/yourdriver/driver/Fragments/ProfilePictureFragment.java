@@ -6,8 +6,10 @@ import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.User;
+import live.yourdriver.driver.Services.RetrofitClient;
+import live.yourdriver.driver.Services.ServiceApi;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -40,6 +42,8 @@ public class ProfilePictureFragment extends Fragment implements View.OnClickList
     private User currentUser;
     private Button btnUpdatePicture;
     ImageView imPassengerIcon;
+    public static AppPreference appPreference;
+    public static ServiceApi serviceApi;
 
     public ProfilePictureFragment() {
         // Required empty public constructor
@@ -56,7 +60,10 @@ public class ProfilePictureFragment extends Fragment implements View.OnClickList
         btnUpdatePicture = root.findViewById(R.id.btn_profile_picture);
         btnUpdatePicture.setOnClickListener(this);
         imProfilePicture.setOnClickListener(this);
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        appPreference = new AppPreference(getContext());
+        serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
+
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         imPassengerIcon =  Passenger.headerView.findViewById(R.id.im_passenger_image);
 
@@ -117,7 +124,7 @@ public class ProfilePictureFragment extends Fragment implements View.OnClickList
 
 
 
-                Call<User> userCall = MainActivity.serviceApi.updateProfilePicture(profilePictureToUpload, mobileBody);
+                Call<User> userCall = serviceApi.updateProfilePicture(profilePictureToUpload, mobileBody);
                 userCall.enqueue(new Callback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
@@ -125,7 +132,7 @@ public class ProfilePictureFragment extends Fragment implements View.OnClickList
                         if(response.isSuccessful()){
 
                             if(response.body().getResponse().equals("uploaded")){
-                                MainActivity.appPreference.setUserObject(response.body());
+                                appPreference.setUserObject(response.body());
                                 currentUser = response.body();
                                 Utils.showAlertBox(getActivity(),"Picture Updated Successfully");
                                 if(currentUser.getPicture()!="") {

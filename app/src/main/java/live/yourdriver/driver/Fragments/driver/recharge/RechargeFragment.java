@@ -10,6 +10,7 @@ import android.widget.Spinner;
 
 import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import live.yourdriver.driver.R;;
@@ -30,9 +31,12 @@ public class RechargeFragment extends Fragment {
     private Spinner spPaymentTypes;
     public static DriverTransactionApi driverTransactionApi;
     private User currentUser;
+    public static AppPreference appPreference;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        appPreference = new AppPreference(getContext());
 
         View root = inflater.inflate(R.layout.driver_fragment_recharge, container, false);
         driverTransactionApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_DRIVER_TRNSACTIONS).create(DriverTransactionApi.class);
@@ -41,7 +45,7 @@ public class RechargeFragment extends Fragment {
         etTransactionId = root.findViewById(R.id.et_transaction_id);
         etAmount = root.findViewById(R.id.et_amount);
         spPaymentTypes = root.findViewById(R.id.sp_payment_type);
-        currentUser= MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser= appPreference.getUserObject(getContext(),getActivity());
         btnRecharge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,7 +56,7 @@ public class RechargeFragment extends Fragment {
                     public void onResponse(Call<User> call, Response<User> response) {
                         Utils.dismissProgressBarSpinner();
                         if(response.isSuccessful()){
-                            MainActivity.appPreference.setUserObject(response.body());
+                            appPreference.setUserObject(response.body());
                             if(response.body().getResponse().equals("payment_successful")){
                                 Utils.showAlertBox(getActivity(),"Your Account has been recharged successfully");
                             }else if (response.body().getResponse().equals("voucher_not_found")){

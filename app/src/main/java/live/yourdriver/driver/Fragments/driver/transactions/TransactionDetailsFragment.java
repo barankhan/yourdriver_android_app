@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.TransactionLiability;
 import live.yourdriver.driver.Model.UserRideTransaction;
 import retrofit2.Call;
@@ -32,6 +32,7 @@ import java.util.List;
 
 public class TransactionDetailsFragment extends Fragment {
 
+    public static AppPreference appPreference;
     private RatingBar ratingBar;
 
     private TextView tvTransactionId,tvTransactionType,tvDriverStartupFare,tvCompanyServiceCharges,
@@ -48,7 +49,12 @@ public class TransactionDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         View root =  inflater.inflate(R.layout.fragment_transaction_details, container, false);
+
+        appPreference = new AppPreference(getContext());
+
 
         linearLayoutLiabilities = root.findViewById(R.id.linearLayoutLiabilities);
         ratingBar = root.findViewById(R.id.ratingBar);
@@ -106,7 +112,7 @@ public class TransactionDetailsFragment extends Fragment {
                     Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
                         if(response.body().getDriverTransaction().getTransactionCompleted()==0){
-                            MainActivity.appPreference.setDriverTransactionObject(response.body().getDriverTransaction());
+                            appPreference.setDriverTransactionObject(response.body().getDriverTransaction());
                             btnEnterCash.setVisibility(View.VISIBLE);
                         }
 

@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements MyInterface {
     @Override
     public void login(User u) {
         if(u==null){
-            MainActivity.appPreference.setLoginStatus(false);
+            appPreference.setLoginStatus(false);
             loginFragment();
         }else{
             appPreference.setDisplayName(u.getName());

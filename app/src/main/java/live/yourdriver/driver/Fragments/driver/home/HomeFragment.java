@@ -33,6 +33,7 @@ import live.yourdriver.driver.Activity.VoiceChatViewActivity;
 //import live.yourdriver.driver.BuildConfig;
 import live.yourdriver.driver.BuildConfig;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.DBHelper;
 import live.yourdriver.driver.Model.DriverServerResponse;
@@ -72,6 +73,7 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -207,21 +209,31 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private LatLngBounds.Builder latLngBuilder = new LatLngBounds.Builder();
     private String firebaseToken;
 
+    public static AppPreference appPreference;
+
+
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.driver_fragment_home, container, false);
 
 //        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 
+        );
 
-
+        appPreference = new AppPreference(getContext());
+//
          mNavigationView = getActivity().findViewById(R.id.d_nav_view);
         headerView = mNavigationView.getHeaderView(0);
         TextView userName = headerView.findViewById(R.id.tv_driver_name);
-        userName.setText(MainActivity.appPreference.getDisplayName());
+        userName.setText(appPreference.getDisplayName());
         TextView userEmail = headerView.findViewById(R.id.tv_driver_email);
-        userEmail.setText(MainActivity.appPreference.getDisplayEmail());
+        userEmail.setText(appPreference.getDisplayEmail());
 
 
 
@@ -271,7 +283,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         createNotificationChannel();
 
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
         if(currentUser.getPicture()!="") {
             try
             {   Picasso.Builder picassoBuilder = new Picasso.Builder(getContext());
@@ -314,7 +326,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 android.Manifest.permission.ACCESS_NETWORK_STATE,
                 android.Manifest.permission.BLUETOOTH,
                 android.Manifest.permission.ACCESS_WIFI_STATE,
-                android.Manifest.permission.BLUETOOTH_ADMIN
+                android.Manifest.permission.BLUETOOTH_ADMIN,
+                android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                android.Manifest.permission.WAKE_LOCK
         };
 
         if (!Utils.hasPermissions(getContext(), PERMISSIONS)) {
@@ -352,7 +366,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                 public void onResponse(Call<User> call, Response<User> response) {
                                     Utils.dismissProgressBarSpinner();
                                     if(response.isSuccessful()){
-                                        MainActivity.appPreference.setUserObject(response.body());
+                                        appPreference.setUserObject(response.body());
                                         currentUser = response.body();
                                         if(currentUser.getIsDriverOnline()==1){
                                             btnOnOffLine.setTag(response.body().getMessage());
@@ -396,7 +410,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                         public void onResponse(Call<User> call, Response<User> response) {
                             Utils.dismissProgressBarSpinner();
                             if(response.isSuccessful()){
-                                MainActivity.appPreference.setUserObject(response.body());
+                                appPreference.setUserObject(response.body());
                                 currentUser = response.body();
                                 if(response.body().getResponse().equals("success")){
                                     btnOnOffLine.setTag(response.body().getMessage());
@@ -488,7 +502,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             buildAlertMessageNoGps();
         }
 
-        Ride r = MainActivity.appPreference.getRideObject();
+        Ride r = appPreference.getRideObject();
         navigationButtonVisibility(r);
         if(r!=null) {
             if(pickUpMarker!=null) {
@@ -502,14 +516,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             }
 
             Location currentLocation = new Location("right now");
-            currentLocation.setLatitude(Double.valueOf(MainActivity.appPreference.getLat()));
-            currentLocation.setLongitude(Double.valueOf(MainActivity.appPreference.getLng()));
+            currentLocation.setLatitude(Double.valueOf(appPreference.getLat()));
+            currentLocation.setLongitude(Double.valueOf(appPreference.getLng()));
             if(r.getIsRideStarted()!=1){
                 btnCancelRide.setVisibility(View.VISIBLE);
             }
 
 
-            User passenger = MainActivity.appPreference.getPassengerObject();
+            User passenger = appPreference.getPassengerObject();
             if(passenger!=null){
                 tvPassengerName.setText(passenger.getName());
                 tvPassengerName.setVisibility(View.VISIBLE);
@@ -531,13 +545,18 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             initialState();
         }
 
-        User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        User u = appPreference.getUserObject(getContext(),getActivity());
         if(u!=null){
             if(u.getIsDriverOnline()==1){
                 btnOnOffLine.setTag("Online");
                 btnOnOffLine.setText("Online");
                 btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.online));
 
+
+            }else{
+                btnOnOffLine.setTag("Offline");
+                btnOnOffLine.setText("Offline");
+                btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.offline));
 
             }
         }
@@ -660,7 +679,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         }
 
 
-        Ride r = MainActivity.appPreference.getRideObject();
+        Ride r = appPreference.getRideObject();
 
         if(r!=null){
                 pickUpMarker.setPosition(new LatLng(r.getPickupLat(), r.getPickupLng()));
@@ -678,8 +697,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 //        Log.e("On Map Ready","In map Ready");
 
-        if(MainActivity.appPreference.getLat()!="0" && MainActivity.appPreference.getLng()!="0") {
-            cameraPosition = new CameraPosition.Builder().target(new LatLng(Double.valueOf(MainActivity.appPreference.getLat()), Double.valueOf(MainActivity.appPreference.getLng()))).zoom(DEFAULT_PICKUP_ZOOM).build();
+        if(appPreference.getLat()!="0" && appPreference.getLng()!="0") {
+            cameraPosition = new CameraPosition.Builder().target(new LatLng(Double.valueOf(appPreference.getLat()), Double.valueOf(appPreference.getLng()))).zoom(DEFAULT_PICKUP_ZOOM).build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         }
@@ -738,14 +757,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     private void updateLocationOnServer(Location currentLocation){
         if (currentLocation != null) {
 
-//            MainActivity.appPreference.showToast(String.valueOf(currentLocation.getLatitude())+"=="+String.valueOf(currentLocation.getLongitude()));
-            MainActivity.appPreference.setLat(String.valueOf(currentLocation.getLatitude()));
-            MainActivity.appPreference.setLng(String.valueOf(currentLocation.getLongitude()));
+//            appPreference.showToast(String.valueOf(currentLocation.getLatitude())+"=="+String.valueOf(currentLocation.getLongitude()));
+            appPreference.setLat(String.valueOf(currentLocation.getLatitude()));
+            appPreference.setLng(String.valueOf(currentLocation.getLongitude()));
 
 
 
             Ride r ;
-            r = MainActivity.appPreference.getRideObject();
+            r = appPreference.getRideObject();
             String ride_id="";
             String passenger_id="";
             if(r!=null){
@@ -826,7 +845,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         startPoint.setLatitude(r.getPickupLat());
         startPoint.setLongitude(r.getPickupLng());
         double distance=startPoint.distanceTo(currentLocation);
-        if(distance<=50 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
+        if(distance<=200 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
             if(r.getDropoffLat()!=null && dropOffMarker!=null){
                 dropOffMarker.setVisible(true);
@@ -840,7 +859,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
     private void showArrivedButtonsWithDistance(Ride r,Double distance){
-        if(distance<=50 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
+        if(distance<=200 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
             btnDriverArrived.setVisibility(View.VISIBLE);
             if(r.getDropoffLat()!=null && dropOffMarker!=null){
                 dropOffMarker.setVisible(true);
@@ -969,9 +988,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onClick(View v) {
-        final User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
-        final Ride r = MainActivity.appPreference.getRideObject();
-        User p = MainActivity.appPreference.getPassengerObject();
+        final User u = appPreference.getUserObject(getContext(),getActivity());
+        final Ride r = appPreference.getRideObject();
+        User p = appPreference.getPassengerObject();
         switch (v.getId()){
             case R.id.btn_driver_arrived:
 
@@ -987,7 +1006,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                 Utils.dismissProgressBarSpinner();
                                 if(response.isSuccessful()){
                                     if(response.body().getResponse().equals("driver_arrived")){
-                                        MainActivity.appPreference.setRideObject(response.body());
+                                        appPreference.setRideObject(response.body());
                                         btnDriverArrived.setVisibility(View.INVISIBLE);
                                         btnStartRide.setVisibility(View.VISIBLE);
                                         navigationButtonVisibility(response.body());
@@ -1030,15 +1049,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                     if(response.body().getResponse().equals("ride_cancelled_successfully") ) {
                                         initialState();
                                         Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
-                                        MainActivity.appPreference.setRideObject(null);
-                                        MainActivity.appPreference.setPassengerObject(null);
-                                        MainActivity.appPreference.setUserObject(response.body().getUser());
+                                        appPreference.setRideObject(null);
+                                        appPreference.setPassengerObject(null);
+                                        appPreference.setUserObject(response.body().getUser());
 
                                     }else if(response.body().getResponse().equals("ride_cancel_error") && response.body().getRide().getIsRideCancelled()==1){
                                         initialState();
                                         Utils.showAlertBox(getActivity(), "Ride Cancelled Successfully");
-                                        MainActivity.appPreference.setRideObject(null);
-                                        MainActivity.appPreference.setPassengerObject(null);
+                                        appPreference.setRideObject(null);
+                                        appPreference.setPassengerObject(null);
                                     }else{
                                         Utils.showAlertBox(getActivity(),"Unable to cancel Ride");
                                     }
@@ -1071,13 +1090,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                             @Override
                             public void onResponse(Call<Ride> call, Response<Ride> response) {
                                 if(response.isSuccessful()){
-                                    MainActivity.appPreference.setRideObject(response.body());
+                                    appPreference.setRideObject(response.body());
 
                                     showEndRideButton(response.body());
                                     navigationButtonVisibility(response.body());
                                     DBHelper dbHelper;
                                     dbHelper = new DBHelper(getContext());
-                                    dbHelper.insertRidePath(Double.valueOf(MainActivity.appPreference.getLat()),Double.valueOf(MainActivity.appPreference.getLng()),response.body().getId());
+                                    dbHelper.insertRidePath(Double.valueOf(appPreference.getLat()),Double.valueOf(appPreference.getLng()),response.body().getId());
 
                                     Utils.dismissProgressBarSpinner();
                                 }
@@ -1127,16 +1146,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                             distance += startPoint.distanceTo(endPoint);
                         }
 
-                        Call<DriverTransaction> endRideCall = DriverActivity.ridesApi.endRide(u.getMobile(),r.getId(),distance);
+                        Call<DriverTransaction> endRideCall = DriverActivity.ridesApi.endRide(u.getMobile(),r.getId(),distance,appPreference.getLat(),appPreference.getLng());
 
                         endRideCall.enqueue(new Callback<DriverTransaction>() {
                             @Override
                             public void onResponse(Call<DriverTransaction> call, Response<DriverTransaction> response) {
 
                                 if(response.isSuccessful()){
-                                    MainActivity.appPreference.setDriverTransactionObject(response.body());
-                                    MainActivity.appPreference.setRideObject(null);
-                                    MainActivity.appPreference.setPassengerObject(null);
+                                    appPreference.setDriverTransactionObject(response.body());
+                                    appPreference.setRideObject(null);
+                                    appPreference.setPassengerObject(null);
 
                                     initialState();
                                     Intent intent = new Intent(getContext(), DriverTransactionActivity.class);

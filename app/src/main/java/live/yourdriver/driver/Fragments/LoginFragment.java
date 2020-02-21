@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
@@ -38,6 +39,10 @@ public class LoginFragment extends Fragment {
     private EditText mobileInput, passwordInput;
     private Button loginBtn;
     private String firebaseToken;
+    public static AppPreference appPreference;
+
+
+
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -48,8 +53,12 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (MainActivity.appPreference.getLoginStatus()){
-            User u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        appPreference = new AppPreference(getContext());
+
+
+
+        if (appPreference.getLoginStatus()){
+            User u = appPreference.getUserObject(getContext(),getActivity());
             loginFromActivityListener.login(u);
         }
 
@@ -104,13 +113,13 @@ public class LoginFragment extends Fragment {
         String Password = passwordInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(mobile_number)){
-            MainActivity.appPreference.showToast("Your email is required.");
+            appPreference.showToast("Your email is required.");
         } else if (mobile_number.length() != 11) {
-            MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
+            appPreference.showToast("Please Enter Correct Mobile Number");
         } else if (TextUtils.isEmpty(Password)){
-            MainActivity.appPreference.showToast("Password required");
+            appPreference.showToast("Password required");
         } else if (Password.length() < 6){
-            MainActivity.appPreference.showToast("Password  may be at least 6 characters long.");
+            appPreference.showToast("Password  may be at least 6 characters long.");
         } else {
             Utils.showProgressBarSpinner(getContext());
 
@@ -121,14 +130,14 @@ public class LoginFragment extends Fragment {
                     Utils.dismissProgressBarSpinner();
                     if(response.isSuccessful()){
                         if (response.body().getResponse().equals("data")){
-                            MainActivity.appPreference.setLoginStatus(true); // set login status in sharedPreference
-                            MainActivity.appPreference.setUserObject(response.body());
+                            appPreference.setLoginStatus(true); // set login status in sharedPreference
+                            appPreference.setUserObject(response.body());
 
                             loginFromActivityListener.login(response.body());
 //                            Log.e("Login Activity","I'm here");
 
                         } else if (response.body().getResponse().equals("login_failed")){
-                            MainActivity.appPreference.showToast("Sorry! Your Login information is not correct");
+                            appPreference.showToast("Sorry! Your Login information is not correct");
                             passwordInput.setText("");
                         }
                     }else{

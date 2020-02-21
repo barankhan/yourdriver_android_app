@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 
-import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.DriverTransaction;
 import live.yourdriver.driver.Model.User;
@@ -40,12 +40,16 @@ public class TransactionsFragment extends Fragment {
     public static DriverTransactionApi driverTransactionApi;
     private User currentUser;
     private static int page_no=0;
+    public static AppPreference appPreference;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
 //        galleryViewModel =
 //                ViewModelProviders.of(this).get(GalleryViewModel.class);
         View root = inflater.inflate(R.layout.driver_fragment_transactions, container, false);
+        appPreference = new AppPreference(getContext());
+
 //        final TextView textView = root.findViewById(R.id.d_text_gallery);
 //        galleryViewModel.getText().observe(this, new Observer<String>() {
 //            @Override
@@ -57,7 +61,7 @@ public class TransactionsFragment extends Fragment {
 
         driverTransactionApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_DRIVER_TRNSACTIONS).create(DriverTransactionApi.class);
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         recyclerView = (RecyclerView) root.findViewById(R.id.rides_recycler_view);
         manager = new LinearLayoutManager(getContext());

@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Adapters.DriverTransactionAdapter;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
@@ -41,15 +41,17 @@ public class TransactionsFragment extends Fragment {
     public static PassengerTransactionApi passengerTransactionApi;
     private User currentUser;
     private static int page_no=0;
+    public static AppPreference appPreference;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
+        appPreference = new AppPreference(getContext());
         View root = inflater.inflate(R.layout.passenger_fragment_transactions, container, false);
         final TextView textView = root.findViewById(R.id.d_text_gallery);
         passengerTransactionApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_DRIVER_TRNSACTIONS).create(PassengerTransactionApi.class);
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         recyclerView = (RecyclerView) root.findViewById(R.id.rides_recycler_view);
         manager = new LinearLayoutManager(getContext());

@@ -3,6 +3,7 @@ package live.yourdriver.driver.Activity;
 import android.os.Bundle;
 
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Fragments.ChangePasswordFragment;
 import live.yourdriver.driver.Fragments.driver.recharge.RechargeFragment;
 import live.yourdriver.driver.Fragments.driver.tickets.TicketsFragment;
@@ -42,6 +43,8 @@ public class DriverActivity extends AppCompatActivity {
     public static RidesApi ridesApi;
 
     private View headerView;
+    public static AppPreference appPreference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,7 @@ public class DriverActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        appPreference = new AppPreference(this);
 
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
         final DrawerLayout drawer = findViewById(R.id.d_drawer_layout);
@@ -70,7 +74,7 @@ public class DriverActivity extends AppCompatActivity {
             @Override
             public void onDrawerStateChanged(int newState) {
                 if (newState == DrawerLayout.STATE_SETTLING && !drawer.isDrawerOpen(GravityCompat.START)) {
-                    User currentUser  = MainActivity.appPreference.getUserObjectWithoutUserValidation();
+                    User currentUser  = appPreference.getUserObjectWithoutUserValidation();
                     TextView driverBalance = headerView.findViewById(R.id.tv_driver_balance);
                     driverBalance.setText("Balance: "+String.valueOf(currentUser.getBalance()));
                     TextView rating = headerView.findViewById(R.id.tv_acceptance_rating);

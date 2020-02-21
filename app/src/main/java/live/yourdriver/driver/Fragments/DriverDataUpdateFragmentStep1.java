@@ -11,9 +11,12 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
+import live.yourdriver.driver.Services.RetrofitClient;
+import live.yourdriver.driver.Services.ServiceApi;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -52,6 +55,10 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
     public final int PICK_DRIVER_CNIC_REAR = 4;
     public final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 60;
     User current_user;
+    public static AppPreference appPreference;
+    public static ServiceApi serviceApi;
+
+
     public DriverDataUpdateFragmentStep1() {
         // Required empty public constructor
     }
@@ -62,9 +69,11 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_driver_data_update_step_1, container, false);
+        appPreference = new AppPreference(getContext());
+        serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
 
 
-        current_user = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        current_user = appPreference.getUserObject(getContext(),getActivity());
         etDriverName = root.findViewById(R.id.et_driver_name);
         etDriverFather = root.findViewById(R.id.et_driver_father);
         etDriverCNIC = root.findViewById(R.id.et_driver_cnic);
@@ -263,27 +272,27 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
 
 
         if(imDriverPic.getTag(R.id.image_uri).equals("@")){
-            MainActivity.appPreference.showToast("Please select your Picture");
+            appPreference.showToast("Please select your Picture");
         }else if(imDriverCNICRear.getTag(R.id.image_uri).equals("@")){
-            MainActivity.appPreference.showToast("Please select your CNIC Rear Image");
+            appPreference.showToast("Please select your CNIC Rear Image");
         }else if(imDriverCNICFront.getTag(R.id.image_uri).equals("@")){
-            MainActivity.appPreference.showToast("Please select your CNIC Front Image");
+            appPreference.showToast("Please select your CNIC Front Image");
         }else if (TextUtils.isEmpty(name)){
-            MainActivity.appPreference.showToast("Your name is required.");
+            appPreference.showToast("Your name is required.");
         }else if (TextUtils.isEmpty(father)){
-            MainActivity.appPreference.showToast("Your Mobile Number is required.");
+            appPreference.showToast("Your Mobile Number is required.");
         } else if (TextUtils.isEmpty(cnic)){
-            MainActivity.appPreference.showToast("Your email is required.");
+            appPreference.showToast("Your email is required.");
         } else if (cnic.length() != 13){
-            MainActivity.appPreference.showToast("Please Enter Correct CNIC");
+            appPreference.showToast("Please Enter Correct CNIC");
         }
 
 //        else if ( picture_uri.toString()){
-//            MainActivity.appPreference.showToast("Please add your picture");
+//            appPreference.showToast("Please add your picture");
 //        }else if (cnic_front_uri == "@"){
-//            MainActivity.appPreference.showToast("Please add your CNIC Front Image");
+//            appPreference.showToast("Please add your CNIC Front Image");
 //        }else if (cnic_rear_uri == "@"){
-//            MainActivity.appPreference.showToast("Please add your CNIC Rear Image");
+//            appPreference.showToast("Please add your CNIC Rear Image");
 //        }
 
         else {
@@ -337,7 +346,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
 
 
 
-            Call<User> userCall = MainActivity.serviceApi.doDriverRegistrationStep1(pictureToUpload, licenceToUpload, cnicFrontToUpload, cnicRearToUpload, cnicBody, nameBody, fatherBody, mobileBody);
+            Call<User> userCall = serviceApi.doDriverRegistrationStep1(pictureToUpload, licenceToUpload, cnicFrontToUpload, cnicRearToUpload, cnicBody, nameBody, fatherBody, mobileBody);
             userCall.enqueue(new Callback<User>() {
 
 
@@ -347,7 +356,7 @@ public class DriverDataUpdateFragmentStep1 extends Fragment{
                 public void onResponse(Call<User> call, Response<User> response) {
                     Utils.dismissProgressBarSpinner();
                     if(response.body().getResponse().equals("step1_completed")){
-                        MainActivity.appPreference.setUserObject(response.body());
+                        appPreference.setUserObject(response.body());
                         FragmentManager fragmentManager = getFragmentManager();
                         Utils.showAlertBox(getActivity(),"Please enter your vehicle details now.");
                         DriverDataUpdateFragmentStep2 step2 = new DriverDataUpdateFragmentStep2();

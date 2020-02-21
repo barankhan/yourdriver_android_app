@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import retrofit2.Call;
@@ -30,6 +31,7 @@ public class RegistrationVerificationFragment extends Fragment {
     User u;
     TextView tvVerificationTimer,tvMobileNumber;
     private MyInterface registrationFromActivityListener;
+    public static AppPreference appPreference;
 
     public RegistrationVerificationFragment() {
         // Required empty public constructor
@@ -42,7 +44,9 @@ public class RegistrationVerificationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_register_verification, container, false);
-        u = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        appPreference = new AppPreference(getContext());
+
+        u = appPreference.getUserObject(getContext(),getActivity());
 
         verificationButton = view.findViewById(R.id.verificationButton);
         tvVerificationTimer = view.findViewById(R.id.tv_verification_timer);
@@ -66,7 +70,7 @@ public class RegistrationVerificationFragment extends Fragment {
                     public void onResponse(Call<User> call, Response<User> response) {
                         Utils.dismissProgressBarSpinner();
                         runCountDown();
-                        MainActivity.appPreference.setUserObject(response.body());
+                        appPreference.setUserObject(response.body());
                         clearForm();
                     }
 
@@ -94,7 +98,7 @@ public class RegistrationVerificationFragment extends Fragment {
             @Override
             public void onClick(View v) {
                     if(token.getText().length()!=5)
-                        MainActivity.appPreference.showToast("Please Enter 5 digit Verification Code");
+                        appPreference.showToast("Please Enter 5 digit Verification Code");
                     else
                         verifyToken();
             }
@@ -134,8 +138,8 @@ public class RegistrationVerificationFragment extends Fragment {
                 public void onResponse(Call<User> call, Response<User> response) {
                     Utils.dismissProgressBarSpinner();
                         if(response.body().getResponse().equals("verified")){
-                            MainActivity.appPreference.setUserObject(response.body());
-                            MainActivity.appPreference.setLoginStatus(true);
+                            appPreference.setUserObject(response.body());
+                            appPreference.setLoginStatus(true);
                             clearForm();
                             registrationFromActivityListener.loginFragment();
                         }else{

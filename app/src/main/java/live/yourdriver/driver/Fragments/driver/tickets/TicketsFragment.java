@@ -6,9 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 
-import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Adapters.TicketAdapter;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.SupportTicket;
 import live.yourdriver.driver.Model.User;
@@ -44,10 +44,13 @@ public class TicketsFragment extends Fragment {
     public static SupportTicketAPI supportTicketAPI;
     private User currentUser;
     private static int page_no=0;
+    public static AppPreference appPreference;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         page_no =0;
+        appPreference = new AppPreference(getContext());
         supportTickets.clear();
         View root = inflater.inflate(R.layout.driver_fragment_tickets, container, false);
 
@@ -65,7 +68,7 @@ public class TicketsFragment extends Fragment {
 
         supportTicketAPI = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_SUPPORT_TICKETS).create(SupportTicketAPI.class);
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         recyclerView = (RecyclerView) root.findViewById(R.id.tickets_recycler_view);
         manager = new LinearLayoutManager(getContext());

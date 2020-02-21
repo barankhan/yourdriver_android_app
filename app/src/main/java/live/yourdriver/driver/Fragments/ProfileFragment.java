@@ -4,8 +4,12 @@ package live.yourdriver.driver.Fragments;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
+import live.yourdriver.driver.Services.RetrofitClient;
+import live.yourdriver.driver.Services.ServiceApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,6 +33,9 @@ public class ProfileFragment extends Fragment {
     private Button btnUpdateProfile;
     private User currentUser;
 
+    public static AppPreference appPreference;
+    public static ServiceApi serviceApi;
+
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -40,8 +47,10 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
+        appPreference = new AppPreference(getContext());
+        serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         etName = view.findViewById(R.id.et_profile_name);
 
@@ -64,22 +73,22 @@ public class ProfileFragment extends Fragment {
                 String father = etFather.getText().toString();
                 String email = etEmail.getText().toString();
                 if (TextUtils.isEmpty(name)){
-                    MainActivity.appPreference.showToast("Your name is required.");
+                    appPreference.showToast("Your name is required.");
                 }else if (TextUtils.isEmpty(email)){
-                    MainActivity.appPreference.showToast("Your email is required.");
+                    appPreference.showToast("Your email is required.");
                 } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    MainActivity.appPreference.showToast("Invalid email");
+                    appPreference.showToast("Invalid email");
                 }
                 else {
 
-                    Call<User> c = MainActivity.serviceApi.updateProfile(currentUser.getMobile(), name, father, email);
+                    Call<User> c = serviceApi.updateProfile(currentUser.getMobile(), name, father, email);
                     Utils.showProgressBarSpinner(getContext());
                     c.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
                             Utils.dismissProgressBarSpinner();
                             if (response.isSuccessful()) {
-                                MainActivity.appPreference.setUserObject(response.body());
+                                appPreference.setUserObject(response.body());
                                 Utils.showAlertBox(getActivity(), "Profile updated successfully!");
                             } else {
                                 Utils.showAlertBox(getActivity(), "Unable to update data on the server");

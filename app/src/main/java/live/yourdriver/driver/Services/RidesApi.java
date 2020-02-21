@@ -48,7 +48,7 @@ public interface RidesApi {
 
     @FormUrlEncoded
     @POST("end_ride.php")
-    Call <DriverTransaction> endRide(@Field("mobile") String mobile, @Field("ride_id") int ride_id, @Field("distance") Double distance);
+    Call <DriverTransaction> endRide(@Field("mobile") String mobile, @Field("ride_id") int ride_id, @Field("distance") Double distance,@Field("end_lat") String endLat,@Field("end_lng") String endLng);
 
     @FormUrlEncoded
     @POST("transaction_amount_received.php")

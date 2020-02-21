@@ -14,9 +14,13 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.User;
 import live.yourdriver.driver.R;
+import live.yourdriver.driver.Services.RetrofitClient;
+import live.yourdriver.driver.Services.ServiceApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,6 +34,9 @@ public class ChangePasswordFragment extends Fragment {
     Button btnUpdatePassword;
     User u;
     String oldPassword,newPassword,confirmPassword;
+    public static AppPreference appPreference;
+    public static ServiceApi serviceApi;
+
     public ChangePasswordFragment() {
         // Required empty public constructor
     }
@@ -44,8 +51,10 @@ public class ChangePasswordFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root =  inflater.inflate(R.layout.fragment_change_password, container, false);
+        appPreference = new AppPreference(getContext());
+        serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
 
-        u=MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        u=appPreference.getUserObject(getContext(),getActivity());
         etOldPassword = root.findViewById(R.id.et_old_password);
         etNewPassword = root.findViewById(R.id.et_new_password);
         etConfirmPassword = root.findViewById(R.id.et_confirm_password);
@@ -62,15 +71,15 @@ public class ChangePasswordFragment extends Fragment {
                 confirmPassword = etConfirmPassword.getText().toString().trim();
 
                 if (TextUtils.isEmpty(oldPassword)){
-                    MainActivity.appPreference.showToast("Old Password is required");
+                    appPreference.showToast("Old Password is required");
                 } else if (!newPassword.equals(confirmPassword)){
-                    MainActivity.appPreference.showToast("Password and Confirm password doesn't match");
+                    appPreference.showToast("Password and Confirm password doesn't match");
                 }else if (newPassword.length() < 6){
-                    MainActivity.appPreference.showToast("Create a password at least 6 characters long.");
+                    appPreference.showToast("Create a password at least 6 characters long.");
                 }else{
                     Utils.showProgressBarSpinner(getContext());
 
-                    Call<User> userCall = MainActivity.serviceApi.updatePassword(u.getMobile(), oldPassword,newPassword);
+                    Call<User> userCall = serviceApi.updatePassword(u.getMobile(), oldPassword,newPassword);
                     userCall.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {

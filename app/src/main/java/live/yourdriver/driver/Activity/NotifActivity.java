@@ -14,7 +14,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.User;
@@ -26,7 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;;
 
 
-public class NotifActivity extends Activity {
+public class NotifActivity extends AppCompatActivity {
     private Button btnOkay;
     private TextView tvAlertMessage;
     private static Ringtone r=null;
@@ -35,6 +38,8 @@ public class NotifActivity extends Activity {
     private int rideId;
     private static boolean goToLogin=false;
     public static RidesApi ridesApi;
+    public static AppPreference appPreference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +52,9 @@ public class NotifActivity extends Activity {
         imCallStart = findViewById(R.id.im_attend_call);
         imCallEnd = findViewById(R.id.im_end_call);
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
+        appPreference = new AppPreference(this);
+
+
 
         int width = dm.widthPixels;
         int height = dm.heightPixels;
@@ -62,16 +70,16 @@ public class NotifActivity extends Activity {
             }
             if(getIntent().getExtras().containsKey("setPickUpMode")) {
                 if(getIntent().getExtras().getString("setPickUpMode").equals("true")){
-                    MainActivity.appPreference.setIsPickupMode(true);
+                    appPreference.setIsPickupMode(true);
                 }else if(getIntent().getExtras().getString("setPickUpMode").equals("false")){
-                    MainActivity.appPreference.setIsPickupMode(false);
+                    appPreference.setIsPickupMode(false);
                 }
             }
             if(getIntent().getExtras().containsKey("setDropoffMode")) {
                 if(getIntent().getExtras().getString("setDropoffMode").equals("true")){
-                    MainActivity.appPreference.setIsDropoffMode(true);
+                    appPreference.setIsDropoffMode(true);
                 }else if(getIntent().getExtras().getString("setDropoffMode").equals("false")){
-                    MainActivity.appPreference.setIsDropoffMode(false);
+                    appPreference.setIsDropoffMode(false);
                 }
             }
 
@@ -148,7 +156,7 @@ public class NotifActivity extends Activity {
         imCallEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User u = MainActivity.appPreference.getUserObjectWithoutUserValidation();
+                User u = appPreference.getUserObjectWithoutUserValidation();
                 if(u!=null){
                     Call<DriverServerResponse> rejectCall = ridesApi.rejectAgoraCall(u.getMobile(),agoraChannel,rideId);
                     Utils.showProgressBarSpinner(NotifActivity.this);

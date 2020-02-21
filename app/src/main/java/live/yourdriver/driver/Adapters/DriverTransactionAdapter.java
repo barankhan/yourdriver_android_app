@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Fragments.driver.transactions.TransactionDetailsFragment;
 
 
@@ -25,10 +25,14 @@ public class DriverTransactionAdapter extends RecyclerView.Adapter<DriverTransac
 
     private Context context;
     private List<DriverTransaction> transactions;
+    public static AppPreference appPreference;
+
 
     public DriverTransactionAdapter(Context context, List<DriverTransaction> transactions) {
         this.context = context;
         this.transactions = transactions;
+        appPreference = new AppPreference(context);
+
     }
 
     @NonNull
@@ -61,7 +65,7 @@ public class DriverTransactionAdapter extends RecyclerView.Adapter<DriverTransac
 
                 FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
 
-                if(MainActivity.appPreference.getUserObjectWithoutUserValidation().getId()==transaction.getPassengerId()){
+                if(appPreference.getUserObjectWithoutUserValidation().getId()==transaction.getPassengerId()){
                     live.yourdriver.driver.Fragments.passenger.transactions.TransactionDetailsFragment transactionDetailsFragment =
                             new live.yourdriver.driver.Fragments.passenger.transactions.TransactionDetailsFragment();
                     transactionDetailsFragment.setArguments(b);

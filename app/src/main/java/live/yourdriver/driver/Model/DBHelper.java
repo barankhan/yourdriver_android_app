@@ -88,7 +88,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public long insertLocation (String place_id, String primary_text, String secondary_text, String lat,String lng,String title,int is_temp) {
 
 
-        long i =this.findLocationIdWithin50Meters(lat,lng);
+        long i =this.findLocationIdWithin50Meters(lat,lng,LOCATION_TABLE_NAME);
         if(i!=0){
             return i;
         }
@@ -112,7 +112,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public long insertShortLocation (String lat,String lng,String title,int is_temp) {
 
 
-        long i =this.findLocationIdWithin50Meters(lat,lng);
+        long i =this.findLocationIdWithin50Meters(lat,lng,LOCATION_TABLE_NAME);
         if(i!=0){
             return i;
         }
@@ -148,8 +148,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase readableDatabase = this.getReadableDatabase();
         Cursor res =  readableDatabase.rawQuery( "select count(*) as ct from "+ADDRESS_TABLE_NAME, null );
-        if (res != null) {
-            res.moveToFirst();
+        if (res != null && res.moveToFirst()) {
+
             int ct = res.getInt(res.getColumnIndex("ct"));
             if(ct>1000){
                 SQLiteDatabase writableDatabase = this.getWritableDatabase();
@@ -175,8 +175,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from "+LOCATION_TABLE_NAME+" where id="+id+"", null );
 
-        if (res != null) {
-            res.moveToFirst();
+        if (res != null  && res.moveToFirst()) {
+
             int saved_id = res.getInt(res.getColumnIndex(LOCATION_COLUMN_ID));
             int is_temp = res.getInt(res.getColumnIndex(LOCATION_COLUMN_IS_TEMP));
             String title = res.getString(res.getColumnIndex(LOCATION_COLUMN_TITLE));
@@ -310,7 +310,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public long findLocationIdWithin50Meters(String lat,String lng){
+    public long findLocationIdWithin50Meters(String lat,String lng,String table_name){
 
         PointF center = new PointF(Float.valueOf(lat), Float.valueOf(lng));
         final double mult = 1; // mult = 1.1; is more reliable
@@ -322,7 +322,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String strWhere =  " WHERE cast(lat as real) > " + String.valueOf(p3.x) + " AND cast(lat as real) < " + String.valueOf(p1.x) + " AND cast(lng as real)< " + String.valueOf(p2.y) + " AND cast(lng  as real) >" + String.valueOf(p4.y);
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from "+ADDRESS_TABLE_NAME+" "+strWhere+"", null );
+        Cursor res =  db.rawQuery( "select * from "+table_name+" "+strWhere+"", null );
         if (res != null && res.moveToFirst()) {
 
             db.close();

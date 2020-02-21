@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import live.yourdriver.driver.Adapters.SupportMessageAdapter;
 import live.yourdriver.driver.Constants.Constant;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.SupportTicketMessage;
 import live.yourdriver.driver.Model.User;
@@ -39,6 +40,7 @@ public class SupportActivity extends AppCompatActivity {
     int ticketId;
     Button btnSendChat;
     TextView tvSubject;
+    public static AppPreference appPreference;
 
     public static SupportTicketAPI supportTicketAPI;
     private Ringtone r;
@@ -46,8 +48,10 @@ public class SupportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_support);
+        appPreference = new AppPreference(this);
+
         supportTicketAPI = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_SUPPORT_TICKETS).create(SupportTicketAPI.class);
-        currentUser = MainActivity.appPreference.getUserObject(this,this);
+        currentUser = appPreference.getUserObject(this,this);
         tvSubject = findViewById(R.id.tv_subject);
         Set<String> keys = getIntent().getExtras().keySet();
 

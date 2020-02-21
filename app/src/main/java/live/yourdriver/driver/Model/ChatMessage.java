@@ -32,7 +32,9 @@ public class ChatMessage {
     private  String updatedAt;
 
 
-    private int currentUserId = MainActivity.appPreference.getUserObjectWithoutUserValidation().getId();
+
+
+//    private int currentUserId = appPreference.getUserObjectWithoutUserValidation().getId();
 
     boolean isMe;
 

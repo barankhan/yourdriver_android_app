@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Fragments.passenger.home.HomeFragment;
 import live.yourdriver.driver.Model.User;
@@ -43,6 +44,9 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
    TextView tvVehicleFront,tvVehicleRear,tvVehicleRegistration,tvVehicleRoute;
    Button btnSaveStep2;
     User current_user;
+    public static AppPreference appPreference;
+
+
 
     public final int PICK_VEHICLE_ROUTE = 1;
     public final int PICK_VEHICLE_REGISTRATION = 2;
@@ -59,8 +63,9 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root  = inflater.inflate(R.layout.fragment_driver_data_update_step_2, container, false);
+        appPreference = new AppPreference(getContext());
 
-        current_user = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        current_user = appPreference.getUserObject(getContext(),getActivity());
         etRegAlphabets = root.findViewById(R.id.et_vehicle_reg_alphabet);
         etRegYear = root.findViewById(R.id.et_vehicle_reg_year);
         etRegNo = root.findViewById(R.id.et_vehicle_reg_number);
@@ -184,17 +189,17 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
 
 
         if(imVehicleFront.getTag(R.id.image_uri).equals("@")){
-            MainActivity.appPreference.showToast("Please select your Vehicle Front Image");
+            appPreference.showToast("Please select your Vehicle Front Image");
         }else if(imVehicleRear.getTag(R.id.image_uri).equals("@")){
-            MainActivity.appPreference.showToast("Please select your Vehicle Rear Image");
+            appPreference.showToast("Please select your Vehicle Rear Image");
         }else if(imVehicleRegistration.getTag(R.id.image_uri).equals("@")){
-            MainActivity.appPreference.showToast("Please select your Registration Book Image");
+            appPreference.showToast("Please select your Registration Book Image");
         }else if (TextUtils.isEmpty(regAlphabet)){
-            MainActivity.appPreference.showToast("Vehicle Registration Number is required");
+            appPreference.showToast("Vehicle Registration Number is required");
         }else if (TextUtils.isEmpty(regYear)){
-            MainActivity.appPreference.showToast("Vehicle Registration Number is required");
+            appPreference.showToast("Vehicle Registration Number is required");
         } else if (TextUtils.isEmpty(regNumber)) {
-            MainActivity.appPreference.showToast("Vehicle Registration Number is required");
+            appPreference.showToast("Vehicle Registration Number is required");
         }
         else {
             Utils.showProgressBarSpinner(getContext());
@@ -259,7 +264,7 @@ public class DriverDataUpdateFragmentStep2 extends Fragment implements View.OnCl
                 public void onResponse(Call<User> call, Response<User> response) {
                     Utils.dismissProgressBarSpinner();
                     if(response.body().getResponse().equals("step2_completed")){
-                        MainActivity.appPreference.setUserObject(response.body());
+                        appPreference.setUserObject(response.body());
                         Utils.showAlertBox(getActivity(),"Thanks! your account will be activated shortly!");
                         try {
                             FragmentManager fragmentManager = getFragmentManager();

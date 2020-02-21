@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import live.yourdriver.driver.Activity.MainActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Extras.Utils;
 import live.yourdriver.driver.Model.DriverServerResponse;
 
@@ -26,6 +27,7 @@ public class ForgetPasswordFragment extends Fragment {
     Button forgotPasswordButton;
     EditText token;
     private MyInterface registrationFromActivityListener;
+    public static AppPreference appPreference;
 
     public ForgetPasswordFragment() {
         // Required empty public constructor
@@ -36,6 +38,8 @@ public class ForgetPasswordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        appPreference = new AppPreference(getContext());
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
         forgotPasswordButton = view.findViewById(R.id.bt_forgot_password);
@@ -48,7 +52,7 @@ public class ForgetPasswordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                     if(token.getText().length()!=11)
-                        MainActivity.appPreference.showToast("Please Enter Valid Mobile Number");
+                        appPreference.showToast("Please Enter Valid Mobile Number");
                     else
                         getPassword();
             }
@@ -76,7 +80,7 @@ public class ForgetPasswordFragment extends Fragment {
         String Mobi = token.getText().toString().trim();
 
         if (Mobi.length() != 11) {
-            MainActivity.appPreference.showToast("Please Enter Correct Mobile Number");
+            appPreference.showToast("Please Enter Correct Mobile Number");
         } else {
             Utils.showProgressBarSpinner(getContext());
             Call<DriverServerResponse> userCall = MainActivity.serviceApi.doSendPasswordViaSMS(Mobi);
@@ -85,7 +89,7 @@ public class ForgetPasswordFragment extends Fragment {
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
                     Utils.dismissProgressBarSpinner();
                     if (response.body().getResponse().equals("sms_sent")) {
-                        MainActivity.appPreference.showToast("Please check your SMS");
+                        appPreference.showToast("Please check your SMS");
                         registrationFromActivityListener.loginFragment();
 
                     } else {
@@ -96,7 +100,7 @@ public class ForgetPasswordFragment extends Fragment {
                 @Override
                 public void onFailure(Call<DriverServerResponse> call, Throwable t) {
                     Utils.dismissProgressBarSpinner();
-                    MainActivity.appPreference.showToast("There is some error We can't communicate with Server");
+                    appPreference.showToast("There is some error We can't communicate with Server");
                 }
             });
 

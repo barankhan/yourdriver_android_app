@@ -2,6 +2,7 @@ package live.yourdriver.driver.Activity;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.Ride;
 import live.yourdriver.driver.Model.User;
@@ -38,6 +39,7 @@ import static live.yourdriver.driver.Extras.Utils.showAlertBoxThenFinish;
 
 public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     public static RidesApi ridesApi;
+    public static AppPreference appPreference;
     private GoogleMap mMap;
     private MapView mv;
     double lat=0;
@@ -50,6 +52,8 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
     CountDownTimer timer;
     private static MediaPlayer mediaPlayer;
     boolean rejectAlert = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +67,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
 
         );
 
-
+        appPreference = new AppPreference(this);
 
         countDown = findViewById(R.id.tv_count_down);
         progressBar = findViewById(R.id.progressBar3);
@@ -71,7 +75,7 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
         progressBar.setMax(15);
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
 
-        currentUser  = MainActivity.appPreference.getUserObject(this,this);
+        currentUser  = appPreference.getUserObject(this,this);
 
         btnAcceptRide = findViewById(R.id.btn_accept_ride);
         btnRejectRide = findViewById(R.id.btn_reject_ride);
@@ -132,15 +136,15 @@ public class RideAlertActivity extends AppCompatActivity implements OnMapReadyCa
             timer.cancel();
             mediaPlayer.stop();
             Utils.showProgressBarSpinner(this);
-            Call<UserRide> userCall = this.ridesApi.acceptRide(currentUser.getMobile(), getIntent().getExtras().getString("ride_id"),MainActivity.appPreference.getLat(),MainActivity.appPreference.getLng());
+            Call<UserRide> userCall = this.ridesApi.acceptRide(currentUser.getMobile(), getIntent().getExtras().getString("ride_id"),appPreference.getLat(),appPreference.getLng());
             userCall.enqueue(new Callback<UserRide>() {
                 @Override
                 public void onResponse(Call<UserRide> call, Response<UserRide> response) {
                     Utils.dismissProgressBarSpinner();
                     if (response.isSuccessful()) {
                         if (response.body().getResponse().equals("you_got_it")) {
-                            MainActivity.appPreference.setRideObject(response.body().getRide());
-                            MainActivity.appPreference.setPassengerObject(response.body().getUser());
+                            appPreference.setRideObject(response.body().getRide());
+                            appPreference.setPassengerObject(response.body().getUser());
                             finish();
                         } else {
                             showAlertBoxThenFinish(RideAlertActivity.this, "Sorry! Someone else got it.");

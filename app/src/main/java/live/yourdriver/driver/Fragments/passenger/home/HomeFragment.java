@@ -172,6 +172,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     private static boolean pickupLocationSelected = false;
 
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -179,7 +180,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         pickupAddress = "Please Select Pickup Location";
         dropoffAddress = "Please Select Dropoff Location";
 
-        appPreference = MainActivity.appPreference;
+        appPreference = new AppPreference(getContext());
         stack = new ArrayDeque<String>();
 
         if (!Places.isInitialized()) {
@@ -189,9 +190,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
 
 
-        MainActivity.appPreference.setIsPickupMode(true);
-        MainActivity.appPreference.setIsDropoffMode(false);
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        appPreference.setIsPickupMode(true);
+        appPreference.setIsDropoffMode(false);
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
 
         View root = inflater.inflate(R.layout.passenger_fragment_home, container, false);
 
@@ -379,11 +380,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                             Utils.dismissProgressBarSpinner();
                                 if(response.body().getResponse().equals("no_driver_found")){
                                     showAlertBox(getActivity(),response.body().getMessage());
-                                    MainActivity.appPreference.setIsPickupMode(true);
-                                    MainActivity.appPreference.setIsDropoffMode(false);
+                                    appPreference.setIsPickupMode(true);
+                                    appPreference.setIsDropoffMode(false);
                                     initialState();
                                 }else if(response.body().getResponse().equals("alert_sent_to_driver")){
-                                    MainActivity.appPreference.setRideObject(response.body());
+                                    appPreference.setRideObject(response.body());
                                     Intent intent = new Intent(getContext(), NotifActivity.class);
                                     intent.putExtra("message", "Finding Driver For you.");
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -631,10 +632,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     @Override
     public void onPause() {
         super.onPause();
-//        Log.e("In On Pause",String.valueOf(MainActivity.appPreference.getIsPickupMode()));
-        MainActivity.appPreference.setIsPickupMode(isPickupMode);
-//        Log.e("In On Pause2",String.valueOf(MainActivity.appPreference.getIsPickupMode()));
-        MainActivity.appPreference.setIsDropoffMode(isDropOffMode);
+        appPreference.setIsPickupMode(isPickupMode);
+        appPreference.setIsDropoffMode(isDropOffMode);
 
     }
 
@@ -757,7 +756,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
 
 
-        currentUser = MainActivity.appPreference.getUserObject(getContext(),getActivity());
+        currentUser = appPreference.getUserObject(getContext(),getActivity());
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -767,8 +766,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             }
         });
 
-        isPickupMode = MainActivity.appPreference.getIsPickupMode();
-        isDropOffMode = MainActivity.appPreference.getIsDropoffMode();
+        isPickupMode = appPreference.getIsPickupMode();
+        isDropOffMode = appPreference.getIsDropoffMode();
 
 //        Log.e("In Reusme",String.valueOf(isPickupMode));
 
@@ -835,7 +834,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 ratingLayout.setVisibility(View.GONE);
             }
 
-        }else if(!MainActivity.appPreference.getIsDropoffMode() && MainActivity.appPreference.getIsPickupMode() ){
+        }else if(!appPreference.getIsDropoffMode() && appPreference.getIsPickupMode() ){
             initialState();
             if(!pickupLocationSelected){
                 getDeviceLocation();
@@ -1149,7 +1148,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         }
 
 
-        Ride r = MainActivity.appPreference.getRideObject();
+        Ride r = appPreference.getRideObject();
         if(r!=null){
             vehicleMaker.setVisible(true);
         }
@@ -1281,11 +1280,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                             public void onResponse(Call<UserRide> call, Response<UserRide> response) {
                                 Utils.dismissProgressBarSpinner();
                                 if(response.isSuccessful()){
-                                    MainActivity.appPreference.setUserObject(response.body().getUser());
-                                    MainActivity.appPreference.setDriverObject(null);
-                                    MainActivity.appPreference.setRideObject(null);
-                                    MainActivity.appPreference.setIsDropoffMode(false);
-                                    MainActivity.appPreference.setIsPickupMode(true);
+                                    appPreference.setUserObject(response.body().getUser());
+                                    appPreference.setDriverObject(null);
+                                    appPreference.setRideObject(null);
+                                    appPreference.setIsDropoffMode(false);
+                                    appPreference.setIsPickupMode(true);
                                     initialState();
                                 }else{
 
@@ -1347,8 +1346,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
                             Utils.dismissProgressBarSpinner();
                             if(response.isSuccessful()){
-                                MainActivity.appPreference.setRideObject(null);
-                                MainActivity.appPreference.setDriverObject(null);
+                                appPreference.setRideObject(null);
+                                appPreference.setDriverObject(null);
                                 Intent intent = new Intent(getContext(), NotifActivity.class);
                                 intent.putExtra("setPickUpMode", "true");
                                 intent.putExtra("setDropoffMode", "false");
@@ -1417,8 +1416,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         btnConfirmDropOff.setVisibility(View.GONE);
         tvDriverMobileNo.setVisibility(View.GONE);
 
-        isPickupMode = MainActivity.appPreference.getIsPickupMode();
-        isDropOffMode = MainActivity.appPreference.getIsDropoffMode();
+        isPickupMode = appPreference.getIsPickupMode();
+        isDropOffMode = appPreference.getIsDropoffMode();
 
 
 
