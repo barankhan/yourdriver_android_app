@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import live.yourdriver.driver.Activity.ChatActivity;
 import live.yourdriver.driver.Activity.DriverActivity;
 import live.yourdriver.driver.Activity.DriverTransactionActivity;
-import live.yourdriver.driver.Activity.MainActivity;
 import live.yourdriver.driver.Activity.VoiceChatViewActivity;
 //import live.yourdriver.driver.BuildConfig;
 import live.yourdriver.driver.BuildConfig;
@@ -87,6 +86,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import live.yourdriver.driver.Services.ServiceApi;
 import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -104,7 +104,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     private final int RIDE_ALERT_REQUEST_CODE = 10001;
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = DriverActivity.class.getSimpleName();
 
     CameraPosition cameraPosition ;
     /**
@@ -211,6 +211,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     public static AppPreference appPreference;
 
+    public static ServiceApi serviceApi;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -227,6 +228,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         );
 
         appPreference = new AppPreference(getContext());
+        serviceApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_USERS_API).create(ServiceApi.class);
 //
          mNavigationView = getActivity().findViewById(R.id.d_nav_view);
         headerView = mNavigationView.getHeaderView(0);
@@ -359,7 +361,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Utils.showProgressBarSpinner(getContext());
-                            Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
+                            Call<User> userCall = serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
 
                             userCall.enqueue(new Callback<User>() {
                                 @Override
@@ -404,7 +406,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Utils.showProgressBarSpinner(getContext());
-                    Call<User> userCall = MainActivity.serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
+                    Call<User> userCall = serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
                     userCall.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
@@ -814,7 +816,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
 
-            Call<DriverServerResponse> userCall = MainActivity.serviceApi.doUpdateLatLong(currentUser.getMobile(),currentLocation.getLatitude(),currentLocation.getLongitude(),ride_id,passenger_id);
+            Call<DriverServerResponse> userCall = serviceApi.doUpdateLatLong(currentUser.getMobile(),currentLocation.getLatitude(),currentLocation.getLongitude(),ride_id,passenger_id);
             userCall.enqueue(new Callback<DriverServerResponse>() {
                 @Override
                 public void onResponse(Call<DriverServerResponse> call, Response<DriverServerResponse> response) {
