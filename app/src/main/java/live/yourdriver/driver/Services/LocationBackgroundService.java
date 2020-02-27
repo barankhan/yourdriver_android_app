@@ -3,6 +3,7 @@ package live.yourdriver.driver.Services;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import live.yourdriver.driver.Activity.DriverActivity;
 import live.yourdriver.driver.R;
 
 import androidx.core.app.NotificationCompat;
@@ -80,7 +82,7 @@ public class LocationBackgroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         super.onStartCommand(intent, flags, startId);
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
@@ -137,7 +139,14 @@ public class LocationBackgroundService extends Service {
             NotificationChannel channel = new NotificationChannel("channel_01", "My Channel", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
-            Notification.Builder builder = new Notification.Builder(getApplicationContext(), "channel_01").setAutoCancel(false).setSmallIcon(R.drawable.ic_driver_notification_icon).setContentText("Your are Online!");
+            Notification.Builder builder = new Notification.Builder(getApplicationContext(), "channel_01").setAutoCancel(false).setSmallIcon(R.drawable.ic_driver_notification_icon).setContentText("Your are Online!").setOngoing(true);
+
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, DriverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+            builder.setContentIntent(contentIntent);
+
+
             notification = builder.build();
         } else {
 
@@ -145,9 +154,13 @@ public class LocationBackgroundService extends Service {
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText("You are online!")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(false);
+                    .setAutoCancel(false).setOngoing(true);
 
-             notification = builder.build();
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                    new Intent(this, DriverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+
+            builder.setContentIntent(contentIntent);
+            notification = builder.build();
         }
        return  notification;
     }

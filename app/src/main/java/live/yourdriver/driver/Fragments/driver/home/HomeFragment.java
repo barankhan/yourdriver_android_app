@@ -339,6 +339,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
 
+
         return root;
     }
 
@@ -474,14 +475,25 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onStop() {
         super.onStop();
-
+        if(appPreference.getUserObjectWithoutUserValidation().getIsDriverOnline()==1)
+            getContext().startService(new Intent(getContext(), ChatHeadService.class));
     }
 
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
 
     @Override
     public void onResume(){
         super.onResume();
+
+        if(ChatHeadService.running)
+            getContext().stopService(new Intent(getContext(), ChatHeadService.class));
+
+
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
@@ -1188,14 +1200,13 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             case R.id.btn_navigation:
 
                 if(r.getIsDriverArrived()==0){
-                    getContext().startService(new Intent(getContext(), ChatHeadService.class));
+
                     Uri gmmIntentUri;
                     gmmIntentUri = Uri.parse("google.navigation:q="+r.getPickupLat()+","+r.getPickupLng()+"&mode=d");
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                     mapIntent.setPackage("com.google.android.apps.maps");
                     startActivity(mapIntent);
                 }else if(r.getIsDriverArrived()==1 && r.getDropoffLat()>0 && r.getDropoffLng() > 0){
-                    getContext().startService(new Intent(getContext(), ChatHeadService.class));
                     Uri gmmIntentUri;
                     gmmIntentUri = Uri.parse("google.navigation:q="+r.getDropoffLat()+","+r.getDropoffLng()+"&mode=d");
                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);

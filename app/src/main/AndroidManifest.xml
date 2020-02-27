@@ -75,7 +75,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name="live.yourdriver.driver.Services.LocationBackgroundService" />
+        <service android:name="live.yourdriver.driver.Services.LocationBackgroundService"
+            android:launchMode="singleTop"
+            android:enabled="true"
+
+            />
 
         <activity
             android:name="live.yourdriver.driver.Activity.DriverActivity"

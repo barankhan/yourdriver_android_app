@@ -1,5 +1,8 @@
 package live.yourdriver.driver.Activity;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import live.yourdriver.driver.Constants.Constant;
@@ -16,6 +19,8 @@ import live.yourdriver.driver.R;;
 import live.yourdriver.driver.Services.RetrofitClient;
 import live.yourdriver.driver.Services.RidesApi;
 
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.MenuItem;
 
 import androidx.core.view.GravityCompat;
@@ -53,6 +58,18 @@ public class DriverActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         appPreference = new AppPreference(this);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent();
+            String packageName = getPackageName();
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + packageName));
+                startActivity(intent);
+            }
+        }
+
 
         ridesApi = RetrofitClient.getApiClient(Constant.baseUrl.BASE_URL_RIDES_API).create(RidesApi.class);
         final DrawerLayout drawer = findViewById(R.id.d_drawer_layout);
