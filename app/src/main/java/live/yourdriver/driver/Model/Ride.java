@@ -89,6 +89,18 @@ public class Ride {
     private  String dropoffAddress;
 
 
+    @SerializedName("arrivalCode")
+    private  int arrivalCode;
+
+
+    public int getArrivalCode() {
+        return arrivalCode;
+    }
+
+    public void setArrivalCode(int arrivalCode) {
+        this.arrivalCode = arrivalCode;
+    }
+
     public String getPickupAddress() {
         return pickupAddress;
     }

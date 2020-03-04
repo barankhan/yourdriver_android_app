@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import live.yourdriver.driver.Activity.ChatActivity;
 import live.yourdriver.driver.Activity.DriverActivity;
 import live.yourdriver.driver.Activity.DriverTransactionActivity;
@@ -74,6 +75,7 @@ import com.squareup.picasso.Picasso;
 
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,7 +89,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import live.yourdriver.driver.Services.ServiceApi;
-import okhttp3.internal.Util;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -100,6 +101,7 @@ import static androidx.core.content.ContextCompat.checkSelfPermission;
 public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback, View.OnClickListener, GoogleMap.OnCameraMoveListener {
 
 
+    private ConstraintLayout notArrivedLayout;
     public LocationBackgroundService gpsService;
 
     private final int RIDE_ALERT_REQUEST_CODE = 10001;
@@ -197,7 +199,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     Intent serviceIntent;
     IntentFilter intentFilter,intentFilter1;
     private static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
-    Button btnDriverArrived,btnCancelRide,btnStartRide,btnEndRide,btnNavigation;
+    Button btnDriverArrived,btnCancelRide,btnStartRide,btnEndRide,btnNavigation,btnArrivalCodeOk,btnArrivalCodeCancel,btnArrivalCodeResend;
+    EditText etArrivedCode;
     private Marker pickUpMarker=null, dropOffMarker=null;
 
     private NavigationView mNavigationView;
@@ -244,6 +247,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
 
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.driver_map);
+
+
+        notArrivedLayout = root.findViewById(R.id.notArrivedLayout);
+
+        btnArrivalCodeOk = root.findViewById(R.id.btn_arrived_ok);
+        btnArrivalCodeCancel = root.findViewById(R.id.btn_arrived_cancel);
+        btnArrivalCodeResend = root.findViewById(R.id.btn_arrived_resend);
+        etArrivedCode = root.findViewById(R.id.et_arrived_code);
+
+        btnArrivalCodeOk.setOnClickListener(this);
+        btnArrivalCodeCancel.setOnClickListener(this);
+        btnArrivalCodeResend.setOnClickListener(this);
+
 
         imCallPassenger = root.findViewById(R.id.im_call_passenger);
         tvPassengerName = root.findViewById(R.id.tv_passenger_name);
@@ -475,8 +491,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onStop() {
         super.onStop();
-        if(appPreference.getUserObjectWithoutUserValidation().getIsDriverOnline()==1)
-            getContext().startService(new Intent(getContext(), ChatHeadService.class));
+        User u = appPreference.getUserObject(getContext(),getActivity());
+        if(u!=null) {
+            if (appPreference.getUserObject(getContext(), getActivity()).getIsDriverOnline() == 1)
+                getContext().startService(new Intent(getContext(), ChatHeadService.class));
+        }
     }
 
 
@@ -545,11 +564,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 imMessagePassenger.setVisibility(View.VISIBLE);
             }
 
-            showArrivedButtons(r, currentLocation);
-            showEndRideButton(r);
-            showStartRideButton(r);
+//            showArrivedButtons(r, currentLocation);
+//            showEndRideButton(r);
+//            showStartRideButton(r);
 
-
+            showArrivedStartEndRideButtons(r);
 
 
 
@@ -681,14 +700,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         if(dropOffMarker==null) {
             dropOffMarker = mMap.addMarker(new MarkerOptions()
                     .position(mDefaultLocation)
-                    .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_drop_off_locatin_marker)));
+                    .draggable(true));
             dropOffMarker.setVisible(false);
         }
 
         if(pickUpMarker==null){
             pickUpMarker = mMap.addMarker(new MarkerOptions()
                     .position(mDefaultLocation)
-                    .draggable(true).icon(Utils.getBitmapFromVector(getContext(), R.drawable.ic_locatin_marker)));
+                    .draggable(true));
             pickUpMarker.setVisible(false);
         }
 
@@ -797,7 +816,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     startPoint.setLongitude(r.getDropoffLng());
                     distance = startPoint.distanceTo(currentLocation);
                 }
-                showArrivedButtonsWithDistance(r,distance);
+//                showArrivedButtonsWithDistance(r,distance);
                 if (r.getIsRideStarted()==1){
                     DBHelper dbHelper;
                     dbHelper = new DBHelper(getContext());
@@ -860,26 +879,26 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         startPoint.setLongitude(r.getPickupLng());
         double distance=startPoint.distanceTo(currentLocation);
         if(distance<=200 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
-            btnDriverArrived.setVisibility(View.VISIBLE);
+           // btnDriverArrived.setVisibility(View.VISIBLE);
             if(r.getDropoffLat()!=null && dropOffMarker!=null){
-                dropOffMarker.setVisible(true);
+
             }
 
 
         }else{
-            btnDriverArrived.setVisibility(View.INVISIBLE);
+           // btnDriverArrived.setVisibility(View.INVISIBLE);
         }
     }
 
 
     private void showArrivedButtonsWithDistance(Ride r,Double distance){
         if(distance<=200 && r.getIsRideStarted()==0 && r.getIsDriverArrived()==0){
-            btnDriverArrived.setVisibility(View.VISIBLE);
+            //btnDriverArrived.setVisibility(View.VISIBLE);
             if(r.getDropoffLat()!=null && dropOffMarker!=null){
                 dropOffMarker.setVisible(true);
             }
         }else{
-            btnDriverArrived.setVisibility(View.INVISIBLE);
+            //btnDriverArrived.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -904,6 +923,29 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             btnCancelRide.setVisibility(View.VISIBLE);
             btnDriverArrived.setVisibility(View.INVISIBLE);
             btnEndRide.setVisibility(View.GONE);
+        }
+    }
+
+
+    private void showArrivedStartEndRideButtons(Ride r){
+        if(r.getIsRideStarted()==1 && r.getIsDriverArrived()==1){
+            btnEndRide.setVisibility(View.VISIBLE);
+            imCallPassenger.setVisibility(View.GONE);
+            btnStartRide.setVisibility(View.GONE);
+            btnCancelRide.setVisibility(View.GONE);
+            btnDriverArrived.setVisibility(View.GONE);
+            btnEndRide.setVisibility(View.VISIBLE);
+            if(dropOffMarker!=null) dropOffMarker.setVisible(true);
+        }else if(r.getIsRideStarted()==0 && r.getIsDriverArrived()==1){
+            if(dropOffMarker!=null) dropOffMarker.setVisible(true);
+            btnEndRide.setVisibility(View.GONE);
+            imCallPassenger.setVisibility(View.VISIBLE);
+            btnStartRide.setVisibility(View.VISIBLE);
+            btnCancelRide.setVisibility(View.VISIBLE);
+            btnDriverArrived.setVisibility(View.INVISIBLE);
+            btnEndRide.setVisibility(View.GONE);
+        }else{
+            btnDriverArrived.setVisibility(View.VISIBLE);
         }
     }
 
@@ -1012,31 +1054,71 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 AlertDialog d =builder.setTitle("Are you arrived?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Call<Ride> userCall = DriverActivity.ridesApi.driverArrived(u.getMobile(),r.getId());
-                        Utils.showProgressBarSpinner(getContext());
-                        userCall.enqueue(new Callback<Ride>() {
-                            @Override
-                            public void onResponse(Call<Ride> call, Response<Ride> response) {
-                                Utils.dismissProgressBarSpinner();
-                                if(response.isSuccessful()){
-                                    if(response.body().getResponse().equals("driver_arrived")){
-                                        appPreference.setRideObject(response.body());
-                                        btnDriverArrived.setVisibility(View.INVISIBLE);
-                                        btnStartRide.setVisibility(View.VISIBLE);
-                                        navigationButtonVisibility(response.body());
-                                    }else{
-                                        Utils.showAlertBox(getActivity(),"Ride has been cancelled by the User!.");
-                                        initialState();
+
+                        Location startPoint=new Location("pickup_location");
+                        startPoint.setLatitude(r.getPickupLat());
+                        startPoint.setLongitude(r.getPickupLng());
+                        Location currentLocation = new Location("current_location");
+                        currentLocation.setLatitude(Double.valueOf(appPreference.getLat()));
+                        currentLocation.setLongitude(Double.valueOf(appPreference.getLng()));
+                        double distance = startPoint.distanceTo(currentLocation);
+
+                        if(distance<=100) {
+                            Call<Ride> userCall = DriverActivity.ridesApi.driverArrived(u.getMobile(), r.getId());
+                            Utils.showProgressBarSpinner(getContext());
+                            userCall.enqueue(new Callback<Ride>() {
+                                @Override
+                                public void onResponse(Call<Ride> call, Response<Ride> response) {
+                                    Utils.dismissProgressBarSpinner();
+                                    if (response.isSuccessful()) {
+                                        if (response.body().getResponse().equals("driver_arrived")) {
+                                            appPreference.setRideObject(response.body());
+                                            btnDriverArrived.setVisibility(View.INVISIBLE);
+                                            btnStartRide.setVisibility(View.VISIBLE);
+                                            navigationButtonVisibility(response.body());
+                                        } else {
+                                            Utils.showAlertBox(getActivity(), "Ride has been cancelled by the User!.");
+                                            initialState();
+                                        }
+
                                     }
-
                                 }
-                            }
 
-                            @Override
-                            public void onFailure(Call<Ride> call, Throwable t) {
-                                Utils.dismissProgressBarSpinner();
-                            }
-                        });
+                                @Override
+                                public void onFailure(Call<Ride> call, Throwable t) {
+                                    Utils.dismissProgressBarSpinner();
+                                }
+                            });
+                        }else{
+
+                            Call<Ride> userCall = DriverActivity.ridesApi.getArrivalCode(u.getMobile(), r.getId());
+                            Utils.showProgressBarSpinner(getContext());
+                            userCall.enqueue(new Callback<Ride>() {
+                                @Override
+                                public void onResponse(Call<Ride> call, Response<Ride> response) {
+                                    Utils.dismissProgressBarSpinner();
+                                    if (response.isSuccessful()) {
+                                        if (response.body().getResponse().equals("code_sent")) {
+                                            appPreference.setRideObject(response.body());
+                                            notArrivedLayout.setVisibility(View.VISIBLE);
+                                        } else {
+                                            Utils.showAlertBox(getActivity(), "دوبارہ کوشش کریں");
+
+                                        }
+
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Ride> call, Throwable t) {
+                                    Utils.dismissProgressBarSpinner();
+                                    Utils.showAlertBox(getActivity(), "سرور میں کچھ مسئلہ ہے.دوبارہ کوشش کریں");
+                                }
+                            });
+
+
+
+                        }
                     }
                 }).setNegativeButton(R.string.no,null).create();
 
@@ -1260,6 +1342,77 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
+                break;
+
+
+            case R.id.btn_arrived_ok:
+
+                if(r.getArrivalCode()==Integer.valueOf(etArrivedCode.getText().toString())){
+                    Call<Ride> userCall = DriverActivity.ridesApi.driverArrived(u.getMobile(), r.getId());
+                    Utils.showProgressBarSpinner(getContext());
+                    userCall.enqueue(new Callback<Ride>() {
+                        @Override
+                        public void onResponse(Call<Ride> call, Response<Ride> response) {
+                            Utils.dismissProgressBarSpinner();
+                            if (response.isSuccessful()) {
+                                if (response.body().getResponse().equals("driver_arrived")) {
+                                    etArrivedCode.setText("");
+                                    appPreference.setRideObject(response.body());
+                                    btnDriverArrived.setVisibility(View.INVISIBLE);
+                                    btnStartRide.setVisibility(View.VISIBLE);
+                                    navigationButtonVisibility(response.body());
+                                    notArrivedLayout.setVisibility(View.INVISIBLE);
+                                } else {
+                                    Utils.showAlertBox(getActivity(), "Ride has been cancelled by the User!.");
+                                    initialState();
+                                }
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Ride> call, Throwable t) {
+                            Utils.dismissProgressBarSpinner();
+                        }
+                    });
+                }else{
+                    Utils.showAlertBox(getActivity(), "آپ کا کوڈ درست نہیں ہے۔ دوبارہ کوشش کریں.");
+                }
+
+
+
+
+                break;
+
+            case R.id.btn_arrived_cancel:
+                notArrivedLayout.setVisibility(View.INVISIBLE);
+                break;
+
+            case R.id.btn_arrived_resend:
+                Call<Ride> userCall = DriverActivity.ridesApi.getArrivalCode(u.getMobile(), r.getId());
+                Utils.showProgressBarSpinner(getContext());
+                userCall.enqueue(new Callback<Ride>() {
+                    @Override
+                    public void onResponse(Call<Ride> call, Response<Ride> response) {
+                        Utils.dismissProgressBarSpinner();
+                        if (response.isSuccessful()) {
+                            if (response.body().getResponse().equals("code_sent")) {
+                                appPreference.setRideObject(response.body());
+                                notArrivedLayout.setVisibility(View.VISIBLE);
+                            } else {
+                                Utils.showAlertBox(getActivity(), "دوبارہ کوشش کریں");
+
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Ride> call, Throwable t) {
+                        Utils.dismissProgressBarSpinner();
+                        Utils.showAlertBox(getActivity(), "سرور میں کچھ مسئلہ ہے.دوبارہ کوشش کریں");
+                    }
+                });
                 break;
 
         }
