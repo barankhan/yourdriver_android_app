@@ -5,6 +5,7 @@ import live.yourdriver.driver.Model.DriverServerResponse;
 import live.yourdriver.driver.Model.ExpectedFare;
 import live.yourdriver.driver.Model.Ride;
 import live.yourdriver.driver.Model.DriverTransaction;
+import live.yourdriver.driver.Model.RideAlert;
 import live.yourdriver.driver.Model.UserRide;
 import live.yourdriver.driver.Model.UserTransaction;
 
@@ -92,5 +93,11 @@ public interface RidesApi {
     @FormUrlEncoded
     @POST("arrival_code.php")
     Call <Ride> getArrivalCode(@Field("mobile") String mobile,@Field("ride_id") int ride_id);
+
+
+
+    @FormUrlEncoded
+    @POST("ride_alerts.php")
+    Call <List<RideAlert>> getRideAlerts(@Field("driver_id") int   DriverID, @Field("page_no") int pageNo);
 
 }

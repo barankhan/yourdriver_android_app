@@ -50,6 +50,20 @@
         android:hint="Password"
         android:inputType="numberPassword" />
 
+    <TextView
+        android:id="@+id/textView43"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Referral Code (if any)" />
+
+    <EditText
+        android:id="@+id/et_ref_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Referral Code"
+        android:inputType="textPersonName" />
+
     <Button
         android:id="@+id/regBtn"
         android:layout_marginTop="30dp"

@@ -14,7 +14,7 @@ import retrofit2.http.Part;
 public interface ServiceApi {
     @FormUrlEncoded
     @POST("register.php")
-    Call<User> doRegistration(@Field("name") String name, @Field("email") String email, @Field("mobile") String mobile, @Field("password") String password, @Field("firebaseToken") String firebaseToken);
+    Call<User> doRegistration(@Field("name") String name, @Field("email") String email, @Field("mobile") String mobile, @Field("password") String password, @Field("firebaseToken") String firebaseToken,@Field("ref_code") String refCode);
 
     @FormUrlEncoded
     @POST("login.php")

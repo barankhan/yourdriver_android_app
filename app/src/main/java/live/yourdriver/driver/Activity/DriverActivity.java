@@ -8,6 +8,8 @@ import android.os.Bundle;
 import live.yourdriver.driver.Constants.Constant;
 import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Fragments.ChangePasswordFragment;
+import live.yourdriver.driver.Fragments.driver.alerts.RideAlertsFragment;
+import live.yourdriver.driver.Fragments.driver.dashboard.DashboardFragment;
 import live.yourdriver.driver.Fragments.driver.recharge.RechargeFragment;
 import live.yourdriver.driver.Fragments.driver.tickets.TicketsFragment;
 import live.yourdriver.driver.Fragments.driver.transactions.TransactionsFragment;
@@ -139,6 +141,12 @@ public class DriverActivity extends AppCompatActivity {
                 break;
             case R.id.d_nav_password:
                 fragmentClass = ChangePasswordFragment.class;
+                break;
+            case R.id.d_nav_ride_alert:
+                fragmentClass = RideAlertsFragment.class;
+                break;
+            case R.id.d_nav_dash:
+                fragmentClass = DashboardFragment.class;
                 break;
 //            case R.id.d_switch_to_passenger:
 //                fragmentClass = null;

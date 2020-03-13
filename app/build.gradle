@@ -16,8 +16,8 @@ android {
         applicationId 'live.yourdriver.app'
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 16
-        versionName '1.0.09'
+        versionCode 17
+        versionName '1.0.10'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

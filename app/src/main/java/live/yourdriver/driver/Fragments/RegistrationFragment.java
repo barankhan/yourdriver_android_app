@@ -41,7 +41,7 @@ public class RegistrationFragment extends Fragment {
     public static AppPreference appPreference;
 
 
-    private EditText nameInput, emailInput, phoneInput, passwordInput;
+    private EditText nameInput, emailInput, phoneInput, passwordInput,referralCode;
     Button regBtn;
 
     private String firebaseToken;
@@ -61,6 +61,8 @@ public class RegistrationFragment extends Fragment {
         emailInput = view.findViewById(R.id.et_login_mobile);
         phoneInput = view.findViewById(R.id.phoneInput);
         passwordInput = view.findViewById(R.id.et_login_pass);
+        referralCode  = view.findViewById(R.id.et_ref_code);
+
         regBtn = view.findViewById(R.id.regBtn);
         regBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +90,7 @@ public class RegistrationFragment extends Fragment {
         final String email = emailInput.getText().toString().trim();
         final String phone = phoneInput.getText().toString().trim();
         final String password = passwordInput.getText().toString().trim();
+        final String refCode = referralCode.getText().toString().trim();
 
         if (TextUtils.isEmpty(name)){
             appPreference.showToast("Your name is required.");
@@ -109,7 +112,7 @@ public class RegistrationFragment extends Fragment {
         else {
             Utils.showProgressBarSpinner(getContext());
 
-            Call<User> userCall = MainActivity.serviceApi.doRegistration(name, email, phone, password,firebaseToken);
+            Call<User> userCall = MainActivity.serviceApi.doRegistration(name, email, phone, password,firebaseToken,refCode);
             userCall.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {

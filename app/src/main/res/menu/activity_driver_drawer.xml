@@ -10,9 +10,19 @@
             android:icon="@drawable/ic_home_blue_24dp"
             android:title="@string/menu_home" />
         <item
+            android:id="@+id/d_nav_dash"
+            android:icon="@drawable/ic_open_text_book_25"
+            android:title="Dashboard" />
+        <item
             android:id="@+id/d_nav_transactions"
             android:icon="@drawable/ic_transaction_24dp"
             android:title="Transactions" />
+
+        <item
+            android:id="@+id/d_nav_ride_alert"
+            android:icon="@drawable/ic_add_alert_bule_24dp"
+            android:title="Ride Alerts" />
+
 <!--        <item-->
 <!--            android:id="@+id/d_nav_slideshow"-->
 <!--            android:icon="@drawable/ic_menu_slideshow"-->
@@ -40,6 +50,9 @@
             android:id="@+id/d_nav_password"
             android:icon="@drawable/ic_menu_manage"
             android:title="Change Password" />
+
+
+
 
 
         <item
