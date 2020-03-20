@@ -138,12 +138,12 @@ public class ChatHeadService extends Service {
                         //to identify if the user clicked the view or not.
                         if (lastAction == MotionEvent.ACTION_DOWN) {
                             //Open the chat conversation click.
-                            Intent intent = new Intent(ChatHeadService.this, DriverActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            //close the service and remove the chat heads
-                            stopSelf();
+//                            Intent intent = new Intent(ChatHeadService.this, DriverActivity.class);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                            startActivity(intent);
+//                            //close the service and remove the chat heads
+//                            stopSelf();
                         }
                         lastAction = event.getAction();
                         return true;

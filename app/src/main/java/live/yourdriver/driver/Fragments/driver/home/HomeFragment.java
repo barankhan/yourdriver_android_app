@@ -18,6 +18,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
@@ -74,6 +75,7 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -491,11 +493,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onStop() {
         super.onStop();
-        User u = appPreference.getUserObject(getContext(),getActivity());
-        if(u!=null) {
-            if (appPreference.getUserObject(getContext(), getActivity()).getIsDriverOnline() == 1)
-                getContext().startService(new Intent(getContext(), ChatHeadService.class));
-        }
+
     }
 
 
@@ -509,8 +507,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     public void onResume(){
         super.onResume();
 
-        if(ChatHeadService.running)
-            getContext().stopService(new Intent(getContext(), ChatHeadService.class));
 
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
@@ -1101,6 +1097,25 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                         if (response.body().getResponse().equals("code_sent")) {
                                             appPreference.setRideObject(response.body());
                                             notArrivedLayout.setVisibility(View.VISIBLE);
+                                            etArrivedCode.setFocusable(true);
+                                            final Handler handler=new Handler();
+                                            handler.postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    etArrivedCode.requestFocus();
+                                                    try{
+                                                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                        imm.showSoftInput(etArrivedCode, InputMethodManager.SHOW_FORCED);
+                                                    }catch (Exception e){
+
+                                                    }
+
+                                                }
+                                            }, 400);
+
+
+
+
                                         } else {
                                             Utils.showAlertBox(getActivity(), "دوبارہ کوشش کریں");
 

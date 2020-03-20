@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/d_nav_home"
         android:name="live.yourdriver.driver.Fragments.driver.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="Driver"
         tools:layout="@layout/driver_fragment_home" />
 
 </navigation>

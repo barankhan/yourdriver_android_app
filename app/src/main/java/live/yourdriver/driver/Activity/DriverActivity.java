@@ -18,6 +18,7 @@ import live.yourdriver.driver.Fragments.passenger.logout.LogoutFragment;
 import live.yourdriver.driver.Model.Ride;
 import live.yourdriver.driver.Model.User;
 import live.yourdriver.driver.R;;
+import live.yourdriver.driver.Services.ChatHeadService;
 import live.yourdriver.driver.Services.RetrofitClient;
 import live.yourdriver.driver.Services.RidesApi;
 
@@ -178,6 +179,24 @@ public class DriverActivity extends AppCompatActivity {
 //        getMenuInflater().inflate(R.menu.driver, menu);
 //        return true;
 //    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        User u = appPreference.getUserObject(this,this);
+        if(u!=null) {
+            if (appPreference.getUserObject(this, this).getIsDriverOnline() == 1)
+                startService(new Intent(this, ChatHeadService.class));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(ChatHeadService.running)
+            stopService(new Intent(this, ChatHeadService.class));
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
