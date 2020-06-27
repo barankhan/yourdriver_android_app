@@ -12,6 +12,7 @@ import live.yourdriver.driver.Fragments.DriverDataUpdateFragmentStep2;
 import live.yourdriver.driver.Fragments.ProfileFragment;
 import live.yourdriver.driver.Fragments.ProfilePictureFragment;
 import live.yourdriver.driver.Fragments.driver.tickets.TicketsFragment;
+import live.yourdriver.driver.Fragments.passenger.dashboard.DashboardFragment;
 import live.yourdriver.driver.Fragments.passenger.transactions.TransactionsFragment;
 import live.yourdriver.driver.Fragments.passenger.home.HomeFragment;
 import live.yourdriver.driver.Fragments.passenger.logout.LogoutFragment;
@@ -191,6 +192,9 @@ public class Passenger extends AppCompatActivity {
                 break;
             case R.id.nav_password:
                 fragmentClass = ChangePasswordFragment.class;
+                break;
+            case R.id.nav_dash:
+                fragmentClass = DashboardFragment.class;
                 break;
         }
 

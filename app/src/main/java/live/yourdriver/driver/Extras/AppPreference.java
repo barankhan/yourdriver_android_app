@@ -206,6 +206,14 @@ public class AppPreference {
     }
 
 
+    // For Lat
+    public void setCityPos(int city){
+        editor.putInt("cityPos", city);
+        editor.commit();
+    }
+    public int getCityPos(){
+        return sharedPreferences.getInt("cityPos", 0);
+    }
 
     public void setIsPickupMode(Boolean mode){
         editor.putBoolean("isPickupMode", mode);

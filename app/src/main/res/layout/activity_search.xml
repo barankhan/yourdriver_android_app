@@ -16,7 +16,7 @@
         android:ems="10"
         android:hint="Search Location"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toStartOf="@+id/pb_search"
+        app:layout_constraintEnd_toStartOf="@+id/spCities"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -89,6 +89,17 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spCities"
+        android:layout_width="155dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="7dp"
+        android:entries="@array/Cities"
+        android:spinnerMode="dialog"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintStart_toEndOf="@+id/et_search_location"
         app:layout_constraintTop_toTopOf="parent" />
 

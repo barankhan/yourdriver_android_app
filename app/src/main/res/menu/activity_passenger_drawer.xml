@@ -10,6 +10,10 @@
             android:icon="@drawable/ic_home_blue_24dp"
             android:title="@string/menu_home" />
         <item
+            android:id="@+id/nav_dash"
+            android:icon="@drawable/ic_open_text_book_25"
+            android:title="Dashboard" />
+        <item
             android:id="@+id/nav_passenger_transactions"
             android:icon="@drawable/ic_transaction_24dp"
             android:title="Transactions" />
@@ -17,10 +21,7 @@
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_account_circle_blue_24dp"
             android:title="Profile" />
-<!--        <item-->
-<!--            android:id="@+id/nav_tools"-->
-<!--            android:icon="@drawable/ic_menu_manage"-->
-<!--            android:title="@string/menu_tools" />-->
+
 <!--        <item-->
 <!--            android:id="@+id/nav_share"-->
 <!--            android:icon="@drawable/ic_menu_share"-->

@@ -2,6 +2,7 @@ package live.yourdriver.driver.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import live.yourdriver.driver.Extras.AppPreference;
 import live.yourdriver.driver.Model.DBHelper;
 
 
@@ -11,10 +12,12 @@ import android.text.TextWatcher;
 
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import live.yourdriver.driver.Extras.LocationDataAdapter;
@@ -49,6 +52,8 @@ public class SearchActivity extends AppCompatActivity  {
     DBHelper mydb;
     PlacesClient placesClient;
     ProgressBar pbSearch;
+    Spinner spCities;
+    public static AppPreference appPreference;
 
     public static boolean generateNewToken=false;
 
@@ -57,11 +62,25 @@ public class SearchActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        appPreference = new AppPreference(this);
         setContentView(R.layout.activity_search);
         mydb = new DBHelper(this);
         List<SavedLocationData> array_list = mydb.getAllAddress();
         pbSearch = findViewById(R.id.pb_search);
+        spCities = findViewById(R.id.spCities);
+        spCities.setSelection(appPreference.getCityPos());
+
+        spCities.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                appPreference.setCityPos(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         ArrayList<SavedLocationData> arrayOfUsers = new ArrayList<SavedLocationData>();
         ArrayList<SavedLocationData> arrayOfSuggestions = new ArrayList<SavedLocationData>();
@@ -124,6 +143,10 @@ public class SearchActivity extends AppCompatActivity  {
                         }
                         RectangularBounds bounds = RectangularBounds.newInstance(
                                 new LatLng(30.0519792, 71.3039295),new LatLng(30.3105332, 71.64538709999999));
+                        if(appPreference.getCityPos()==1){
+                            bounds = RectangularBounds.newInstance(
+                                    new LatLng(29.3088215, 71.5971945),new LatLng(29.44505909999999, 71.7828297));
+                        }
                         request = FindAutocompletePredictionsRequest.builder()
                                 // Call either setLocationBias() OR setLocationRestriction().
                                 .setLocationRestriction(bounds)
