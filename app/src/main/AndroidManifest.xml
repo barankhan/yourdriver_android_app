@@ -110,6 +110,13 @@
             android:enabled="true"
             android:exported="false" />
 
+
+        <service
+            android:name="live.yourdriver.driver.Services.LocationUpdatesService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="location" />
+
         <activity
             android:name="live.yourdriver.driver.Activity.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar"

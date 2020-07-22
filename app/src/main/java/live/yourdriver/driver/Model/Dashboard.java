@@ -30,6 +30,17 @@ public class Dashboard {
     @SerializedName("DashTodayEarning")
     private  String DashTodayEarning;
 
+    @SerializedName("VehicleType")
+    private  String VehicleType;
+
+
+    public String getVehicleType() {
+        return VehicleType;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        VehicleType = vehicleType;
+    }
 
     public String getResponse() {
         return response;

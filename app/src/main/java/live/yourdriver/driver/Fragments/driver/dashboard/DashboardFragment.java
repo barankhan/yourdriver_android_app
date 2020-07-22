@@ -28,7 +28,7 @@ import retrofit2.Response;
 public class DashboardFragment extends Fragment {
 
     private TextView tvBalance,tvLast7DaysEarning,tvLast30DaysEarning,tvReferredUsers,tvReferredDrivers,
-            tvReferralCode,tvDashTodayEarning;
+            tvReferralCode,tvDashTodayEarning,tvVehicleType;
 
     public static AppPreference appPreference;
     public static DashboardApi dashboardApi;
@@ -50,6 +50,7 @@ public class DashboardFragment extends Fragment {
         tvReferredDrivers = root.findViewById(R.id.tv_referred_drivers);
         tvReferralCode = root.findViewById(R.id.tv_referral_code);
         tvDashTodayEarning = root.findViewById(R.id.tv_dash_today_earning);
+        tvVehicleType = root.findViewById(R.id.tv_vehicle_type);
 
 
 
@@ -67,6 +68,7 @@ public class DashboardFragment extends Fragment {
                     tvReferralCode.setText(response.body().getReferralCode());
                     tvReferredDrivers.setText(response.body().getReferredDrivers());
                     tvReferredUsers.setText(response.body().getReferredUsers());
+                    tvVehicleType.setText(response.body().getVehicleType());
                 }
             }
 

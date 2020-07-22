@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -20,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import live.yourdriver.driver.Activity.ChatActivity;
 import live.yourdriver.driver.Activity.DriverActivity;
 import live.yourdriver.driver.Activity.DriverTransactionActivity;
@@ -49,6 +53,7 @@ import live.yourdriver.driver.Services.ChatHeadService;
 import live.yourdriver.driver.Services.LocationBackgroundService;
 import live.yourdriver.driver.Services.LocationServiceCallback;
 
+import live.yourdriver.driver.Services.LocationUpdatesService;
 import live.yourdriver.driver.Services.RetrofitClient;
 
 
@@ -91,6 +96,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import live.yourdriver.driver.Services.ServiceApi;
+import live.yourdriver.driver.Services.UtilsGoogle;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -98,9 +104,68 @@ import retrofit2.Response;
 
 import static android.content.Context.LOCATION_SERVICE;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
+import static live.yourdriver.driver.Services.UtilsGoogle.*;
 
 
-public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback, View.OnClickListener, GoogleMap.OnCameraMoveListener {
+public class HomeFragment extends Fragment implements OnMapReadyCallback, LocationServiceCallback, View.OnClickListener, GoogleMap.OnCameraMoveListener, SharedPreferences.OnSharedPreferenceChangeListener {
+
+
+    // GOOGLE Foreground Service Code.
+
+    // Used in checking for runtime permissions.
+
+    // The BroadcastReceiver used to listen from broadcasts from the service.
+    private MyReceiver myReceiver;
+
+    // A reference to the service used to get location updates.
+    private LocationUpdatesService mService = null;
+
+    // Tracks the bound state of the service.
+    private boolean mBound = false;
+
+    // UI elements.
+    private Button mRequestLocationUpdatesButton;
+    private Button mRemoveLocationUpdatesButton;
+
+    // Monitors the state of the connection to the service.
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            LocationUpdatesService.LocalBinder binder = (LocationUpdatesService.LocalBinder) service;
+            mService = binder.getService();
+            mService.registerCallBack(HomeFragment.this);
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            mService = null;
+            mBound = false;
+        }
+    };
+
+
+
+
+
+    /**
+     * Receiver for broadcasts sent by {@link LocationUpdatesService}.
+     */
+    private class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Location location = intent.getParcelableExtra(LocationUpdatesService.EXTRA_LOCATION);
+            if (location != null) {
+                Toast.makeText(getActivity(), UtilsGoogle.getLocationText(location),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // google foreground service code end.
+
+
 
 
     private ConstraintLayout notArrivedLayout;
@@ -224,6 +289,24 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
         View root = inflater.inflate(R.layout.driver_fragment_home, container, false);
 
+        // Google ForeGround Service Code:
+
+        myReceiver = new MyReceiver();
+
+
+        // Check that the user hasn't revoked permissions by going to Settings.
+        if (UtilsGoogle.requestingLocationUpdates(getContext())) {
+            if (!checkPermissions()) {
+                requestPermissions();
+            }
+        }
+
+        getActivity().getApplication().bindService(new Intent(getActivity(), LocationUpdatesService.class), mServiceConnection,
+                Context.BIND_AUTO_CREATE|Context.BIND_IMPORTANT);
+        // End of google foreground service code
+
+
+
 //        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
         getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
                 WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
@@ -297,8 +380,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
         buildLocationSettingsRequest();
 
-        serviceIntent = new Intent(getActivity().getApplication(), LocationBackgroundService.class);
-        getActivity().getApplication().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+//        serviceIntent = new Intent(getActivity().getApplication(), LocationBackgroundService.class);
+//        getActivity().getApplication().bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE|Context.BIND_IMPORTANT);
 
         createNotificationChannel();
 
@@ -393,7 +476,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                             btnOnOffLine.setTag(response.body().getMessage());
                                             btnOnOffLine.setText(response.body().getMessage());
                                             btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.online));
-                                            gpsService.startTracking();
+//                                            gpsService.startTracking();
+
+                                            mService.requestLocationUpdates();
 
                                         }else{
                                             Utils.showAlertBox(getActivity(),currentUser.getMessage());
@@ -436,7 +521,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                 if(response.body().getResponse().equals("success")){
                                     btnOnOffLine.setTag(response.body().getMessage());
                                     btnOnOffLine.setText(response.body().getMessage());
-                                    gpsService.stopTracking();
+//                                    gpsService.stopTracking();
+
+                                    mService.removeLocationUpdates();
                                     btnOnOffLine.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.offline));
                                 }else{
                                     Utils.showAlertBox(getActivity(),response.body().getMessage());
@@ -465,23 +552,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            String name = className.getClassName();
-            if (name.endsWith("LocationBackgroundService")) {
-                gpsService = ((LocationBackgroundService.LocationServiceBinder) service).getService();
-                gpsService.registerCallBack(HomeFragment.this);
-
-
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            if (className.getClassName().equals("LocationBackgroundService")) {
-                gpsService = null;
-            }
-        }
-    };
+//    private ServiceConnection serviceConnection = new ServiceConnection() {
+//        public void onServiceConnected(ComponentName className, IBinder service) {
+//            String name = className.getClassName();
+//            if (name.endsWith("LocationBackgroundService")) {
+//                gpsService = ((LocationBackgroundService.LocationServiceBinder) service).getService();
+//                gpsService.registerCallBack(HomeFragment.this);
+//
+//
+//            }
+//        }
+//
+//        public void onServiceDisconnected(ComponentName className) {
+//            if (className.getClassName().equals("LocationBackgroundService")) {
+//                gpsService = null;
+//            }
+//        }
+//    };
 
 
     @Override
@@ -492,6 +579,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onStop() {
+        if (mBound) {
+            // Unbind from the service. This signals to the service that this activity is no longer
+            // in the foreground, and the service can respond by promoting itself to a foreground
+            // service.
+            getActivity().getApplication().unbindService(mServiceConnection);
+            mBound = false;
+        }
+        PreferenceManager.getDefaultSharedPreferences(getContext())
+                .unregisterOnSharedPreferenceChangeListener(this);
         super.onStop();
 
     }
@@ -500,6 +596,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     @Override
     public void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(myReceiver);
 
     }
 
@@ -507,7 +604,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     public void onResume(){
         super.onResume();
 
-
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(myReceiver,
+                new IntentFilter(LocationUpdatesService.ACTION_BROADCAST));
 
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener( getActivity(),  new OnSuccessListener<InstanceIdResult>() {
             @Override
@@ -1472,4 +1570,16 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         }
 
     }
+
+    // Google foreground code:
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        // Update the buttons state depending on whether location updates are being requested.
+        if (s.equals(UtilsGoogle.KEY_REQUESTING_LOCATION_UPDATES)) {
+//            setButtonsState(sharedPreferences.getBoolean(UtilsGoogle.KEY_REQUESTING_LOCATION_UPDATES,
+//                    false));
+        }
+    }
+
 }
