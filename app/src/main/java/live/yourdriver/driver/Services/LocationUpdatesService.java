@@ -186,7 +186,7 @@ public class LocationUpdatesService extends Service {
 //            stopSelf();
         }
 
-        return START_STICKY;
+        return START_REDELIVER_INTENT;
     }
 
     @Override
@@ -297,7 +297,7 @@ public class LocationUpdatesService extends Service {
                 .setContentText(text)
                 .setContentTitle(UtilsGoogle.getLocationTitle(this))
                 .setOngoing(true)
-                .setPriority(NotificationManager.IMPORTANCE_NONE)
+                .setPriority(NotificationManager.IMPORTANCE_HIGH)
                 .setSmallIcon(R.drawable.ic_driver_notification_icon)
                 .setTicker(text)
                 .setWhen(System.currentTimeMillis())
