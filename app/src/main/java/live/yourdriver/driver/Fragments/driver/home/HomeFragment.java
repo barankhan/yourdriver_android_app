@@ -463,7 +463,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Utils.showProgressBarSpinner(getContext());
-                            Call<User> userCall = serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken);
+                            Call<User> userCall = serviceApi.isDriverOnline(currentUser.getMobile(),1,firebaseToken,getString(R.string.app_version));
 
                             userCall.enqueue(new Callback<User>() {
                                 @Override
@@ -510,7 +510,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Utils.showProgressBarSpinner(getContext());
-                    Call<User> userCall = serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken);
+                    Call<User> userCall = serviceApi.isDriverOnline(currentUser.getMobile(),0,firebaseToken,getString(R.string.app_version));
                     userCall.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
@@ -911,12 +911,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     distance = startPoint.distanceTo(currentLocation);
                 }
 //                showArrivedButtonsWithDistance(r,distance);
-                if (r.getIsRideStarted()==1){
-                    DBHelper dbHelper;
-                    dbHelper = new DBHelper(getContext());
-                    dbHelper.insertRidePath(currentLocation.getLatitude(),currentLocation.getLongitude(),r.getId());
-                    dbHelper.close();
-                }
+
 
                 if(r.getIsRideStarted()==0){
 
@@ -953,6 +948,19 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
                 }
             });
+
+
+            if (r !=null && r.getIsRideStarted()==1){
+                try{
+                    DBHelper dbHelper;
+                    dbHelper = new DBHelper(getContext());
+                    dbHelper.insertRidePath(currentLocation.getLatitude(),currentLocation.getLongitude(),r.getId());
+                    dbHelper.close();
+                }catch (Exception e){
+                    //Toast.makeText(getContext(),e.toString(),Toast.LENGTH_LONG);
+                }
+
+            }
         }
 
     }
@@ -1293,7 +1301,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 AlertDialog ds =builders.setTitle("Do you want to start the ride?").setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Call<Ride> startRideCall = DriverActivity.ridesApi.startRide(u.getMobile(),r.getId());
+                        Call<Ride> startRideCall = DriverActivity.ridesApi.startRide(u.getMobile(),r.getId(),appPreference.getLat(),appPreference.getLng());
                         Utils.showProgressBarSpinner(getContext());
                         startRideCall.enqueue(new Callback<Ride>() {
                             @Override

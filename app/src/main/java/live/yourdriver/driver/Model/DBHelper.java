@@ -11,6 +11,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PointF;
+import android.widget.Toast;
 
 import live.yourdriver.driver.Extras.SavedLocationData;
 
@@ -46,11 +47,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String ADDRESS_COLUMN_LAT = "lat";
     public static final String ADDRESS_COLUMN_LONG = "lng";
     public static final String ADDRESS_COLUMN_TITLE = "title";
+    private Context context;
 
     private HashMap hp;
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME , null, 3);
+        this.context=context;
     }
 
     @Override
@@ -133,13 +136,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     public long insertRidePath (Double lat,Double lng,long rideId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(RIDE_PATHS_LAT, lat);
-        contentValues.put(RIDE_PATHS_LNG, lng);
-        contentValues.put(RIDE_PATHS_RIDE_ID, rideId);
-        long i =  db.insert(RIDE_PATHS_TABLE_NAME, null, contentValues);
-        db.close();
+        long i = 0;
+        try{
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(RIDE_PATHS_LAT, lat);
+            contentValues.put(RIDE_PATHS_LNG, lng);
+            contentValues.put(RIDE_PATHS_RIDE_ID, rideId);
+             i =  db.insert(RIDE_PATHS_TABLE_NAME, null, contentValues);
+            db.close();
+        }catch (Exception e){
+            Toast.makeText(this.context,e.toString(),Toast.LENGTH_LONG);
+        }
         return  i;
     }
 

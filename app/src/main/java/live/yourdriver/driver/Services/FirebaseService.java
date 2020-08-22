@@ -1,6 +1,7 @@
 package live.yourdriver.driver.Services;
 
 import android.content.Intent;
+import android.util.Log;
 
 import live.yourdriver.driver.Activity.ChatActivity;
 import live.yourdriver.driver.Activity.NotifActivity;
@@ -47,7 +48,7 @@ public class FirebaseService extends FirebaseMessagingService {
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
 //        Log.e(TAG, "From: " + remoteMessage.getFrom());
-//        Log.e(TAG,remoteMessage.getMessageId());
+        Log.e(TAG,"Received messaage .........");
 
         Call<DriverServerResponse> rideCall = ridesApi.pushNotificationReceived(remoteMessage.getMessageId());
         rideCall.enqueue(new Callback<DriverServerResponse>() {

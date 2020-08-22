@@ -100,7 +100,9 @@
         <service
             android:name="live.yourdriver.driver.Services.FirebaseService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:directBootAware="true"
+            >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

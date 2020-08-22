@@ -59,7 +59,7 @@ public interface ServiceApi {
 
     @FormUrlEncoded
     @POST("is_driver_online.php")
-    Call <User> isDriverOnline(@Field("mobile") String mobile, @Field("is_driver_online") int is_driver_online, @Field("firebaseToken") String firebaseToken);
+    Call <User> isDriverOnline(@Field("mobile") String mobile, @Field("is_driver_online") int is_driver_online, @Field("firebaseToken") String firebaseToken,@Field("app_version") String appVersion);
 
 
     @FormUrlEncoded

@@ -1367,6 +1367,15 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                             Utils.showAlertBox(getActivity(),"Unable to Connect to server.");
                         }
                     });
+                }else{
+                    appPreference.setRideObject(null);
+                    appPreference.setDriverObject(null);
+                    Intent intent = new Intent(getContext(), NotifActivity.class);
+                    intent.putExtra("setPickUpMode", "true");
+                    intent.putExtra("setDropoffMode", "false");
+                    intent.putExtra("message", "Thanks a lot! for your feedback");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
                 break;
             case R.id.tv_driver_name:
