@@ -1,4 +1,4 @@
-# *Driver - Adnroid Application*
+# *Driver - Android Application*
 
 This application was developed by Baran Khan and was deployed and worked live in Multan, Pakistan. 
 
